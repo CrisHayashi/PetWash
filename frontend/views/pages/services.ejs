@@ -1,0 +1,54 @@
+<div id="servicoMenu" class="container">
+    <div class="row">
+        <div class="col s3">
+            <a id="btn_novoServico" class="waves-effect waves-light btn">Novo</a>
+        </div>
+
+        <form id="servicoForm" class="col s12">
+            <div class="row">
+                <div class="input-field col s6">
+                    <i class="material-icons prefix">person</i>
+                    <input id="nameServico" name="name" type="text" data-label="Nome do Serviço" class="validate">
+                    <label for="nameServico">Nome do Serviço</label>
+                </div>
+                <div class="input-field col s6">
+                    <i class="material-icons prefix">email</i>
+                    <input id="price" name="price" type="number" data-label="price" class="validate">
+                    <label for="price">Preço</label>
+                </div>
+                <div class="input-field col s6">
+                    <i class="material-icons prefix">phone</i>
+                    <input id="duration" name="duration" type="text" data-label="Duração" class="validate">
+                    <label for="duration">Duração</label>
+                </div>
+                <div class="input-field col s6">
+                    <i class="material-icons prefix">phone</i>
+                    <input id="description" name="description" type="text" data-label="Descrição" class="validate">
+                    <label for="description">Descrição</label>
+                </div>
+                <div class="col s3">
+                    <a id="btn_salvarServico" class="waves-effect waves-light btn">Enviar</a>
+                </div>
+                <div class="col s3">
+                    <a id="btn_voltarServico" class="waves-effect waves-light btn">Voltar</a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <table id="table_servico">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Preço</th>
+                <th>Duração</th>
+                <th>Descrição</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+
+        <tbody id="servico_list">
+            <!-- lista de serviços gerada aqui -->
+        </tbody>
+    </table>
+</div>

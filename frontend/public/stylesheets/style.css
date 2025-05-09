@@ -1,0 +1,21 @@
+#loading {
+    text-align: center;
+    font-size: 18px;
+    padding: 50px;
+}
+
+html, body {
+    height: 100%; /* Garante que toda a página ocupe a altura total */
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1; /* Faz com que o conteúdo ocupe o espaço disponível */
+}
+
+footer {
+    color: white;
+    text-align: center;
+}
