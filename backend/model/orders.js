@@ -1,282 +1,240 @@
-const fs = require('fs');
-const banco = 'orders';
+const table = 'orders';
 const order_products = 'order_products';
 const order_services = 'order_services';
 const db = require('../banco/database');
 
-function pegarPedidos(res, next) {
-    db.all(`
-        SELECT 
-            orders.id AS idPedido,
-            tutors.name AS tutorName,
-            pets.name AS petName,
-            prod.productNames,
-            prod.quantidadeProduto,
-            serv.serviceNames,
-            serv.quantidadeServico,
-            orders.total AS total,
-            orders.status AS status
-        FROM ${banco} AS orders
-        LEFT JOIN tutors ON tutors.id = orders.tutorId
-        LEFT JOIN pets ON pets.id = orders.petId
-        LEFT JOIN (
-            SELECT order_products.orderId, 
-                GROUP_CONCAT(DISTINCT products.name) AS productNames,
-                SUM(order_products.quantidade) AS quantidadeProduto
-            FROM ${order_products}
-            LEFT JOIN products ON products.id = ${order_products}.productId
-            GROUP BY order_products.orderId
-        ) AS prod ON prod.orderId = orders.id
-        LEFT JOIN (
-            SELECT order_services.orderId, 
-                GROUP_CONCAT(DISTINCT services.name) AS serviceNames,
-                SUM(order_services.quantidade) AS quantidadeServico
-            FROM ${order_services}
-            LEFT JOIN services ON services.id = ${order_services}.serviceId
-            GROUP BY order_services.orderId
-        ) AS serv ON serv.orderId = orders.id
-        GROUP BY orders.id, tutors.name, pets.name, orders.total, orders.status
-        ;`, [], (err, data) => {
+// Função para pegar todos os pedidos
+const pegarPedidos = async () => {
+    try {
+        const data = await new Promise((resolve, reject) => {
+            db.all(`
+                SELECT 
+                    orders.id AS idPedido,
+                    tutors.name AS tutorName,
+                    pets.name AS petName,
+                    prod.productNames,
+                    prod.quantidadeProduto,
+                    serv.serviceNames,
+                    serv.quantidadeServico,
+                    orders.total AS total,
+                    orders.status AS status
+                FROM ${table} AS orders
+                LEFT JOIN tutors ON tutors.id = orders.tutorId
+                LEFT JOIN pets ON pets.id = orders.petId
+                LEFT JOIN (
+                    SELECT order_products.orderId, 
+                        GROUP_CONCAT(DISTINCT products.name) AS productNames,
+                        SUM(order_products.quantidade) AS quantidadeProduto
+                    FROM ${order_products}
+                    LEFT JOIN products ON products.id = ${order_products}.productId
+                    GROUP BY order_products.orderId
+                ) AS prod ON prod.orderId = orders.id
+                LEFT JOIN (
+                    SELECT order_services.orderId, 
+                        GROUP_CONCAT(DISTINCT services.name) AS serviceNames,
+                        SUM(order_services.quantidade) AS quantidadeServico
+                    FROM ${order_services}
+                    LEFT JOIN services ON services.id = ${order_services}.serviceId
+                    GROUP BY order_services.orderId
+                ) AS serv ON serv.orderId = orders.id
+                GROUP BY orders.id, tutors.name, pets.name, orders.total, orders.status;
+            `, [], (err, rows) => {
+                if (err) reject(err);
+                resolve(rows);
+            });
+        });
 
-        if (err) {
-            console.error(err);
-            return next(err);
-        }
-        return res.json(data);
-    });
-}
-
-function pegarPedidoPorId(req, res, next) {
-    const id = Number(req.params.id);
-    db.all(`
-        SELECT 
-            orders.id AS idPedido,
-            tutors.name AS tutorName,
-            pets.name AS petName,
-            GROUP_CONCAT(products.name) AS productNames,
-            ${order_products}.quantidade AS quantidade,
-            orders.total AS total,
-            orders.status AS status
-        FROM
-            ${banco} AS orders
-        JOIN
-            tutors ON tutors.id = orders.tutorId
-        JOIN
-            pets ON pets.id = orders.petId
-        JOIN
-            ${order_products} ON ${order_products}.orderId = orders.id
-        JOIN
-            products ON products.id = ${order_products}.productId
-        WHERE 
-            orders.id = ?
-        GROUP BY 
-            orders.id, tutors.name, pets.name, orders.total, orders.status
-        ;`, [id], [], (err, data) => {
-        if (err) {
-            console.error(err);
-            return next(err);
-        }
-        if (data.length === 0) {
-            console.error(err);
-            return res.json('Não encontrado');
-        }
-        return res.json(data);
-    });
-}
-
-function criarPedido(req, res) {
-    const corpo = req.body;
-
-    for (let key in corpo) {
-        if (key.trim() === "") {
-            return res.json('Preencha todos os campos!');
-        }
+        return data;
+    } catch (err) {
+        throw new Error('Erro ao pegar pedidos: ' + err.message);
     }
+};
 
-    db.run(`INSERT INTO ${banco} 
-                    (tutorId, petId, products, services, total, status)
-                    values
-                    (?, ?, ?, ?, ?, ?)
-                    `, [corpo.tutorId, corpo.petId, corpo.products, corpo.services, corpo.total, corpo.status], function (err) {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ error: 'Erro ao inserir o elemento' });
-        }
-
-        let orderId = this.lastID;
-        let products = JSON.parse(req.body.products);
-        let services = JSON.parse(req.body.services);
-
-        // Contar a quantidade de cada produto
-        let qtdProduto = products.reduce((contagem, productId) => {
-            contagem[productId] = (contagem[productId] || 0) + 1;
-            return contagem;
-        }, {});
-
-        // Inserir produtos no banco pedido_produtos
-        Object.entries(qtdProduto).forEach(([productId, quantidade]) => {
-            db.run(`INSERT INTO ${order_products}
-                    (orderId, productId, quantidade)
-                    values
-                    (?, ?, ?)`, [orderId, productId, quantidade], function (err) {
-                if (err) {
-                    console.error(err);
-                    return res.status(500).json({ error: 'Erro ao inserir o elemento OP' });
-                }
+// Função para pegar pedido por ID
+const pegarPedidoPorId = async (id) => {
+    try {
+        const data = await new Promise((resolve, reject) => {
+            db.all(`
+                SELECT 
+                    orders.id AS idPedido,
+                    tutors.name AS tutorName,
+                    pets.name AS petName,
+                    GROUP_CONCAT(products.name) AS productNames,
+                    ${order_products}.quantidade AS quantidade,
+                    orders.total AS total,
+                    orders.status AS status
+                FROM
+                    ${table} AS orders
+                JOIN
+                    tutors ON tutors.id = orders.tutorId
+                JOIN
+                    pets ON pets.id = orders.petId
+                JOIN
+                    ${order_products} ON ${order_products}.orderId = orders.id
+                JOIN
+                    products ON products.id = ${order_products}.productId
+                WHERE 
+                    orders.id = ?
+                GROUP BY 
+                    orders.id, tutors.name, pets.name, orders.total, orders.status;
+            `, [id], (err, rows) => {
+                if (err) reject(err);
+                resolve(rows);
             });
         });
 
-        // Contar a quantidade de cada serviço
-        let qtdServico = services.reduce((contagem, serviceId) => {
-            contagem[serviceId] = (contagem[serviceId] || 0) + 1;
-            return contagem;
-        }, {});
+        return data.length > 0 ? data : null;
+    } catch (err) {
+        throw new Error('Erro ao pegar pedido por ID: ' + err.message);
+    }
+};
 
-        // Inserir serviços no banco
-        Object.entries(qtdServico).forEach(([serviceId, quantidade]) => {
-            db.run(`INSERT INTO ${order_services}
-                    (orderId, serviceId, quantidade)
-                    values
-                    (?, ?, ?)`, [orderId, serviceId, quantidade], function (err) {
-                if (err) {
-                    console.error(err);
-                    return res.status(500).json({ error: 'Erro ao inserir o elemento OS' });
-                }
-            });
-        });
-
-        return res.json('Todos os produtos e Serviços foram inseridos!');
-    });
-}
-
-function atualizarPedido(req, res) {
-    const id = Number(req.params.id);
-    const corpo = req.body;
-
-    // recupera o pedido com base no id
-    db.get(`SELECT * FROM ${banco} WHERE id= ?`, [id], (err, row) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ error: 'Erro ao buscar o pedido' });
-        }
-        if (!row) {
-            return res.json('Pedido não encontrado.');
-        }
-
-        // copia todos os elementos do corpo da requisição para adentro do array novoCorpo
-        // caso não encontre no corpo, usa o que esta no pedido do banco de dados
-        const novoCorpo = {
-            tutorId: corpo.tutorId || row.tutorId,
-            petId: corpo.petId || row.petId,
-            total: corpo.total || row.total,
-            status: corpo.status || row.status,
-        };
-
-        // atualiza o pedido com base nas informações de novoCorpo (menos produtos e serviços)
-        db.run(`UPDATE ${banco} 
-            SET tutorId=?, petId=?, total=?, status=?
-            WHERE id=?`, [novoCorpo.tutorId, novoCorpo.petId, novoCorpo.total, novoCorpo.status, id], function (err) {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ error: 'Erro ao atualizar o pedido' });
-            }
-
-            // apaga os antigos elementos da tabela que faz a comunicação entre produto e pedido, com base no id
-            db.run(`DELETE FROM ${order_products} WHERE orderId=?`, [id], (err) => {
-                if (err) {
-                    console.error(err);
-                    return res.status(500).json({ error: 'Erro ao remover produtos antigos' });
-                }
-
-                let products = JSON.parse(corpo.products || '[]'); // converte os produtos para JSON e caso não tenha nada, retorna um array vazio []
-
-                // conta a quantidade de cada produto que foi passado pelo corpo da requisição
-                
-                // contagem é quem vai guardar a quantidade de cada produto, contagem é um objeto vazio inicialmente {}
-                // productId é o id do produto que foi passado pelo corpo da requisição
-                let qtdProduto = products.reduce((contagem, productId) => {
-                    contagem[productId] = (contagem[productId] || 0) + 1; // se contagem[productId], soma 1, e se for 0, insere o 0 e soma 1
-                    return contagem; // retorna um objeto com a contagem de cada productId, exemplo {1: 1, 2: 5, 3: 4, 4: 2}
-                }, {});
-
-                Object.entries(qtdProduto).forEach(([productId, quantidade]) => {
-                    db.run(`INSERT INTO ${order_products}
-                            (orderId, productId, quantidade)
-                            values
-                            (?, ?, ?)`, [id, productId, quantidade], function (err) {
-                        if (err) {
-                            console.error(err);
-                            return res.status(500).json({ error: 'Erro ao inserir produtos atualizados' });
-                        }
-                    });
+// Função para criar um pedido
+const criarPedido = async (pedidoData) => {
+    const { tutorId, petId, products, services, total, status, datetime } = pedidoData;
+    
+    try {
+        const result = await new Promise((resolve, reject) => {
+            db.run(`
+                INSERT INTO ${table} 
+                (tutorId, petId, products, services, total, status, datetime)
+                VALUES (?, ?, ?, ?, ?, ?, ?)`, 
+                [tutorId, petId, products, services, total, status, datetime],
+                function (err) {
+                    if (err) reject(err);
+                    resolve(this.lastID);
                 });
-            });
+        });
 
-            // a mesma lógica de produtos será aplicada a serviços
-            db.run(`DELETE FROM ${order_services} WHERE orderId=?`, [id], (err) => {
-                if (err) {
-                    console.error(err);
-                    return res.status(500).json({ error: 'Erro ao remover serviços antigos' });
-                }
-
-                let services = JSON.parse(corpo.services || '[]');
-                let qtdServico = services.reduce((contagem, serviceId) => {
-                    contagem[serviceId] = (contagem[serviceId] || 0) + 1;
-                    return contagem;
-                }, {});
-
-                Object.entries(qtdServico).forEach(([serviceId, quantidade]) => {
-                    db.run(`INSERT INTO ${order_services}
-                            (orderId, serviceId, quantidade)
-                            values
-                            (?, ?, ?)`, [id, serviceId, quantidade], function (err) {
-                        if (err) {
-                            console.error(err);
-                            return res.status(500).json({ error: 'Erro ao inserir serviços atualizados' });
-                        }
-                    });
+        const orderId = result;
+        await Promise.all([
+            ...products.map(productId => {
+                return new Promise((resolve, reject) => {
+                    db.run(`
+                        INSERT INTO ${order_products}
+                        (orderId, productId, quantidade)
+                        VALUES (?, ?, ?)`, 
+                        [orderId, productId, 1], (err) => {
+                            if (err) reject(err);
+                            resolve();
+                        });
                 });
+            }),
+            ...services.map(serviceId => {
+                return new Promise((resolve, reject) => {
+                    db.run(`
+                        INSERT INTO ${order_services}
+                        (orderId, serviceId, quantidade)
+                        VALUES (?, ?, ?)`, 
+                        [orderId, serviceId, 1], (err) => {
+                            if (err) reject(err);
+                            resolve();
+                        });
+                });
+            })
+        ]);
+
+        return orderId;
+    } catch (err) {
+        throw new Error('Erro ao criar pedido: ' + err.message);
+    }
+};
+
+// Função para atualizar um pedido
+const atualizarPedido = async (id, pedidoData) => {
+    const { tutorId, petId, total, status, datetime, products, services } = pedidoData;
+
+    try {
+        // Atualizar os dados principais do pedido
+        await new Promise((resolve, reject) => {
+            db.run(`
+                UPDATE ${table} 
+                SET tutorId = ?, petId = ?, total = ?, status = ?, datetime = ?
+                WHERE id = ?`, 
+                [tutorId, petId, total, status, datetime, id], function (err) {
+                    if (err) reject(err);
+                    resolve();
+                });
+        });
+
+        // Limpar produtos e serviços antigos
+        await new Promise((resolve, reject) => {
+            db.run(`DELETE FROM ${order_products} WHERE orderId = ?`, [id], (err) => {
+                if (err) reject(err);
+                resolve();
             });
-
-            return res.json('Pedido atualizado com sucesso!');
         });
-    });
-}
 
-function apagarPedido(req, res) {
-    const id = Number(req.params.id);
+        await new Promise((resolve, reject) => {
+            db.run(`DELETE FROM ${order_services} WHERE orderId = ?`, [id], (err) => {
+                if (err) reject(err);
+                resolve();
+            });
+        });
 
-    db.get(`SELECT * FROM ${banco} WHERE id=?`, [id], (err, row) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ error: 'Erro ao buscar o pedido' });
-        }
-        if (!row) {
-            return res.status(404).json('Id não encontrado');
-        }
-        // código caso encontre o pedido
+        // Inserir novos produtos e serviços
+        await Promise.all([
+            ...products.map(productId => {
+                return new Promise((resolve, reject) => {
+                    db.run(`
+                        INSERT INTO ${order_products}
+                        (orderId, productId, quantidade)
+                        VALUES (?, ?, ?)`, 
+                        [id, productId, 1], (err) => {
+                            if (err) reject(err);
+                            resolve();
+                        });
+                });
+            }),
+            ...services.map(serviceId => {
+                return new Promise((resolve, reject) => {
+                    db.run(`
+                        INSERT INTO ${order_services}
+                        (orderId, serviceId, quantidade)
+                        VALUES (?, ?, ?)`, 
+                        [id, serviceId, 1], (err) => {
+                            if (err) reject(err);
+                            resolve();
+                        });
+                });
+            })
+        ]);
 
-        db.run(`DELETE FROM ${order_products} WHERE orderId=?`, [id], (err) => {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ error: 'Erro ao remover produtos antigos' });
-            }
+        return id;
+    } catch (err) {
+        throw new Error('Erro ao atualizar pedido: ' + err.message);
+    }
+};
+
+// Função para apagar pedido
+const apagarPedido = async (id) => {
+    try {
+        await new Promise((resolve, reject) => {
+            db.run(`DELETE FROM ${order_products} WHERE orderId = ?`, [id], (err) => {
+                if (err) reject(err);
+                resolve();
+            });
         });
-        db.run(`DELETE FROM ${order_services} WHERE orderId=?`, [id], (err) => {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ error: 'Erro ao remover serviços antigos' });
-            }
+
+        await new Promise((resolve, reject) => {
+            db.run(`DELETE FROM ${order_services} WHERE orderId = ?`, [id], (err) => {
+                if (err) reject(err);
+                resolve();
+            });
         });
-        db.run(`DELETE FROM ${banco} WHERE id=?`, [id], function (err) {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ error: 'Erro ao remover o pedido' });
-            }
-            return res.json('Pedido removido com sucesso!');
+
+        await new Promise((resolve, reject) => {
+            db.run(`DELETE FROM ${table} WHERE id = ?`, [id], function (err) {
+                if (err) reject(err);
+                resolve();
+            });
         });
-    });
-}
+
+        return id;
+    } catch (err) {
+        throw new Error('Erro ao apagar pedido: ' + err.message);
+    }
+};
 
 module.exports = {
     pegarPedidos,

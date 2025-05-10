@@ -8,13 +8,26 @@ const db = new sqlite3.Database('./database.sqlite', (err) => {
     console.log('Conectado com o Banco de Dados');
 });
 
+//Tabela de Usuários
+db.serialize(() => {
+    db.run(
+       `CREATE TABLE IF NOT EXISTS users (
+           id INTEGER PRIMARY KEY AUTOINCREMENT,
+           name VARCHAR(150) NOT NULL,
+           email VARCHAR(150) NOT NULL UNIQUE,
+           password VARCHAR(150) NOT NULL
+       )`);
+});
+
+//Tabela de tutores
 db.serialize(() => {
     db.run(
        `CREATE TABLE IF NOT EXISTS tutors (
            id INTEGER PRIMARY KEY AUTOINCREMENT,
            name VARCHAR(150) NOT NULL,
            email VARCHAR(150) NOT NULL UNIQUE,
-           phone VARCHAR(150) NOT NULL
+           phone VARCHAR(150) NOT NULL,
+           address VARCHAR(255) NOT NULL
        )`);
 });
 
@@ -24,6 +37,7 @@ db.serialize(() => {
            id INTEGER PRIMARY KEY AUTOINCREMENT,
            name VARCHAR(150) NOT NULL,
            species VARCHAR(150) NOT NULL,
+           breed VARCHAR(150) NOT NULL,
            age INTEGER NOT NULL,
            tutorId INTEGER NOT NULL REFERENCES tutors(id)
        )`);
@@ -34,6 +48,7 @@ db.serialize(() => {
        `CREATE TABLE IF NOT EXISTS products (
            id INTEGER PRIMARY KEY AUTOINCREMENT,
            name VARCHAR(150) NOT NULL,
+           description VARCHAR(500),
            price INTEGER NOT NULL,
            category VARCHAR(150) NOT NULL,
            stock INTEGER NOT NULL
@@ -80,6 +95,7 @@ db.serialize(() => {
             products TEXT,
             services TEXT,
             total REAL NOT NULL,
+            datetime DATETIME NOT NULL,
             status VARCHAR(50) NOT NULL
         )`);
 });

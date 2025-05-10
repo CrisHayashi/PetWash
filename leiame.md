@@ -3,12 +3,14 @@
 # para levantar o servidor, execute o comando "npm run start" ou "npm run dev"
 # npm run dev é para rodar o servidor em modo desenvolvimento, junto com o nodemon
 
-# após levantar o servidor, encaminhe a porta 5000 na ba 'portas' ou 'ports' do vscode, deixe a porta como pública
+# após levantar o servidor, encaminhe a porta 5000 na aba 'portas' ou 'ports' do vscode, deixe a porta como pública
 
 # para usar o banco de dados sqlite, primeiro instale o sqlite3
 # npm install sqlite3
 
 # para visualizar o banco de dados sqlite dentro do do vscode, instale a extensão sqlite viewer
+# Vá em Extensões
+# Busque por: SQLite Viewer
 
 # para fazer uma consulta no banco de dados, use o comando "sqlite3 database.sqlite" no terminal
 # isso irá abrir o banco direto no terminal, exemplo de consulta: SELECT * FROM tutors;

@@ -1,11 +1,13 @@
 {
   "name": "backend-server",
   "version": "0.0.0",
+  "description": "API Fullstack PetShop base usando Node.js, Express e SQLite",
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
     "dev": "nodemon ./bin/www"
   },
+  "author": "iTech",
   "dependencies": {
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",

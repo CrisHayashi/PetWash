@@ -1,95 +1,85 @@
-const fs = require('fs');
-const banco = 'services';
+const table = 'services';
 const db = require('../banco/database');
 
-function pegarServicos(res, next) {
-    db.all(`SELECT * FROM ${banco}`, (err, data) => {
-        if (err) {
-            console.error(err);
-            return next(err);
-        } else {
-            return res.json(data);
-        }
-    });
-}
-
-function pegarServicoPorId(req, res, next) {
-    const id = Number(req.params.id);
-    db.all(`SELECT * FROM ${banco} WHERE id = ?`, [id], (err, data) => {
-        if (err) {
-            console.error(err);
-            return next(err);
-        }
-        if (data.length === 0) {
-            console.error(err);
-            return res.json('Não encontrado');
-        }
-        return res.json(data);
-    });
-}
-
-function criarServico(req, res) {
-    const corpo = req.body;
-
-    for (let key in corpo) {
-        if (key.trim() === "") {
-            return res.json('Preencha todos os campos!');
-        }
+const pegarServicos = async () => {
+    try {
+        const services = await new Promise((resolve, reject) => {
+            db.all(`SELECT * FROM ${table}`, [], (err, rows) => {
+                if (err) reject(err);
+                resolve(rows);
+            });
+        });
+        return services;
+    } catch (err) {
+        throw new Error('Erro ao buscar serviços: ' + err.message);
     }
-    db.run(`INSERT INTO ${banco} 
-                    (name, price, duration, description)
-                    values
-                    (?, ?, ?, ?)
-                    `, [corpo.name, corpo.price, corpo.duration, corpo.description], function (err) {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ error: 'Erro ao inserir o elemento' });
-        }
-        return res.json('Elemento inserido!');
-    });
-}
+};
 
-function atualizarServico(req, res) {
-    const id = Number(req.params.id);
-    const corpo = req.body;
-
-    db.get(`SELECT * FROM ${banco} WHERE id= ?`, [id], (err, row) => {
-        if (!row) {
-            return res.json('Id não encontrado.')
-        }
-
-        const novoCorpo = {};
-        for (let key in row) {
-            novoCorpo[key] = corpo.hasOwnProperty(key) ? (typeof corpo[key] === "string" ? corpo[key].trim() : corpo[key]) : row[key];
-        }
-
-        db.run(`UPDATE ${banco} 
-            SET name=?, price=?, duration=?, description=?
-            WHERE id=?`, [novoCorpo.name, novoCorpo.price, novoCorpo.duration, novoCorpo.description, id], function (err) {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ error: 'Erro ao atualizar o elemento' });
-            }
-            return res.json('Elemento atualizado!');
+const pegarServicoPorId = async (id) => {
+    try {
+        const service = await new Promise((resolve, reject) => {
+            db.get(`SELECT * FROM ${table} WHERE id = ?`, [id], (err, row) => {
+                if (err) reject(err);
+                resolve(row);
+            });
         });
-    });
-}
+        return service;
+    } catch (err) {
+        throw new Error('Erro ao buscar serviço por ID: ' + err.message);
+    }
+};
 
-function apagarServico(req, res) {
-    const id = Number(req.params.id);
-    db.get(`SELECT * FROM ${banco} WHERE id= ?`, [id], (err, rows) => {
-        if (!rows) {
-            return res.json('Id não encontrado.')
-        }
-        db.run(`DELETE FROM ${banco} WHERE id= ?`, [id], function (err) {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ error: 'Erro ao apagar o elemento' });
-            }
-            return res.json('Elemento apagado!');
+const criarServico = async (serviceData) => {
+    const { name, description, price, duration } = serviceData;
+    try {
+        const serviceId = await new Promise((resolve, reject) => {
+            db.run(
+                `INSERT INTO ${table} (name, description, price, duration) VALUES (?, ?, ?, ?)`,
+                [name, description, price, duration],
+                function (err) {
+                    if (err) reject(err);
+                    resolve(this.lastID);
+                }
+            );
         });
-    });
-}
+        return serviceId;
+    } catch (err) {
+        throw new Error('Erro ao criar serviço: ' + err.message);
+    }
+};
+
+const atualizarServico = async (id, serviceData) => {
+    const { name, description, price, duration } = serviceData;
+    try {
+        await new Promise((resolve, reject) => {
+            db.run(
+                `UPDATE ${table} SET name = ?, description = ?, price = ?, duration = ? WHERE id = ?`,
+                [name, description, price, duration, id],
+                function (err) {
+                    if (err) reject(err);
+                    resolve();
+                }
+            );
+        });
+        return id;
+    } catch (err) {
+        throw new Error('Erro ao atualizar serviço: ' + err.message);
+    }
+};
+
+const apagarServico = async (id) => {
+    try {
+        await new Promise((resolve, reject) => {
+            db.run(`DELETE FROM ${table} WHERE id = ?`, [id], function (err) {
+                if (err) reject(err);
+                resolve();
+            });
+        });
+        return id;
+    } catch (err) {
+        throw new Error('Erro ao apagar serviço: ' + err.message);
+    }
+};
 
 module.exports = {
     pegarServicos,
