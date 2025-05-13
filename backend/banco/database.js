@@ -81,19 +81,6 @@ db.serialize(() => {
 
 db.serialize(() => {
     db.run(
-        `CREATE TABLE IF NOT EXISTS orders (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            tutorId INTEGER NOT NULL REFERENCES tutors(id),
-            petId INTEGER NOT NULL REFERENCES pets(id),
-            products TEXT,
-            services TEXT,
-            total REAL NOT NULL,
-            status VARCHAR(50) NOT NULL
-        )`);
-});
-
-db.serialize(() => {
-    db.run(
         `CREATE TABLE IF NOT EXISTS order_products (
             orderId INTEGER NOT NULL REFERENCES orders(id),
             productId INTEGER NOT NULL REFERENCES products(id),
