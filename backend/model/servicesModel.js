@@ -1,7 +1,7 @@
 const table = 'services';
 const db = require('../banco/database');
 
-const pegarServicos = async () => {
+const listarServicos = async () => {
     try {
         const services = await new Promise((resolve, reject) => {
             db.all(`SELECT * FROM ${table}`, [], (err, rows) => {
@@ -15,7 +15,7 @@ const pegarServicos = async () => {
     }
 };
 
-const pegarServicoPorId = async (id) => {
+const buscarServicoPorId = async (id) => {
     try {
         const service = await new Promise((resolve, reject) => {
             db.get(`SELECT * FROM ${table} WHERE id = ?`, [id], (err, row) => {
@@ -67,7 +67,7 @@ const atualizarServico = async (id, serviceData) => {
     }
 };
 
-const apagarServico = async (id) => {
+const deletarServico = async (id) => {
     try {
         await new Promise((resolve, reject) => {
             db.run(`DELETE FROM ${table} WHERE id = ?`, [id], function (err) {
@@ -82,9 +82,9 @@ const apagarServico = async (id) => {
 };
 
 module.exports = {
-    pegarServicos,
-    pegarServicoPorId,
+    listarServicos,
+    buscarServicoPorId,
     criarServico,
     atualizarServico,
-    apagarServico
+    deletarServico
 };

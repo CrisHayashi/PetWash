@@ -3,8 +3,8 @@ const order_products = 'order_products';
 const order_services = 'order_services';
 const db = require('../banco/database');
 
-// Função para pegar todos os pedidos
-const pegarPedidos = async () => {
+// Função para listar todos os pedidos
+const listarPedidos = async () => {
     try {
         const data = await new Promise((resolve, reject) => {
             db.all(`
@@ -46,12 +46,12 @@ const pegarPedidos = async () => {
 
         return data;
     } catch (err) {
-        throw new Error('Erro ao pegar pedidos: ' + err.message);
+        throw new Error('Erro ao listar pedidos: ' + err.message);
     }
 };
 
-// Função para pegar pedido por ID
-const pegarPedidoPorId = async (id) => {
+// Função para buscar pedido por ID
+const buscarPedidoPorId = async (id) => {
     try {
         const data = await new Promise((resolve, reject) => {
             db.all(`
@@ -85,7 +85,7 @@ const pegarPedidoPorId = async (id) => {
 
         return data.length > 0 ? data : null;
     } catch (err) {
-        throw new Error('Erro ao pegar pedido por ID: ' + err.message);
+        throw new Error('Erro ao buscar pedido por ID: ' + err.message);
     }
 };
 
@@ -206,8 +206,8 @@ const atualizarPedido = async (id, pedidoData) => {
     }
 };
 
-// Função para apagar pedido
-const apagarPedido = async (id) => {
+// Função para deletar pedido
+const deletarPedido = async (id) => {
     try {
         await new Promise((resolve, reject) => {
             db.run(`DELETE FROM ${order_products} WHERE orderId = ?`, [id], (err) => {
@@ -237,9 +237,9 @@ const apagarPedido = async (id) => {
 };
 
 module.exports = {
-    pegarPedidos,
-    pegarPedidoPorId,
+    listarPedidos,
+    buscarPedidoPorId,
     criarPedido,
     atualizarPedido,
-    apagarPedido
+    deletarPedido
 };

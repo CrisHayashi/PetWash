@@ -2,7 +2,7 @@ const table = 'pets';
 const db = require('../banco/database');
 
 // Função para pegar todos os pets
-const pegarPets = async () => {
+const listarPets = async () => {
     try {
         const pets = await new Promise((resolve, reject) => {
             db.all(`SELECT * FROM ${table}`, [], (err, rows) => {
@@ -17,7 +17,7 @@ const pegarPets = async () => {
 };
 
 // Função para pegar um pet por ID
-const pegarPetPorId = async (id) => {
+const buscarPetPorId = async (id) => {
     try {
         const pet = await new Promise((resolve, reject) => {
             db.get(`SELECT * FROM ${table} WHERE id = ?`, [id], (err, row) => {
@@ -72,7 +72,7 @@ const atualizarPet = async (id, petData) => {
 };
 
 // Função para apagar um pet
-const apagarPet = async (id) => {
+const deletarPet = async (id) => {
     try {
         await new Promise((resolve, reject) => {
             db.run(`DELETE FROM ${table} WHERE id = ?`, [id], function (err) {
@@ -87,9 +87,9 @@ const apagarPet = async (id) => {
 };
 
 module.exports = {
-    pegarPets,
-    pegarPetPorId,
+    listarPets,
+    buscarPetPorId,
     criarPet,
     atualizarPet,
-    apagarPet
+    deletarPet
 };

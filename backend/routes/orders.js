@@ -1,20 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const fs = require('fs');
+
 const {
-  pegarPedidos,
-  pegarPedidoPorId,
+  listarPedidos,
+  buscarPedidoPorId,
   criarPedido,
   atualizarPedido,
-  apagarPedido
-} = require('../model/orders');
+  deletarPedido
+} = require('../controllers/orderscontroller');
 
 router.get('/', function (req, res, next) {
-  pegarPedidos(res, next);
+  listarPedidos(res, next);
 });
 
 router.get('/:id', function (req, res, next) {
-  pegarPedidoPorId(req, res, next);
+  buscarPedidoPorId(req, res, next);
 });
 
 router.post('/', (req, res) => {
@@ -26,7 +26,7 @@ router.patch('/:id', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
-  apagarPedido(req, res);
+  deletarPedido(req, res);
 });
 
 module.exports = router;

@@ -1,7 +1,7 @@
 const table = 'tutors';
 const db = require('../banco/database');
 
-const pegarTutores = async () => {
+const listarTutores = async () => {
     try {
         const tutors = await new Promise((resolve, reject) => {
             db.all(`SELECT * FROM ${table}`, [], (err, rows) => {
@@ -15,7 +15,7 @@ const pegarTutores = async () => {
     }
 };
 
-const pegarTutorPorId = async (id) => {
+const buscarTutorPorId = async (id) => {
     try {
         const tutor = await new Promise((resolve, reject) => {
             db.get(`SELECT * FROM ${table} WHERE id = ?`, [id], (err, row) => {
@@ -67,7 +67,7 @@ const atualizarTutor = async (id, tutorData) => {
     }
 };
 
-const apagarTutor = async (id) => {
+const deletarTutor = async (id) => {
     try {
         await new Promise((resolve, reject) => {
             db.run(`DELETE FROM ${table} WHERE id = ?`, [id], function (err) {
@@ -82,9 +82,9 @@ const apagarTutor = async (id) => {
 };
 
 module.exports = {
-    pegarTutores,
-    pegarTutorPorId,
+    listarTutores,
+    buscarTutorPorId,
     criarTutor,
     atualizarTutor,
-    apagarTutor
+    deletarTutor
 };

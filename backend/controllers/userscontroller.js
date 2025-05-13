@@ -1,11 +1,11 @@
-const usersModel = require('../models/usersModel');  // Importa o modelo de usuários
+const usersModel = require('../model/usersModel');  // Importa o modelo de usuários
 const gerarToken = require('../auth/auth');  // Função para gerar o token JWT
 
 // Função para pegar todos os usuários
-const pegarUsuarios = async (req, res, next) => {
+const listarUsuarios = async (req, res, next) => {
   try {
-    const usuarios = await usersModel.pegarUsuarios();
-    res.status(200).json(usuarios);
+    const users = await usersModel.listarUsuarios();
+    res.status(200).json(users);
   } catch (err) {
     console.error(err);  // Log do erro para debug
     next(err);
@@ -13,12 +13,12 @@ const pegarUsuarios = async (req, res, next) => {
 };
 
 // Função para pegar usuário por ID
-const pegarUsuarioPorId = async (req, res, next) => {
-  const userId = req.params.id;
+const buscarUsuarioPorId = async (req, res, next) => {
+  const id = req.params.id;
   try {
-    const usuario = await usersModel.pegarUsuarioPorId(userId);
-    if (usuario) {
-      res.status(200).json(usuario);
+    const user = await usersModel.buscarUsuarioPorId(id);
+    if (user) {
+      res.status(200).json(user);
     } else {
       res.status(404).json({ message: 'Usuário não encontrado' });
     }
@@ -78,10 +78,10 @@ const login = async (req, res, next) => {
 
   try {
     // Verifica a senha durante o login
-    const usuario = await usersModel.verificarSenha(email, password);
+    const user = await usersModel.verificarSenha(email, password);
 
     // Gerar o token
-    const token = gerarToken(usuario);
+    const token = gerarToken(user);
 
     res.status(200).json({ token });
   } catch (err) {
@@ -90,8 +90,8 @@ const login = async (req, res, next) => {
 };
 
 module.exports = {
-  pegarUsuarios,
-  pegarUsuarioPorId,
+  listarUsuarios,
+  buscarUsuarioPorId,
   criarUsuario,
   atualizarUsuario,
   deletarUsuario,

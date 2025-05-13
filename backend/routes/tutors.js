@@ -1,20 +1,21 @@
 const express = require('express');
 const router = express.Router();
-const fs = require('fs');
+// const fs = require('fs');
+
 const {
-  pegarTutores,
-  pegarTutorPorId,
+  listarTutores,
+  buscarTutorPorId,
   criarTutor,
   atualizarTutor,
-  apagarTutor
-} = require('../model/tutors'); // importando as funções pegarTutor e pegarTutorPorId do arquivo tutorsModel.js
+  deletarTutor
+} = require('../controllers/tutorscontroller'); // importando as funções pegarTutor e pegarTutorPorId do arquivo tutorsModel.js
 
 router.get('/', function (req, res, next) {
-  pegarTutores(res, next);
+  listarTutores(res, next);
 });
 
 router.get('/:id', function (req, res, next) {
-  pegarTutorPorId(req, res, next);
+  buscarTutorPorId(req, res, next);
 });
 
 router.post('/', (req, res) => {
@@ -26,7 +27,7 @@ router.patch('/:id', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
-  apagarTutor(req, res);
+  deletarTutor(req, res);
 });
 
 module.exports = router;

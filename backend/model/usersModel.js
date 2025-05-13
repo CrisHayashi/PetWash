@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const db = require('../banco/database');  // Seu arquivo de conexão com o banco
 
 // Função para pegar todos os usuários
-const pegarUsuarios = () => {
+const listarUsuarios = () => {
   return new Promise((resolve, reject) => {
     db.all('SELECT id, name, email FROM users', [], (err, rows) => {
       if (err) reject(err);
@@ -12,7 +12,7 @@ const pegarUsuarios = () => {
 };
 
 // Função para pegar um usuário por ID
-const pegarUsuarioPorId = (id) => {
+const buscarUsuarioPorId = (id) => {
   return new Promise((resolve, reject) => {
     db.get('SELECT id, name, email FROM users WHERE id = ?', [id], (err, row) => {
       if (err) reject(err);
@@ -24,7 +24,7 @@ const pegarUsuarioPorId = (id) => {
 
 
 // Função para pegar um usuário por email (usada no login)
-const pegarUsuarioPorEmail = (email) => {
+const buscarUsuarioPorEmail = (email) => {
   return new Promise((resolve, reject) => {
     db.get('SELECT * FROM users WHERE email = ?', [email], (err, row) => {
       if (err) reject(err);
@@ -35,17 +35,17 @@ const pegarUsuarioPorEmail = (email) => {
 
 // Função para verificar a senha durante o login
 const verificarSenha = async (email, password) => {
-  const usuario = await pegarUsuarioPorEmail(email);
-  if (!usuario) {
+  const user = await buscarUsuarioPorEmail(email);
+  if (!user) {
     throw new Error('Usuário não encontrado');
   }
 
-  const senhaValida = await bcrypt.compare(password, usuario.password);
+  const senhaValida = await bcrypt.compare(password, user.password);
   if (!senhaValida) {
     throw new Error('Senha incorreta');
   }
 
-  return usuario;
+  return user;
 };
 
 // Função para criar um novo usuário
@@ -94,9 +94,9 @@ const deletarUsuario = (id) => {
 
 // Exportando tudo
 module.exports = {
-  pegarUsuarios,
-  pegarUsuarioPorId,
-  pegarUsuarioPorEmail,
+  listarUsuarios,
+  buscarUsuarioPorId,
+  buscarUsuarioPorEmail,
   criarUsuario,
   atualizarUsuario,
   deletarUsuario,

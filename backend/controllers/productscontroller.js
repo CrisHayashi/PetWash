@@ -1,59 +1,55 @@
-const model = require('../models/products');
+const productsModel = require('../model/productsModel');
 
-function listarProdutos(req, res) {
-    model.listarTodos((err, rows) => {
-        if (err) return res.status(500).json({ error: 'Erro ao buscar produtos' });
-        res.json(rows);
-    });
-}
-
-function buscarProdutoPorId(req, res) {
-    const id = Number(req.params.id);
-
-    model.buscarPorId(id, (err, row) => {
-        if (err) return res.status(500).json({ error: 'Erro ao buscar produto' });
-        if (!row) return res.status(404).json({ error: 'Produto não encontrado' });
-        res.json(row);
-    });
-}
-
-function criarProduto(req, res) {
-    const { name, price } = req.body;
-
-    if (!name || !price) {
-        return res.status(400).json({ error: 'Nome e preço são obrigatórios' });
+const listarProdutos = async (req, res, next) => {
+    try {
+        const products = await productsModel.listarProdutos();
+        res.json(products);
+    } catch (err) {
+        next(err);
     }
-
-    model.criar(name, price, (err, id) => {
-        if (err) return res.status(500).json({ error: 'Erro ao criar produto' });
-        res.status(201).json({ message: 'Produto criado com sucesso', id });
-    });
-}
-
-function atualizarProduto(req, res) {
-    const id = Number(req.params.id);
-    const { name, price } = req.body;
-
-    if (!name || !price) {
-        return res.status(400).json({ error: 'Nome e preço são obrigatórios' });
+};
+const buscarProdutoPorId = async (req, res, next) => {
+    const { id } = req.params;
+    try {
+        const product = await petsModel.buscarProdutoPorId(id);
+        if (!product) {
+            return res.status(404).json({ erro: 'Produto não encontrado' });
+        }
+        res.json(pet);
+    } catch (err) {
+        next(err);
     }
+};
 
-    model.atualizar(id, name, price, (err, changes) => {
-        if (err) return res.status(500).json({ error: 'Erro ao atualizar produto' });
-        if (changes === 0) return res.status(404).json({ error: 'Produto não encontrado' });
-        res.json({ message: 'Produto atualizado com sucesso' });
-    });
-}
+const criarProduto = async (req, res, next) => {
+    try {
+        const productId = await productsModel.criarProduto(req.body);
+        res.status(201).json({ mensagem: 'Produto criado com sucesso', productId });
+    } catch (err) {
+        next(err);
+    }
+};
 
-function deletarProduto(req, res) {
-    const id = Number(req.params.id);
+const atualizarProduto = async (req, res, next) => {
+    const { id } = req.params;
+    try {
+        await productsModel.atualizarProduto(id, req.body);
+        res.json({ mensagem: 'Produto atualizado com sucesso' });
+    } catch (err) {
+        next(err);
+    }
+};
 
-    model.deletar(id, (err, changes) => {
-        if (err) return res.status(500).json({ error: 'Erro ao deletar produto' });
-        if (changes === 0) return res.status(404).json({ error: 'Produto não encontrado' });
-        res.json({ message: 'Produto removido com sucesso' });
-    });
-}
+const deletarProduto = async (req, res, next) => {
+    const { id } = req.params;
+    try {
+        await productsModel.deletarProduto(id);
+        res.json({ mensagem: 'Produto removido com sucesso' });
+    } catch (err) {
+        next(err);
+    }
+};
+
 
 module.exports = {
     listarProdutos,

@@ -1,9 +1,9 @@
-const orderModel = require('../models/order');
+const ordersModel = require('../model/ordersModel');
 
 const listarPedidos = async (req, res, next) => {
     try {
-        const pedidos = await orderModel.pegarPedidos();  // Chama a função do modelo
-        res.json(pedidos);
+        const orders = await ordersModel.listarPedidos();  // Chama a função do modelo
+        res.json(orders);
     } catch (err) {
         next(err);
     }
@@ -12,11 +12,11 @@ const listarPedidos = async (req, res, next) => {
 const buscarPedidoPorId = async (req, res, next) => {
     const { id } = req.params;
     try {
-        const pedido = await orderModel.pegarPedidoPorId(id);  // Chama a função do modelo
-        if (!pedido) {
+        const order = await ordersModel.buscarPedidoPorId(id);  // Chama a função do modelo
+        if (!order) {
             return res.status(404).json({ erro: 'Pedido não encontrado' });
         }
-        res.json(pedido);
+        res.json(order);
     } catch (err) {
         next(err);
     }
@@ -24,8 +24,8 @@ const buscarPedidoPorId = async (req, res, next) => {
 
 const criarPedido = async (req, res, next) => {
     try {
-        const pedidoId = await orderModel.criarPedido(req.body);  // Chama a função do modelo
-        res.status(201).json({ mensagem: 'Pedido criado com sucesso', pedidoId });
+        const orderId = await ordersModel.criarPedido(req.body);  // Chama a função do modelo
+        res.status(201).json({ mensagem: 'Pedido criado com sucesso', orderId });
     } catch (err) {
         next(err);
     }
@@ -34,8 +34,8 @@ const criarPedido = async (req, res, next) => {
 const atualizarPedido = async (req, res, next) => {
     const { id } = req.params;
     try {
-        const pedidoId = await orderModel.atualizarPedido(id, req.body);  // Chama a função do modelo
-        res.json({ mensagem: 'Pedido atualizado com sucesso', pedidoId });
+        const orderId = await ordersModel.atualizarPedido(id, req.body);  // Chama a função do modelo
+        res.json({ mensagem: 'Pedido atualizado com sucesso', orderId });
     } catch (err) {
         next(err);
     }
@@ -44,7 +44,7 @@ const atualizarPedido = async (req, res, next) => {
 const deletarPedido = async (req, res, next) => {
     const { id } = req.params;
     try {
-        await orderModel.apagarPedido(id);  // Chama a função do modelo
+        await ordersModel.deletarPedido(id);  // Chama a função do modelo
         res.json({ mensagem: 'Pedido removido com sucesso' });
     } catch (err) {
         next(err);

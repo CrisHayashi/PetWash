@@ -1,7 +1,7 @@
 const table = 'products';
 const db = require('../banco/database');
 
-const pegarProdutos = async () => {
+const listarProdutos = async () => {
     try {
         const products = await new Promise((resolve, reject) => {
             db.all(`SELECT * FROM ${table}`, [], (err, rows) => {
@@ -15,7 +15,7 @@ const pegarProdutos = async () => {
     }
 };
 
-const pegarProdutoPorId = async (id) => {
+const buscarProdutoPorId = async (id) => {
     try {
         const product = await new Promise((resolve, reject) => {
             db.get(`SELECT * FROM ${table} WHERE id = ?`, [id], (err, row) => {
@@ -67,7 +67,7 @@ const atualizarProduto = async (id, productData) => {
     }
 };
 
-const apagarProduto = async (id) => {
+const deletarProduto = async (id) => {
     try {
         await new Promise((resolve, reject) => {
             db.run(`DELETE FROM ${table} WHERE id = ?`, [id], function (err) {
@@ -82,9 +82,9 @@ const apagarProduto = async (id) => {
 };
 
 module.exports = {
-    pegarProdutos,
-    pegarProdutoPorId,
+    listarProdutos,
+    buscarProdutoPorId,
     criarProduto,
     atualizarProduto,
-    apagarProduto
+    deletarProduto
 };

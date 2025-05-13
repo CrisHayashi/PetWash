@@ -1,20 +1,21 @@
 const express = require('express');
 const router = express.Router();
-const fs = require('fs');
+// const fs = require('fs');
+
 const {
-  pegarServicos,
-  pegarServicoPorId,
+  listarServicos,
+  buscarServicoPorId,
   criarServico,
   atualizarServico,
-  apagarServico
-} = require('../model/services');
+  deletarServico
+} = require('../controllers/servicescontroller');
 
 router.get('/', function (req, res, next) {
-  pegarServicos(res, next);
+  listarServicos(res, next);
 });
 
 router.get('/:id', function (req, res, next) {
-  pegarServicoPorId(req, res, next);
+  buscarServicoPorId(req, res, next);
 });
 
 router.post('/', (req, res) => {
@@ -26,7 +27,7 @@ router.patch('/:id', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
-  apagarServico(req, res);
+  deletarServico(req, res);
 });
 
 module.exports = router;

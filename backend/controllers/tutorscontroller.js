@@ -1,8 +1,8 @@
-const tutorModel = require('../models/tutor');
+const tutorsModel = require('../model/tutorsModel');
 
 const listarTutores = async (req, res, next) => {
     try {
-        const tutors = await tutorModel.pegarTutores();
+        const tutors = await tutorsModel.listarTutores();
         res.json(tutors);
     } catch (err) {
         next(err);
@@ -12,7 +12,7 @@ const listarTutores = async (req, res, next) => {
 const buscarTutorPorId = async (req, res, next) => {
     const { id } = req.params;
     try {
-        const tutor = await tutorModel.pegarTutorPorId(id);
+        const tutor = await tutorsModel.buscarTutorPorId(id);
         if (!tutor) {
             return res.status(404).json({ erro: 'Tutor não encontrado' });
         }
@@ -24,7 +24,7 @@ const buscarTutorPorId = async (req, res, next) => {
 
 const criarTutor = async (req, res, next) => {
     try {
-        const tutorId = await tutorModel.criarTutor(req.body);
+        const tutorId = await tutorsModel.criarTutor(req.body);
         res.status(201).json({ mensagem: 'Tutor criado com sucesso', tutorId });
     } catch (err) {
         next(err);
@@ -34,7 +34,7 @@ const criarTutor = async (req, res, next) => {
 const atualizarTutor = async (req, res, next) => {
     const { id } = req.params;
     try {
-        await tutorModel.atualizarTutor(id, req.body);
+        await tutorsModel.atualizarTutor(id, req.body);
         res.json({ mensagem: 'Tutor atualizado com sucesso' });
     } catch (err) {
         next(err);
@@ -44,7 +44,7 @@ const atualizarTutor = async (req, res, next) => {
 const deletarTutor = async (req, res, next) => {
     const { id } = req.params;
     try {
-        await tutorModel.apagarTutor(id);
+        await tutorsModel.deletarTutor(id);
         res.json({ mensagem: 'Tutor removido com sucesso' });
     } catch (err) {
         next(err);
