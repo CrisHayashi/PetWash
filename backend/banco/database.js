@@ -31,6 +31,7 @@ db.serialize(() => {
        )`);
 });
 
+//Tabela de pets
 db.serialize(() => {
     db.run(
        `CREATE TABLE IF NOT EXISTS pets (
@@ -43,6 +44,7 @@ db.serialize(() => {
        )`);
 });
 
+//Tabela de produtos
 db.serialize(() => {
     db.run(
        `CREATE TABLE IF NOT EXISTS products (
@@ -55,6 +57,7 @@ db.serialize(() => {
        )`);
 });
 
+//Tabela de serviços
 db.serialize(() => {
     db.run(
        `CREATE TABLE IF NOT EXISTS services (
@@ -66,6 +69,7 @@ db.serialize(() => {
        )`);
 });
 
+//tabela de agendamentos
 db.serialize(() => {
     db.run(
         `CREATE TABLE IF NOT EXISTS orders (
@@ -79,6 +83,7 @@ db.serialize(() => {
         )`);
 });
 
+//Tabela de produtos e serviços do agendamento
 db.serialize(() => {
     db.run(
         `CREATE TABLE IF NOT EXISTS order_products (
