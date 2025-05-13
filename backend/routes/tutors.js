@@ -11,7 +11,7 @@ const {
 } = require('../controllers/tutorscontroller'); // importando as funções pegarTutor e pegarTutorPorId do arquivo tutorsModel.js
 
 router.get('/', function (req, res, next) {
-  listarTutores(res, next);
+  listarTutores(req, res, next);
 });
 
 router.get('/:id', function (req, res, next) {

@@ -12,7 +12,7 @@ const {
 } = require('../controllers/productscontroller');
 
 router.get('/', function (req, res, next) {
-  listarProdutos(res, next);
+  listarProdutos(req, res, next);
 });
 
 router.get('/:id', function (req, res, next) {

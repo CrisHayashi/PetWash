@@ -10,7 +10,7 @@ const {
 } = require('../controllers/orderscontroller');
 
 router.get('/', function (req, res, next) {
-  listarPedidos(res, next);
+  listarPedidos(req, res, next);
 });
 
 router.get('/:id', function (req, res, next) {

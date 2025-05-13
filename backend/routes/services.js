@@ -11,7 +11,7 @@ const {
 } = require('../controllers/servicescontroller');
 
 router.get('/', function (req, res, next) {
-  listarServicos(res, next);
+  listarServicos(req, res, next);
 });
 
 router.get('/:id', function (req, res, next) {

@@ -10,7 +10,7 @@ const {
 } = require('../controllers/petscontroller'); // importando as funções pegarTutor e pegarTutorPorId do arquivo tutorsModel.js
 
 router.get('/', function (req, res, next) {
-  listarPets(res, next);
+  listarPets(req, res, next);
 });
 
 router.get('/:id', function (req, res, next) {
