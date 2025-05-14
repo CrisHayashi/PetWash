@@ -1,84 +1,113 @@
-# Projeto PetShop
+🐾 Projeto PetShop
 
-Sistema com funcionalidades CRUD (Criar, Ler, Atualizar, Deletar) para entidades específicas de cada tema, utilizando autenticação via JWT. A aplicação será desenvolvida com HTML, CSS e JavaScript no frontend e uma API REST em Node.js no backend, utilizando módulos/bibliotecas/pacotes necessários.
+   Sistema fullstack com funcionalidades completas de CRUD (Criar, Ler, Atualizar e Deletar) para gerenciamento de um PetShop. A aplicação inclui autenticação via JWT, frontend com HTML, CSS e JavaScript, e backend com API REST em Node.js e banco de dados SQLite.
 
-CRUD
-Pets: (Nome, Espécie, Raça, Idade, Informações do Tutor, etc.)
-Tutores: (Nome, Contato, Endereço, Pets associados, etc.)
-Serviços: (Banho, Tosa, Consulta, Vacinação - Nome, Descrição, Preço, etc.)
-Produtos: (Ração, Brinquedos, Medicamentos - Nome, Descrição, Preço, Estoque, etc.)
-Solicitações/Agendamentos: (Tutor, Pet, Serviço solicitado, Data/Hora, Status, etc.)
-O frontend deverá ter interfaces (tabelas, formulários modais ou em páginas separadas) para gerenciar cada uma dessas entidades. O backend deverá ter os endpoints (rotas da API) correspondentes para cada operação CRUD de cada entidade, protegidos por autenticação JWT (exceto talvez rotas públicas como login ou listagem de produtos/serviços para visualização geral).
+📋 Funcionalidades
 
-## Tecnologias utilizadas
+   CRUD para as seguintes entidades:
 
-- Node.js
-- JavaScript
-- Express
-- SQLite
+      Pets: Nome, espécie, raça, idade, informações do tutor etc.
 
-## Como rodar o projeto
+      Tutores: Nome, telefone, e-mail, endereço, pets associados etc.
 
-1. Clone o repositório:
-   ```bash
-   git clone https://crispy-space-xylophone-jjrgr9775q65cqr4v.github.dev/.git 
-   npm install -g json-server@0.17.4
-   verificar se o nodemon está instalado: nodemon -v
-   npm install -g nodemon
-   Se estiver usando um script no package.json, adicionar: "dev": "nodemon ./bin/www"
-   E rodar com: npm run dev
+      Serviços: Banho, tosa, consulta, vacinação (nome, descrição, preço, duração etc.).
 
+      Produtos: Ração, brinquedos, medicamentos (nome, preço, categoria, estoque etc.).
 
-# Explicação de como o projeto funciona:
-1. Model (modelo)
-O model vai até o banco de dados, pega informações ou coloca novas lá.
-Ele não decide nada, só executa ordens. Ele só conversa com o banco de dados.
-2. Controller (controlador)
-O controller é tipo o chefe, ele recebe os pedidos do frontend, pede para o model buscar ou salvar algo no banco, e depois responde de volta pro frontend. Ele controla o fluxo da informação.
+      Agendamentos/Solicitações/Pedidos: Tutor, pet, serviço solicitado, data/hora, status etc.
 
-Por que separar em controllers e models?
-Para deixar o código mais limpo e organizado.
-Ficar mais fácil de entender e consertar.
-Você pode reaproveitar o model em vários lugares.
-É como cada um fazer só seu trabalho: ninguém se atrapalha.
+   O frontend possui interfaces (tabelas, formulários, modais ou páginas separadas) para gerenciar cada entidade.
+   O backend oferece rotas protegidas por autenticação JWT (exceto login e rotas públicas como listagem de produtos/serviços).
+
+🚀 Tecnologias Utilizadas
+
+   Backend
+      Node.js
+      Express
+      SQLite
+      JWT (jsonwebtoken)
+      BcryptJS
+      Dotenv
+
+   Frontend
+      HTML, CSS e JavaScript
+      SweetAlert
+      IMask (para máscaras de input)
+      Chart.js (para dashboards)
+
+🗃️ Estrutura do Projeto (Backend)
 
 backend/
-├── banco/                        ← Conexão com o banco de dados SQLite
-│   └── database.js               ← Arquivo que configura a conexão com o banco de dados
-├── controllers/                  ← Lógica de controle para as entidades
-│   ├── petsController.js         ← Controlador para pets
-│   ├── tutorsController.js       ← Controlador para tutores
-│   ├── productsController.js     ← Controlador para produtos
-│   ├── servicesController.js     ← Controlador para serviços
-│   ├── ordersController.js       ← Controlador para pedidos
-│   └── usersController.js        ← Controlador para usuários, com função de login
-├── models/                       ← Lógica de interação com o banco de dados
-│   ├── petsModel.js              ← Modelo para pets
-│   ├── tutorsModel.js            ← Modelo para tutores
-│   ├── productsModel.js          ← Modelo para produtos
-│   ├── servicesModel.js          ← Modelo para serviços
-│   ├── ordersModel.js            ← Modelo para pedidos
-│   └── usersModel.js             ← Modelo para usuários
-├── routes/                       ← Definição das rotas da API
-│   ├── petsRoutes.js             ← Rotas de pets
-│   ├── tutorsRoutes.js           ← Rotas de tutores
-│   ├── productsRoutes.js         ← Rotas de produtos
-│   ├── servicesRoutes.js         ← Rotas de serviços
-│   ├── ordersRoutes.js           ← Rotas de pedidos
-│   ├── usersRoutes.js            ← Rotas de usuários (login e CRUD)
-│   └── index.js                  ← Rota inicial da aplicação
-├── auth/                         ← Arquivo de autenticação
-│   ├── auth.js                   ← Função para gerar o JWT
-│   └── authMiddleware.js         ← Middleware para validar o JWT nas requisições
-├── app.js                        ← Ponto de entrada da aplicação
-├── package.json                  ← Dependências do projeto
-└── .env                          ← Arquivo para armazenar variáveis de ambiente (ex. chave secreta)
+├── app.js                      ← Ponto de entrada da aplicação
+├── .env                        ← Variáveis de ambiente (JWT_SECRET etc.)
+├── banco/
+│   └── database.js             ← Configuração da conexão SQLite
+├── auth/
+│   ├── auth.js                 ← Geração do token JWT
+│   └── authMiddleware.js       ← Validação do token nas requisições
+├── controllers/                ← Lógica de controle das entidades
+│   ├── petsController.js
+│   ├── tutorsController.js
+│   ├── productsController.js
+│   ├── servicesController.js
+│   ├── ordersController.js
+│   └── usersController.js
+├── models/                     ← Acesso ao banco de dados
+│   ├── petsModel.js
+│   ├── tutorsModel.js
+│   ├── productsModel.js
+│   ├── servicesModel.js
+│   ├── ordersModel.js
+│   └── usersModel.js
+├── routes/                     ← Rotas da API
+│   ├── petsRoutes.js
+│   ├── tutorsRoutes.js
+│   ├── productsRoutes.js
+│   ├── servicesRoutes.js
+│   ├── ordersRoutes.js
+│   ├── usersRoutes.js
+│   └── index.js
+└── package.json
 
+🔐 Autenticação
 
-Foi implementado a autenticação JWT no backend (Node.js com Express)
-Instalar dependencias necessárias:
-npm install jsonwebtoken bcryptjs
+   A autenticação no backend é feita via JWT.
+   Instalação das dependências:
+      npm install jsonwebtoken bcryptjs dotenv
 
-## instruções para o .env
-crie uma arquivo .env em backend e frontend respectivamente
-para preencher o .env, veja o arquivo env.example
+📦 Como Executar o Projeto
+
+   Pré-requisitos
+      Node.js instalado
+      SQLite (ou DB compatível já incluído)
+
+   Passo a passo
+      1. Clone o repositório:
+         git clone https://crispy-space-xylophone-jjrgr9775q65cqr4v.github.dev/.git
+      2. Acesse o diretório e instale as dependências:
+         cd backend
+         npm install
+      3. Instale o nodemon para desenvolvimento (opcional):
+         npm install -g nodemon
+      4. Configure o script no package.json:
+         "scripts": {
+         "dev": "nodemon ./bin/www",
+         "start": "node ./bin/www"
+         }
+      5. Crie o arquivo .env com base em env.example:
+         cp env.example .env
+      6. Inicie o servidor:
+         npm run dev
+
+🧠 Entendendo a Estrutura MVC
+
+   Model: acessa o banco de dados, executa ações (buscar, salvar, deletar).
+
+   Controller: recebe requisições do frontend, interage com os models e devolve respostas.
+
+   Separação de responsabilidades facilita manutenção, testes e reuso do código.
+
+📄 Licença
+
+   Este projeto está sob a licença MIT (./LICENSE).
+   Sinta-se à vontade para utilizar, modificar e compartilhar com atribuição.
