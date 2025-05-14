@@ -50,8 +50,7 @@ const criarTutor = async (tutorData) => {
     }
 };
 
-const atualizarTutor = async (id, tutorData) => {
-    const { name, email, phone, address } = tutorData;
+const atualizarTutorCompleto = async (id, { name, email, phone, address }) => {
     try {
         await new Promise((resolve, reject) => {
             db.run(
@@ -65,7 +64,31 @@ const atualizarTutor = async (id, tutorData) => {
         });
         return id;
     } catch (err) {
-        throw new Error('Erro ao atualizar tutor: ' + err.message);
+        throw new Error('Erro ao atualizar tutor completamente: ' + err.message);
+    }
+};
+
+const atualizarTutorParcial = async (id, dados) => {
+    try {
+        const campos = Object.keys(dados);
+        const valores = Object.values(dados);
+
+        if (campos.length === 0) {
+            throw new Error('Nenhum campo fornecido para atualização parcial.');
+        }
+
+        const setClause = campos.map(campo => `${campo} = ?`).join(', ');
+        const query = `UPDATE ${table} SET ${setClause} WHERE id = ?`;
+
+        await new Promise((resolve, reject) => {
+            db.run(query, [...valores, id], function (err) {
+                if (err) reject(err);
+                resolve();
+            });
+        });
+        return id;
+    } catch (err) {
+        throw new Error('Erro ao atualizar tutor parcialmente: ' + err.message);
     }
 };
 
@@ -87,6 +110,7 @@ module.exports = {
     listarTutores,
     buscarTutorPorId,
     criarTutor,
-    atualizarTutor,
+    atualizarTutorCompleto,
+    atualizarTutorParcial,
     deletarTutor
 };

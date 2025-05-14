@@ -36,9 +36,9 @@ const criarTutor = async (req, res, next) => {
     }
 };
 
-const atualizarTutor = async (req, res, next) => {
+// PUT - Atualização completa
+const atualizarTutorCompleto = async (req, res, next) => {
     const { id } = req.params;
-    const metodo = req.method; // PUT ou PATCH
     const { name, email, phone, address } = req.body;
 
     try {
@@ -46,33 +46,53 @@ const atualizarTutor = async (req, res, next) => {
             return res.status(400).json({ erro: 'ID do tutor não fornecido' });
         }
 
-        if (!req.body || Object.keys(req.body).length === 0) {
-            return res.status(400).json({ erro: 'Corpo da requisição vazio ou inválido' });
+        // Todos os campos são obrigatórios no PUT
+        if (!name || !email || !phone || !address) {
+            return res.status(400).json({ erro: 'Todos os campos são obrigatórios para atualização completa (PUT)' });
         }
 
-        if (metodo === 'PUT') {
-            // Exige todos os campos
-            if (!name || !email || !phone || !address) {
-                return res.status(400).json({ erro: 'Todos os campos são obrigatórios para PUT' });
-            }
+        const tutorAtual = await tutorsModel.buscarTutorPorId(id);
+        if (!tutorAtual) {
+            return res.status(404).json({ erro: 'Tutor não encontrado' });
         }
 
-        // Atualiza apenas os campos recebidos
+        const tutorAtualizado = { name, email, phone, address };
+
+        await tutorsModel.atualizarTutorCompleto(id, tutorAtualizado);
+        res.status(200).json({ mensagem: 'Tutor atualizado completamente com sucesso' });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// PATCH - Atualização parcial
+const atualizarTutorParcial = async (req, res, next) => {
+    const { id } = req.params;
+    const camposAtualizar = req.body;
+
+    try {
+        if (!id) {
+            return res.status(400).json({ erro: 'ID do tutor não fornecido' });
+        }
+
+        if (!camposAtualizar || Object.keys(camposAtualizar).length === 0) {
+            return res.status(400).json({ erro: 'Nenhum dado enviado para atualização parcial' });
+        }
+
         const tutorAtual = await tutorsModel.buscarTutorPorId(id);
         if (!tutorAtual) {
             return res.status(404).json({ erro: 'Tutor não encontrado' });
         }
 
         const tutorAtualizado = {
-            name: name ?? tutorAtual.name,
-            email: email ?? tutorAtual.email,
-            phone: phone ?? tutorAtual.phone,
-            address: address ?? tutorAtual.address,
+            name: camposAtualizar.name ?? tutorAtual.name,
+            email: camposAtualizar.email ?? tutorAtual.email,
+            phone: camposAtualizar.phone ?? tutorAtual.phone,
+            address: camposAtualizar.address ?? tutorAtual.address,
         };
 
-        await tutorsModel.atualizarTutor(id, tutorAtualizado);
-
-        res.status(200).json({ mensagem: 'Tutor atualizado com sucesso' });
+        await tutorsModel.atualizarTutorParcial(id, tutorAtualizado);
+        res.status(200).json({ mensagem: 'Tutor atualizado parcialmente com sucesso' });
     } catch (err) {
         next(err);
     }
@@ -93,6 +113,7 @@ module.exports = {
     listarTutores,
     buscarTutorPorId,
     criarTutor,
-    atualizarTutor,
+    atualizarTutorCompleto,
+    atualizarTutorParcial,
     deletarTutor
 };

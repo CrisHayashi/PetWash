@@ -159,7 +159,7 @@ router.post('/', tutorscontroller.criarTutor);
  *       404:
  *         description: Tutor não encontrado
  */
-router.patch('/:id', tutorscontroller.atualizarTutor);
+router.patch('/:id', tutorscontroller.atualizarTutorParcial);
 
 // PUT - Atualizar um tutor existente
 /**
@@ -210,7 +210,7 @@ router.patch('/:id', tutorscontroller.atualizarTutor);
  *         description: Tutor não encontrado
  */
 
-router.put('/:id', tutorscontroller.atualizarTutor);
+router.put('/:id', tutorscontroller.atualizarTutorCompleto);
 
 // DELETE - Deletar um tutor
 /**
@@ -236,5 +236,5 @@ router.put('/:id', tutorscontroller.atualizarTutor);
 
 router.delete('/:id', tutorscontroller.deletarTutor);
 
-
+// Exportando o router para ser utilizado em outros arquivos
 module.exports = router;

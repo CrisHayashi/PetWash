@@ -29,13 +29,12 @@ const buscarProdutoPorId = async (id) => {
     }
 };
 
-const criarProduto = async (productData) => {
-    const { name, description, price, category, stock } = productData;
+const criarProduto = async ({ name, price, category, stock }) => {
     try {
         const productId = await new Promise((resolve, reject) => {
             db.run(
-                `INSERT INTO ${table} (name, description, price, category, stock) VALUES (?, ?, ?, ?, ?)`,
-                [name, description, price, category, stock],
+                `INSERT INTO ${table} (name, price, category, stock) VALUES (?, ?, ?, ?)`,
+                [name, price, category, stock],
                 function (err) {
                     if (err) reject(err);
                     resolve(this.lastID);
@@ -48,22 +47,49 @@ const criarProduto = async (productData) => {
     }
 };
 
-const atualizarProduto = async (id, productData) => {
-    const { name, description, price, category, stock } = productData;
+// Atualização completa (PUT)
+const atualizarProdutoCompleto = async (id, { name, price, category, stock }) => {
+    if (!name || price == null || !category || stock == null) {
+        throw new Error('Campos obrigatórios ausentes para atualização completa');
+    }
+
     try {
         await new Promise((resolve, reject) => {
             db.run(
-                `UPDATE ${table} SET name = ?, description = ?, price = ?, category = ?, stock = ? WHERE id = ?`,
-                [name, description, price, category, stock, id],
+                `UPDATE ${table} SET name = ?, price = ?, category = ?, stock = ? WHERE id = ?`,
+                [name, price, category, stock, id],
                 function (err) {
                     if (err) reject(err);
                     resolve();
                 }
             );
         });
-        return id;
     } catch (err) {
-        throw new Error('Erro ao atualizar produto: ' + err.message);
+        throw new Error('Erro ao atualizar produto completamente: ' + err.message);
+    }
+};
+
+// Atualização parcial (PATCH)
+const atualizarProdutoParcial = async (id, dados) => {
+    try {
+        const campos = Object.keys(dados);
+        const valores = Object.values(dados);
+
+        if (campos.length === 0) {
+            throw new Error('Nenhum campo enviado para atualização parcial');
+        }
+
+        const setClause = campos.map(campo => `${campo} = ?`).join(', ');
+        const query = `UPDATE ${table} SET ${setClause} WHERE id = ?`;
+
+        await new Promise((resolve, reject) => {
+            db.run(query, [...valores, id], function (err) {
+                if (err) reject(err);
+                resolve();
+            });
+        });
+    } catch (err) {
+        throw new Error('Erro ao atualizar produto parcialmente: ' + err.message);
     }
 };
 
@@ -85,6 +111,7 @@ module.exports = {
     listarProdutos,
     buscarProdutoPorId,
     criarProduto,
-    atualizarProduto,
+    atualizarProdutoCompleto,
+    atualizarProdutoParcial,
     deletarProduto
 };

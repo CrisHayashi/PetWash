@@ -65,7 +65,7 @@ db.serialize(() => {
        `CREATE TABLE IF NOT EXISTS products (
            id INTEGER PRIMARY KEY AUTOINCREMENT,
            name VARCHAR(150) NOT NULL,
-           price INTEGER NOT NULL,
+           price REAL NOT NULL,
            category VARCHAR(150) NOT NULL,
            stock INTEGER NOT NULL
        )`, (err) => {
