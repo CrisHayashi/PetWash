@@ -16,7 +16,12 @@ db.serialize(() => {
            name VARCHAR(150) NOT NULL,
            email VARCHAR(150) NOT NULL UNIQUE,
            password VARCHAR(150) NOT NULL
-       )`);
+       )`, (err) => {
+        if (err) {
+            throw new Error(`Erro ao criar tabela de pedidos: ${err.message}`);
+        }
+        console.log('Tabela de pedidos criada ou já existe.');
+    });
 });
 
 //Tabela de tutores
@@ -28,7 +33,12 @@ db.serialize(() => {
            email VARCHAR(150) NOT NULL UNIQUE,
            phone VARCHAR(150) NOT NULL,
            address VARCHAR(255) NOT NULL
-       )`);
+       )`, (err) => {
+        if (err) {
+            throw new Error(`Erro ao criar tabela de pedidos: ${err.message}`);
+        }
+        console.log('Tabela de pedidos criada ou já existe.');
+    });
 });
 
 //Tabela de pets
@@ -41,7 +51,12 @@ db.serialize(() => {
            breed VARCHAR(150) NOT NULL,
            age INTEGER NOT NULL,
            tutorId INTEGER NOT NULL REFERENCES tutors(id)
-       )`);
+       )`, (err) => {
+        if (err) {
+            throw new Error(`Erro ao criar tabela de pedidos: ${err.message}`);
+        }
+        console.log('Tabela de pedidos criada ou já existe.');
+    });
 });
 
 //Tabela de produtos
@@ -50,11 +65,15 @@ db.serialize(() => {
        `CREATE TABLE IF NOT EXISTS products (
            id INTEGER PRIMARY KEY AUTOINCREMENT,
            name VARCHAR(150) NOT NULL,
-           description VARCHAR(500),
            price INTEGER NOT NULL,
            category VARCHAR(150) NOT NULL,
            stock INTEGER NOT NULL
-       )`);
+       )`, (err) => {
+        if (err) {
+            throw new Error(`Erro ao criar tabela de pedidos: ${err.message}`);
+        }
+        console.log('Tabela de pedidos criada ou já existe.');
+    });
 });
 
 //Tabela de serviços
@@ -66,7 +85,12 @@ db.serialize(() => {
            price INTEGER NOT NULL,
            duration VARCHAR(10),
            description VARCHAR(500) 
-       )`);
+       )`, (err) => {
+        if (err) {
+            throw new Error(`Erro ao criar tabela de pedidos: ${err.message}`);
+        }
+        console.log('Tabela de pedidos criada ou já existe.');
+    });
 });
 
 //tabela de agendamentos
@@ -75,33 +99,52 @@ db.serialize(() => {
         `CREATE TABLE IF NOT EXISTS orders (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             tutorId INTEGER NOT NULL REFERENCES tutors(id),
-            petId INTEGER NOT NULL REFERENCES pets(id),
+            petId INTEGER REFERENCES pets(id),
             products TEXT,
             services TEXT,
             total REAL NOT NULL,
             status VARCHAR(50) NOT NULL
-        )`);
+        )`, (err) => {
+        if (err) {
+            throw new Error(`Erro ao criar tabela de pedidos: ${err.message}`);
+        }
+        console.log('Tabela de pedidos criada ou já existe.');
+    });
 });
 
 //Tabela de produtos e serviços do agendamento
 db.serialize(() => {
     db.run(
-        `CREATE TABLE IF NOT EXISTS order_products (
+        `CREATE TABLE IF NOT EXISTS order_product (
             orderId INTEGER NOT NULL REFERENCES orders(id),
             productId INTEGER NOT NULL REFERENCES products(id),
-            quantidade INTEGER NOT NULL,
+            prodQtd INTEGER NOT NULL,
+            prodPrice REAL NOT NULL,
+            prodTotal REAL GENERATED ALWAYS AS (prodQtd * prodPrice) STORED,
             PRIMARY KEY (orderId, productId)
-        )`);
+        )`, (err) => {
+        if (err) {
+            throw new Error(`Erro ao criar tabela de pedidos: ${err.message}`);
+        }
+        console.log('Tabela de pedidos criada ou já existe.');
+    });
 });
 
 db.serialize(() => {
     db.run(
-        `CREATE TABLE IF NOT EXISTS order_services (
+        `CREATE TABLE IF NOT EXISTS order_service (
             orderId INTEGER NOT NULL REFERENCES orders(id),
             serviceId INTEGER NOT NULL REFERENCES services(id),
-            quantidade INTEGER NOT NULL,
+            servQtd INTEGER NOT NULL,
+            servPrice REAL NOT NULL,
+            servTotal REAL GENERATED ALWAYS AS (servQtd * servPrice) STORED,
             PRIMARY KEY (orderId, serviceId)
-        )`);
+        )`, (err) => {
+        if (err) {
+            throw new Error(`Erro ao criar tabela de pedidos: ${err.message}`);
+        }
+        console.log('Tabela de pedidos criada ou já existe.');
+    });
 });
 
 

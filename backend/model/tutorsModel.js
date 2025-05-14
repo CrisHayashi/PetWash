@@ -37,7 +37,9 @@ const criarTutor = async (tutorData) => {
                 `INSERT INTO ${table} (name, email, phone, address) VALUES (?, ?, ?, ?)`,
                 [name, email, phone, address],
                 function (err) {
-                    if (err) reject(err);
+                    if (err) {
+                        reject(err) 
+                    };
                     resolve(this.lastID);
                 }
             );

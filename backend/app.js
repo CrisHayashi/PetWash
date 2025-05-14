@@ -8,8 +8,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const cors = require('cors');
-
-var app = express();
+const { swaggerUi, swaggerSpec } = require('./routes/swagger');
 
 //Importe das rotas /ROUTES
 var indexRouter = require('./routes/index');
@@ -20,15 +19,7 @@ const productsRouter = require('./routes/products');
 const servicesRouter = require('./routes/services');
 const ordersRouter = require('./routes/orders');
 
-
-//Define os endpoints para as rotas
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/tutors', tutorsRouter);
-app.use('/pets', petsRouter);
-app.use('/products', productsRouter);
-app.use('/services', servicesRouter);
-app.use('/orders', ordersRouter);
+var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -41,7 +32,15 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-
+//Define os endpoints para as rotas
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+app.use('/tutors', tutorsRouter);
+app.use('/pets', petsRouter);
+app.use('/products', productsRouter);
+app.use('/services', servicesRouter);
+app.use('/orders', ordersRouter);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

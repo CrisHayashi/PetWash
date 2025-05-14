@@ -78,3 +78,7 @@ backend/
 Foi implementado a autenticação JWT no backend (Node.js com Express)
 Instalar dependencias necessárias:
 npm install jsonwebtoken bcryptjs
+
+## instruções para o .env
+crie uma arquivo .env em backend e frontend respectivamente
+para preencher o .env, veja o arquivo env.example
