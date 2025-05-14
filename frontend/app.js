@@ -15,7 +15,7 @@ var ordersRouter = require('./routes/orders');
 
 var app = express();
 
-// view engine setup
+// Define a pasta de views para as páginas EJS
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
