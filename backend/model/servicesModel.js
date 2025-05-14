@@ -48,22 +48,55 @@ const criarServico = async (serviceData) => {
     }
 };
 
-const atualizarServico = async (id, serviceData) => {
-    const { name, description, price, duration } = serviceData;
+const atualizarServicoParcial = async (id, data) => {
+    const campos = [];
+    const valores = [];
+
+    for (let chave in data) {
+        // Ignorar campos inválidos ou vazios (opcional)
+        if (data[chave] !== undefined) {
+            campos.push(`${chave} = ?`);
+            valores.push(data[chave]);
+        }
+    }
+    if (campos.length === 0) {
+        throw new Error('Nenhum dado fornecido para atualização parcial.');
+    }    
+
     try {
-        await new Promise((resolve, reject) => {
+        const result = await new Promise((resolve, reject) => {
             db.run(
-                `UPDATE ${table} SET name = ?, description = ?, price = ?, duration = ? WHERE id = ?`,
-                [name, description, price, duration, id],
+                `UPDATE ${table} SET ${campos.join(', ')} WHERE id = ?`,
+                [...valores, id],
                 function (err) {
-                    if (err) reject(err);
+                    if (err) return reject(err);
+                    if (this.changes === 0) return reject(new Error('Serviço não encontrado para atualizar.'));
                     resolve();
                 }
             );
         });
-        return id;
+        return result;
     } catch (err) {
-        throw new Error('Erro ao atualizar serviço: ' + err.message);
+        throw new Error('Erro ao atualizar serviço parcialmente: ' + err.message);
+    }
+};
+
+const atualizarServicoCompleto = async (id, { name, description, price, duration }) => {
+    try {
+        const result = await new Promise((resolve, reject) => {
+            db.run(
+                `UPDATE ${table} SET name = ?, description = ?, price = ?, duration = ? WHERE id = ?`,
+                [name, description, price, duration, id],
+                function (err) {
+                    if (err) return reject(err);
+                    if (this.changes === 0) return reject(new Error('Serviço não encontrado para atualizar.'));
+                    resolve();
+                }
+            );
+        });
+        return result;
+    } catch (err) {
+        throw new Error('Erro ao atualizar serviço completamente: ' + err.message);
     }
 };
 
@@ -85,6 +118,7 @@ module.exports = {
     listarServicos,
     buscarServicoPorId,
     criarServico,
-    atualizarServico,
+    atualizarServicoParcial,
+    atualizarServicoCompleto,
     deletarServico
 };

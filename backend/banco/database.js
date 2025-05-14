@@ -82,7 +82,7 @@ db.serialize(() => {
        `CREATE TABLE IF NOT EXISTS services (
            id INTEGER PRIMARY KEY AUTOINCREMENT,
            name VARCHAR(150) NOT NULL,
-           price INTEGER NOT NULL,
+           price REAL NOT NULL,
            duration VARCHAR(10),
            description VARCHAR(500) 
        )`, (err) => {

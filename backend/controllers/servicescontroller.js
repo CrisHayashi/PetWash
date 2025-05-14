@@ -23,19 +23,41 @@ const buscarServicoPorId = async (req, res, next) => {
 
 const criarServico = async (req, res, next) => {
     try {
-        const serviceId = await servicessModel.criarServico(req.body);
+        const serviceId = await servicesModel.criarServico(req.body);
         res.status(201).json({ mensagem: 'Servico criado com sucesso', serviceId });
     } catch (err) {
         next(err);
     }
 };
 
-const atualizarServico = async (req, res, next) => {
+const atualizarServicoParcial = async (req, res, next) => {
+    const { id } = req.params;
+
+    // Verifica se o corpo tem pelo menos uma propriedade valida
+    if (!req.body || Object.keys(req.body).length === 0) {
+        return res.status(400).json({ erro: 'Corpo da requisição vazio. Envie ao menos um campo para atualizar.' });
+    }
+
+    try {
+        await servicesModel.atualizarServicoParcial(id, req.body);
+        res.json({ mensagem: 'Serviço atualizado parcialmente com sucesso' });
+    } catch (err) {
+        if (err.message.includes('não encontrado')) {
+            return res.status(404).json({ erro: err.message });
+        }
+        next(err);
+    }
+};
+
+const atualizarServicoCompleto = async (req, res, next) => {
     const { id } = req.params;
     try {
-        await servicesModel.atualizarServico(id, req.body);
-        res.json({ mensagem: 'Servico atualizado com sucesso' });
+        await servicesModel.atualizarServicoCompleto(id, req.body);
+        res.json({ mensagem: 'Serviço atualizado com sucesso' });
     } catch (err) {
+       if (err.message.includes('não encontrado')) {
+            return res.status(404).json({ erro: err.message });
+        }
         next(err);
     }
 };
@@ -46,6 +68,9 @@ const deletarServico = async (req, res, next) => {
         await servicesModel.deletarServico(id);
         res.json({ mensagem: 'Servico removido com sucesso' });
     } catch (err) {
+        if (err.message.includes('não encontrado')) {
+            return res.status(404).json({ erro: err.message });
+        }
         next(err);
     }
 };
@@ -55,6 +80,7 @@ module.exports = {
     listarServicos,
     buscarServicoPorId,
     criarServico,
-    atualizarServico,
+    atualizarServicoParcial,
+    atualizarServicoCompleto,
     deletarServico
-};
+};  
