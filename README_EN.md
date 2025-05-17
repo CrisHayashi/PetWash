@@ -132,7 +132,7 @@
 
     Setup
         1. Clone the repository:
-            git clone https://crispy-space-xylophone-jjrgr9775q65cqr4v.github.dev/.git
+            git clone https://super-duper-garbanzo-976x6w559wg627rj9-3000.app.github.dev/.git
         2. Navigate to the backend folder and install dependencies:
             cd backend
             npm install
