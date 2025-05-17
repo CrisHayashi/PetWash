@@ -1,9 +1,13 @@
 const petsModel = require('../model/petsModel');
 const tutorsModel = require('../model/tutorsModel');
 
-const listarPets = async () => {
-    const pets = await petsModel.listarPets();
-    return pets;
+const listarPets = async (req, res, next) => {
+    try {
+        const pets = await petsModel.listarPets();
+        res.json(pets);
+    } catch (err) {
+        next(err);
+    }
 };
 
 const listarTutores = async () => {

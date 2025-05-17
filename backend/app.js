@@ -9,6 +9,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const cors = require('cors');
 const { swaggerUi, swaggerSpec } = require('./routes/swagger');
+const swaggerJsdoc = require('swagger-jsdoc');
 
 //Importe das rotas /ROUTES
 var indexRouter = require('./routes/index');
