@@ -4,7 +4,7 @@ const db = require('../banco/database');  // Seu arquivo de conexão com o banco
 // Função para pegar todos os usuários
 const listarUsuarios = () => {
   return new Promise((resolve, reject) => {
-    db.all('SELECT id, name, email FROM users', [], (err, rows) => {
+    db.all('SELECT id, name, email, role FROM users', [], (err, rows) => {
       if (err) reject(err);
       resolve(rows);
     });
@@ -14,7 +14,7 @@ const listarUsuarios = () => {
 // Função para pegar um usuário por ID
 const buscarUsuarioPorId = (id) => {
   return new Promise((resolve, reject) => {
-    db.get('SELECT id, name, email FROM users WHERE id = ?', [id], (err, row) => {
+    db.get('SELECT id, name, email, role FROM users WHERE id = ?', [id], (err, row) => {
       if (err) reject(err);
       resolve(row);
     });
@@ -22,13 +22,14 @@ const buscarUsuarioPorId = (id) => {
 };
 
 
-
 // Função para pegar um usuário por email (usada no login)
 const buscarUsuarioPorEmail = (email) => {
+  const sql = 'SELECT * FROM users WHERE email = ?';
+
   return new Promise((resolve, reject) => {
-    db.get('SELECT * FROM users WHERE email = ?', [email], (err, row) => {
+    db.get(sql, [email], (err, row) => {
       if (err) reject(err);
-      resolve(row);
+      else resolve(row);
     });
   });
 };
@@ -50,16 +51,16 @@ const verificarSenha = async (email, password) => {
 
 // Função para criar um novo usuário
 const criarUsuario = (data) => {
-  const { name, email, password } = data;
+  const { name, email, password, role } = data;
   const hashedPassword = bcrypt.hashSync(password, 10);
 
   return new Promise((resolve, reject) => {
     db.run(
-      'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
-      [name, email, hashedPassword],
+      'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
+      [name, email, hashedPassword, role],
       function (err) {
         if (err) reject(err);
-        resolve({ id: this.lastID, name, email });
+        resolve({ id: this.lastID, name, email, role });
       }
     );
   });
@@ -67,18 +68,25 @@ const criarUsuario = (data) => {
 
 // Função para atualizar um usuário
 const atualizarUsuario = (id, data) => {
-  const { name, email, password } = data;
-  const hashedPassword = bcrypt.hashSync(password, 10);
+  const { name, email, password, role } = data;
+  const sql = password
+    ? 'UPDATE users SET name = ?, email = ?, password = ?, role = ? WHERE id = ?'
+    : 'UPDATE users SET name = ?, email = ?, role = ? WHERE id = ?';
+
+  const params = password
+    ? [name, email, bcrypt.hashSync(password, 10), role, id]
+    : [name, email, role, id];
 
   return new Promise((resolve, reject) => {
-    db.run(
-      'UPDATE users SET name = ?, email = ?, password = ? WHERE id = ?',
-      [name, email, hashedPassword, id],
-      function (err) {
-        if (err) reject(err);
-        resolve({ id, name, email });
-      }
-    );
+    db.run(sql, params, function (err) {
+      if (err) {
+        reject(err);
+    } else if (this.changes > 0) {
+      resolve({ id, name, email, role });
+    } else {
+      resolve(null); // Nenhum usuário foi atualizado
+    }
+    });
   });
 };
 

@@ -5,9 +5,20 @@ const db = require('../banco/database');
 const listarPets = async () => {
     try {
         const pets = await new Promise((resolve, reject) => {
-            db.all(`SELECT * FROM ${table}`, [], (err, rows) => {
+            const sql = `SELECT 
+                    pets.id,
+                    pets.name,
+                    pets.species,
+                    pets.breed,
+                    pets.age,
+                    pets.tutorId,
+                    tutors.name AS tutorName
+                FROM pets
+                LEFT JOIN tutors ON pets.tutorId = tutors.id
+            `;
+            db.all(sql, [], (err, rows) => {
                 if (err) reject(err);
-                resolve(rows);
+                else resolve(rows);
             });
         });
         return pets;

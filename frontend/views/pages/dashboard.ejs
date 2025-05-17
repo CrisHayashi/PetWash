@@ -1,0 +1,110 @@
+<div class="section">
+  <div class="card-panel teal lighten-4 teal-text text-darken-4 valign-wrapper">
+    <i class="material-icons left">person</i>
+    <span id="saudacao" class="flow-text" style="flex: 1;"></span>
+    <button id="logoutBtn" class="btn red darken-1 waves-effect waves-light">
+      <i class="material-icons left">exit_to_app</i>Logout
+    </button>
+  </div>
+</div>
+
+<div class="container">
+  <h4>Dashboard</h4>
+  <div class="row">
+    <div class="col s12 m6 l3">
+      <div class="card teal lighten-2 white-text center-align">
+        <div class="card-content">
+          <span class="card-title">Produtos em Estoque</span>
+          <h5 id="totalEstoque">--</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col s12 m6 l3">
+      <div class="card deep-purple lighten-2 white-text center-align">
+        <div class="card-content">
+          <span class="card-title">Total de Serviços cadastrados</span>
+          <h5 id="totalServicos">--</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col s12 m6 l3">
+      <div class="card blue lighten-2 white-text center-align">
+        <div class="card-content">
+          <span class="card-title">Quantidade Total de Pedidos Realizados</span>
+          <h5 id="totalPedidos">--</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col s12 m6 l3">
+      <div class="card green lighten-2 white-text center-align">
+        <div class="card-content">
+          <span class="card-title">Faturamento Total</span>
+          <h5 id="totalFaturado">--</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h5>Quantidade de Pedidos por Status</h5>
+  <ul id="statusPedidos" class="collection"></ul>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async function () {
+        try {
+        const token = localStorage.getItem('token'); // o token foi salvo após o login
+        const res = await fetch('/dashboard', {
+            headers: {
+            'Authorization': 'Bearer ' + token
+            }
+        });
+
+        if (!res.ok) {
+            throw new Error('Erro ao carregar o dashboard');
+        }
+
+        const data = await res.json();
+
+        document.getElementById('totalEstoque').innerText = data.totalEstoque;
+        document.getElementById('totalServicos').innerText = data.totalServicos;
+        document.getElementById('totalPedidos').innerText = data.totalPedidos;
+        document.getElementById('totalFaturado').innerText = `R$ ${data.totalFaturado.toFixed(2)}`;
+
+        const ul = document.getElementById('statusPedidos');
+        data.statusPedidos.forEach(item => {
+            const li = document.createElement('li');
+            li.className = 'collection-item';
+            li.innerText = `${item.status}: ${item.quantidade}`;
+            ul.appendChild(li);
+        });
+        } catch (err) {
+        M.toast({ html: err.message, classes: 'red' });
+        }
+
+        // Exibir saudação
+        const userName = localStorage.getItem('userName');
+        const saudacao = document.getElementById('saudacao');
+        if (userName) {
+        saudacao.innerText = `Bem-vindo(a), ${userName}!`;
+        } else {
+        saudacao.innerText = 'Bem-vindo(a)!';
+        }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        Swal.fire({
+            title: 'Deseja sair?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sim, sair',
+            cancelButtonText: 'Cancelar',
+        }).then((result) => {
+            if (result.isConfirmed) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userName');
+            window.location.href = '/login';
+            }
+        });
+    });
+    
+</script>

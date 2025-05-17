@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+  <div class="container">
+    <h3 class="center-align">Dashboard</h3>
+    <div id="userInfo" class="card-panel teal lighten-5">
+      <p><strong>Nome:</strong> <span id="userName"></span></p>
+      <p><strong>Email:</strong> <span id="userEmail"></span></p>
+    </div>
+    <div class="center-align">
+      <button id="logoutBtn" class="btn red">Logout</button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        Swal.fire('Acesso negado', 'Você precisa estar logado!', 'warning').then(() => {
+          window.location.href = '/login';
+        });
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/users/perfil', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Erro na autenticação');
+        }
+
+        document.getElementById('userName').textContent = data.name;
+        document.getElementById('userEmail').textContent = data.email;
+
+      } catch (err) {
+        Swal.fire('Erro', err.message, 'error').then(() => {
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+        });
+      }
+
+      // Logout
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        localStorage.removeItem('token');
+        Swal.fire('Logout', 'Sessão encerrada com sucesso', 'success').then(() => {
+          window.location.href = '/login';
+        });
+      });
+    });
+  </script>
+</body>
+</html>

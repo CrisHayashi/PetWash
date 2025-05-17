@@ -1,12 +1,29 @@
 const petsModel = require('../model/petsModel');
+const tutorsModel = require('../model/tutorsModel');
 
-const listarPets = async (req, res, next) => {
-    try {
-        const pets = await petsModel.listarPets();
-        res.json(pets);
-    } catch (err) {
-        next(err);
-    }
+const listarPets = async () => {
+    const pets = await petsModel.listarPets();
+    return pets;
+};
+
+const listarTutores = async () => {
+  const tutors = await tutorsModel.listarTutores();
+  return tutors;
+};
+
+const paginaPets = async (req, res, next) => {
+  try {
+    const pets = await petsModel.listarPets();
+    const tutors = await tutorsModel.listarTutores();
+    res.render('layout/layout', {
+      title: 'Gestão de Pets',
+      body: 'pages/pets',
+      pets,
+      tutors
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 const buscarPetPorId = async (req, res, next) => {
@@ -53,6 +70,8 @@ const deletarPet = async (req, res, next) => {
 
 module.exports = {
     listarPets,
+    listarTutores,
+    paginaPets,
     buscarPetPorId,
     criarPet,
     atualizarPet,

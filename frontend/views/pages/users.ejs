@@ -1,0 +1,198 @@
+<h2 class="center-align">Cadastro de Usuários</h2>
+
+<div class="right-align" style="margin-bottom: 20px;">
+<!-- Botão para abrir modal de cadastro -->
+<a class="btn modal-trigger orange" href="#modalUserForm" id="btnNewUser">Novo Usuário</a>
+<a href="/logout" class="btn red">Logout</a>
+</div>
+
+<table class="highlight responsive-table">
+<thead>
+    <tr>
+    <th>ID</th>
+    <th>Nome</th>
+    <th>Email</th>
+    <th>Tipo</th>
+    <th>Ações</th>
+    </tr>
+</thead>
+<tbody>
+    <% if (users && users.length > 0) { %>
+    <% users.forEach(user => { %>
+        <tr>
+        <td><%= user.id %></td>
+        <td><%= user.name %></td>
+        <td><%= user.email %></td>
+        <td><%= user.role %></td>
+        <td>
+            <a href="#!" class="btn-small blue modal-trigger btn-edit" 
+            data-id="<%= user.id %>" 
+            data-name="<%= user.name %>" 
+            data-email="<%= user.email %>" 
+            data-role="<%= user.role %>">Editar</a>
+            <a href="#!" class="btn-small red btn-delete" data-id="<%= user.id %>">Excluir</a>
+        </td>
+        </tr>
+    <% }) %>
+    <% } else { %>
+    <tr>
+        <td colspan="5" class="center-align">Nenhum usuário encontrado.</td>
+    </tr>
+    <% } %>
+</tbody>
+</table>
+
+<!-- Modal de cadastro/edição -->
+<div id="modalUserForm" class="modal">
+<div class="modal-content">
+    <h4 id="modalTitle">Novo Usuário</h4>
+    <form id="userForm">
+    <input type="hidden" id="userId" name="id" value="">
+    <div class="input-field">
+        <input id="name" name="name" type="text" required>
+        <label for="name">Nome</label>
+    </div>
+    <div class="input-field">
+        <input id="email" name="email" type="email" required>
+        <label for="email">Email</label>
+    </div>
+    <div class="input-field">
+        <select id="role" name="role" required>
+        <option value="" disabled selected>Escolha o tipo</option>
+        <option value="admin">Administrador</option>
+        <option value="user">Cliente</option>
+        </select>
+        <label for="role">Tipo</label>
+    </div>
+    <div class="input-field">
+        <input id="password" name="password" type="password">
+        <label for="password">Senha <small>(deixe vazio para manter a atual)</small></label>
+    </div>
+    <button type="submit" class="btn orange">Salvar</button>
+    </form>
+</div>
+<div class="modal-footer">
+    <a href="#!" class="modal-close btn-flat">Cancelar</a>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializa modal e selects Materialize
+    const modalElems = document.querySelectorAll('.modal');
+    const modals = M.Modal.init(modalElems);
+
+    const selectElems = document.querySelectorAll('select');
+    M.FormSelect.init(selectElems);
+
+    // Função para limpar formulário e labels
+    function clearForm() {
+    const form = document.getElementById('userForm');
+    form.reset();
+    document.getElementById('userId').value = '';
+    document.getElementById('modalTitle').textContent = 'Novo Usuário';
+
+    M.updateTextFields();
+    const selects = document.querySelectorAll('select');
+    M.FormSelect.init(selects);
+    }
+
+    // Abrir modal para novo usuário
+    document.getElementById('btnNewUser').addEventListener('click', () => {
+    clearForm();
+    const modalInstance = M.Modal.getInstance(document.getElementById('modalUserForm'));
+    modalInstance.open();
+    });
+
+    // Abrir modal para editar usuário preenchendo os dados
+    document.querySelectorAll('.btn-edit').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        clearForm();
+
+        const button = e.currentTarget;
+        document.getElementById('modalTitle').textContent = 'Editar Usuário';
+        document.getElementById('userId').value = button.dataset.id;
+        document.getElementById('name').value = button.dataset.name;
+        document.getElementById('email').value = button.dataset.email;
+        document.getElementById('role').value = button.dataset.role;
+
+        M.updateTextFields();
+        const selects = document.querySelectorAll('select');
+        M.FormSelect.init(selects);
+
+        const modalInstance = M.Modal.getInstance(document.getElementById('modalUserForm'));
+        modalInstance.open();
+    });
+    });
+
+    // Deletar usuário com confirmação SweetAlert2
+    document.querySelectorAll('.btn-delete').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+        const userId = e.currentTarget.dataset.id;
+        const result = await Swal.fire({
+        title: 'Confirma exclusão?',
+        text: `Excluir usuário ID ${userId}?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sim, excluir',
+        cancelButtonText: 'Cancelar'
+        });
+
+        if (result.isConfirmed) {
+        try {
+            const res = await fetch(`/users/${userId}`, { method: 'DELETE' });
+            if (!res.ok) throw new Error('Erro ao excluir usuário');
+
+            Swal.fire('Excluído!', 'Usuário removido com sucesso.', 'success').then(() => {
+            location.reload();
+            });
+        } catch (err) {
+            Swal.fire('Erro', err.message, 'error');
+        }
+        }
+    });
+    });
+
+    // Envio do formulário (novo ou editar)
+    document.getElementById('userForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const id = this.id.value;
+    const name = this.name.value;
+    const email = this.email.value;
+    const role = this.role.value;
+    const password = this.password.value;
+
+    const url = id ? `/users/${id}` : '/users';
+    const method = id ? 'PUT' : 'POST';
+
+    // Monta objeto para envio
+    const bodyData = { name, email, role };
+    if (password) bodyData.password = password;
+
+    try {
+        const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bodyData)
+        });
+
+        if (!res.ok) {
+        const errorData = await res.json();
+        Swal.fire('Erro', errorData.error || 'Erro ao salvar usuário', 'error');
+        return;
+        }
+
+        Swal.fire('Sucesso', 'Usuário salvo com sucesso!', 'success').then(() => {
+        const modalInstance = M.Modal.getInstance(document.getElementById('modalUserForm'));
+        modalInstance.close();
+        location.reload();
+        });
+
+    } catch (err) {
+        Swal.fire('Erro', err.message, 'error');
+    }
+    });
+});
+</script>

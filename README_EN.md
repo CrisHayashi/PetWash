@@ -69,6 +69,55 @@
     │   └── index.js
     └── package.json
 
+🗃️ Project Structure (Frontend)
+
+    frontend/
+    │
+    ├── app.js
+    ├── .env
+    ├── package.json
+    │
+    ├── /bin
+    │   └── www
+    │
+    ├── /public
+    │   ├── /css
+    │   ├── /js
+    │   │   ├── init.js
+    │   │   ├── script.js
+    │   │   ├── pets.js
+    │   │   └── tutors.js
+    │   └── /libs
+    │
+    ├── /routes
+    │   ├── index.js          ← Página inicial e rotas genéricas (ex: /, /partials/:name)
+    │   ├── pets.js           ← Rotas da entidade Pets (/pets)
+    │   ├── tutors.js         ← Rotas da entidade Tutores (/tutors)
+    │   ├── products.js       ← Rotas de Produtos (/products)
+    │   ├── services.js       ← Rotas de Serviços (/services)
+    │   └── orders.js         ← Rotas de Pedidos (/orders)
+    │
+    ├── /views
+    │   ├── error.ejs
+    │   ├── index.ejs          ← Página inicial
+    │   │
+    │   ├── /layout
+    │   │   └── layout.ejs     ← Template base com <%- body %>
+    │   │
+    │   ├── /partials
+    │   │   ├── header.ejs
+    │   │   ├── footer.ejs
+    │   │   ├── navbar.ejs
+    │   │   ├── loading.ejs
+    │   │   └── janelaAlerta.ejs
+    │   │
+    │   └── /pages
+    │       ├── pets.ejs       ← Página que aparece no layout
+    │       ├── tutors.ejs
+    │       ├── products.ejs
+    │       ├── services.ejs
+    │       └── orders.ejs
+
 🔐 Authentication
 
     The backend uses JWT authentication.

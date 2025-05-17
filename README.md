@@ -37,37 +37,56 @@
 
 🗃️ Estrutura do Projeto (Backend)
 
-backend/
-├── app.js                      ← Ponto de entrada da aplicação
-├── .env                        ← Variáveis de ambiente (JWT_SECRET etc.)
-├── banco/
-│   └── database.js             ← Configuração da conexão SQLite
-├── auth/
-│   ├── auth.js                 ← Geração do token JWT
-│   └── authMiddleware.js       ← Validação do token nas requisições
-├── controllers/                ← Lógica de controle das entidades
-│   ├── petsController.js
-│   ├── tutorsController.js
-│   ├── productsController.js
-│   ├── servicesController.js
-│   ├── ordersController.js
-│   └── usersController.js
-├── models/                     ← Acesso ao banco de dados
-│   ├── petsModel.js
-│   ├── tutorsModel.js
-│   ├── productsModel.js
-│   ├── servicesModel.js
-│   ├── ordersModel.js
-│   └── usersModel.js
-├── routes/                     ← Rotas da API
-│   ├── petsRoutes.js
-│   ├── tutorsRoutes.js
-│   ├── productsRoutes.js
-│   ├── servicesRoutes.js
-│   ├── ordersRoutes.js
-│   ├── usersRoutes.js
-│   └── index.js
-└── package.json
+   backend/
+   ├── app.js                      ← Ponto de entrada da aplicação
+   ├── .env                        ← Variáveis de ambiente (JWT_SECRET etc.)
+   ├── banco/
+   │   └── database.js             ← Configuração da conexão SQLite
+   ├── auth/
+   │   ├── auth.js                 ← Geração do token JWT
+   │   └── authMiddleware.js       ← Validação do token nas requisições
+   ├── controllers/                ← Lógica de controle das entidades
+   │   ├── petsController.js
+   │   ├── tutorsController.js
+   │   ├── productsController.js
+   │   ├── servicesController.js
+   │   ├── ordersController.js
+   │   └── usersController.js
+   ├── models/                     ← Acesso ao banco de dados
+   │   ├── petsModel.js
+   │   ├── tutorsModel.js
+   │   ├── productsModel.js
+   │   ├── servicesModel.js
+   │   ├── ordersModel.js
+   │   └── usersModel.js
+   ├── routes/                     ← Rotas da API
+   │   ├── petsRoutes.js
+   │   ├── tutorsRoutes.js
+   │   ├── productsRoutes.js
+   │   ├── servicesRoutes.js
+   │   ├── ordersRoutes.js
+   │   ├── usersRoutes.js
+   │   └── index.js
+   └── package.json
+
+🗃️ Estrutura do Projeto (Frontend)
+   frontend/
+   ├── routes/
+   │   └── index.js        ← Rotas da home page e dos partials
+   ├── views/
+   │   ├── layout/
+   │   │   └── layout.ejs  ← Template base
+   │   ├── pages/
+   │   │   └── index.ejs   ← Conteúdo da home page
+   │   └── partials/
+   │       ├── header.ejs
+   │       ├── navbar.ejs
+   │       ├── footer.ejs
+   │       ├── loading.ejs
+   │       └── janelaAlerta.ejs
+   ├── public/js/
+   │   └── init.js         ← Carrega os partials
+
 
 🔐 Autenticação
 

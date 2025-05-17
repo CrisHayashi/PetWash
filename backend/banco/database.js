@@ -13,14 +13,15 @@ db.serialize(() => {
     db.run(
        `CREATE TABLE IF NOT EXISTS users (
            id INTEGER PRIMARY KEY AUTOINCREMENT,
-           name VARCHAR(150) NOT NULL,
+           name VARCHAR(150),
            email VARCHAR(150) NOT NULL UNIQUE,
-           password VARCHAR(150) NOT NULL
+           password VARCHAR(150) NOT NULL,
+           role VARCHAR(50) DEFAULT 'client'
        )`, (err) => {
         if (err) {
-            throw new Error(`Erro ao criar tabela de pedidos: ${err.message}`);
+            throw new Error(`Erro ao criar tabela de usuarios: ${err.message}`);
         }
-        console.log('Tabela de pedidos criada ou já existe.');
+        console.log('Tabela de usuarios criada ou já existe.');
     });
 });
 
@@ -35,9 +36,9 @@ db.serialize(() => {
            address VARCHAR(255) NOT NULL
        )`, (err) => {
         if (err) {
-            throw new Error(`Erro ao criar tabela de pedidos: ${err.message}`);
+            throw new Error(`Erro ao criar tabela de tutores: ${err.message}`);
         }
-        console.log('Tabela de pedidos criada ou já existe.');
+        console.log('Tabela de tutores criada ou já existe.');
     });
 });
 
@@ -70,9 +71,9 @@ db.serialize(() => {
            stock INTEGER NOT NULL
        )`, (err) => {
         if (err) {
-            throw new Error(`Erro ao criar tabela de pedidos: ${err.message}`);
+            throw new Error(`Erro ao criar tabela de produtos: ${err.message}`);
         }
-        console.log('Tabela de pedidos criada ou já existe.');
+        console.log('Tabela de produtos criada ou já existe.');
     });
 });
 
@@ -87,9 +88,9 @@ db.serialize(() => {
            description VARCHAR(500) 
        )`, (err) => {
         if (err) {
-            throw new Error(`Erro ao criar tabela de pedidos: ${err.message}`);
+            throw new Error(`Erro ao criar tabela de servicos: ${err.message}`);
         }
-        console.log('Tabela de pedidos criada ou já existe.');
+        console.log('Tabela de servicos criada ou já existe.');
     });
 });
 
@@ -124,9 +125,9 @@ db.serialize(() => {
             PRIMARY KEY (orderId, productId)
         )`, (err) => {
         if (err) {
-            throw new Error(`Erro ao criar tabela de pedidos: ${err.message}`);
+            throw new Error(`Erro ao criar tabela de pedidos de compras: ${err.message}`);
         }
-        console.log('Tabela de pedidos criada ou já existe.');
+        console.log('Tabela de pedidos de compras criada ou já existe.');
     });
 });
 
@@ -141,9 +142,9 @@ db.serialize(() => {
             PRIMARY KEY (orderId, serviceId)
         )`, (err) => {
         if (err) {
-            throw new Error(`Erro ao criar tabela de pedidos: ${err.message}`);
+            throw new Error(`Erro ao criar tabela de pedidos de servicos: ${err.message}`);
         }
-        console.log('Tabela de pedidos criada ou já existe.');
+        console.log('Tabela de pedidos de servicos criada ou já existe.');
     });
 });
 

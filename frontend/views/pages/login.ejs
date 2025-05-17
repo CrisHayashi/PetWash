@@ -1,0 +1,74 @@
+<div class="container">
+    <div class="row">
+        <div class="col s12 m6 offset-m3">
+            <div class="card">
+                <div class="card-content"> 
+                    <h3 class="card-title center-align>Login</h3>
+                    <form id="loginForm">
+                        <div class="input-field">
+                            <i class="material-icons prefix">email</i>
+                            <input id="email" type="email" name="email" required>
+                            <label for="email">Email</label>
+                        </div>
+                        <div class="input-field">
+                            <i class="material-icons prefix">lock</i>
+                            <input id="password" type="password" name="password" required>
+                            <label for="password">Senha</label>
+                        </div>
+                        <div class="center-align">
+                            <button type="submit" class="btn waves-effect waves-light">Login</button><br>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    M.updateTextFields();
+  });
+
+  document.getElementById('loginForm').addEventListener('submit', async function (event) {
+    event.preventDefault();
+
+
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+
+    if (!email || !password) {
+        M.toast({ html: 'Por favor, preencha todos os campos', classes: 'red' });
+        return;
+    }
+
+     try {
+      const response = await fetch('/api/users/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Erro no login');
+      }
+
+      localStorage.setItem('token', data.token); // Guarda o token
+
+      // Decodifica o token para capturar o nome do usuário
+      const decoded = jwt_decode(data.token);
+      localStorage.setItem('userName', decoded.name); // salva o nome
+
+      Swal.fire('Login realizado!', '', 'success').then(() => {
+        window.location.href = '/dashboard'; // Redireciona
+      });
+    } catch (error) {
+      Swal.fire('Erro', error.message, 'error');
+    }
+  });
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>

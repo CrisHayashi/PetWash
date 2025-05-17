@@ -1,5 +1,5 @@
 const usersModel = require('../model/usersModel');  // Importa o modelo de usuários
-const gerarToken = require('../auth/auth');  // Função para gerar o token JWT
+const gerarToken = require('../auth/gerarToken');  // Função para gerar o token JWT
 
 // Função para pegar todos os usuários
 const listarUsuarios = async (req, res, next) => {
@@ -43,13 +43,24 @@ const criarUsuario = async (req, res, next) => {
 const atualizarUsuario = async (req, res, next) => {
   const userId = req.params.id;
   const { name, email, password } = req.body;
+
   try {
-    const usuarioAtualizado = await usersModel.atualizarUsuario(userId, { name, email, password });
+    const dadosAtualizados = { name, email };
+    if (password) {
+      dadosAtualizados.password = password;  // Só envia se realmente houver uma nova senha
+    }
+
+    const usuarioAtualizado = await usersModel.atualizarUsuario(userId, dadosAtualizados);
+    // Se o usuário foi atualizado, retorna o usuário atualizado
+    // Caso contrário, retorna 404 
+  
     if (usuarioAtualizado) {
       res.status(200).json(usuarioAtualizado);
-    } else {
+    }
+    else {
       res.status(404).json({ message: 'Usuário não encontrado' });
     }
+
   } catch (err) {
     console.error(err);  // Log do erro para debug
     next(err);
@@ -77,17 +88,15 @@ const login = async (req, res, next) => {
   const { email, password } = req.body;
 
   try {
-    // Verifica a senha durante o login
-    const user = await usersModel.verificarSenha(email, password);
-
-    // Gerar o token
+    const user = await usersModel.verificarSenha(email, password);  // Usa verificação do model
     const token = gerarToken(user);
 
     res.status(200).json({ token });
   } catch (err) {
-    next(err);
+    res.status(401).json({ message: err.message });
   }
 };
+
 
 module.exports = {
   listarUsuarios,
