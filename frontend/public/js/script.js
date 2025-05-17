@@ -261,7 +261,7 @@ async function gravar(endpoint, form) {
     }
 }
 
-function atualizarPorIdParcial(id, endpoint, form) {
+async function atualizarPorIdParcial(id, endpoint, form) {
     const json = JSON.stringify(pegarForm(form));
     const res = await fetch(url + endpoint + id, {
         method: 'PATCH',
