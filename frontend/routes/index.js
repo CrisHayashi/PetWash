@@ -6,7 +6,7 @@ const fetch = require('node-fetch');  // importar node-fetch
 var url = process.env.URL_API;
 console.log('URL da API carregada do .env:', url); // Verificação
 
-// Página Inicial
+// Rota para a página inicial
 router.get('/', async (req, res) => {
   try {
     // Fazendo fetch para os serviços da API
