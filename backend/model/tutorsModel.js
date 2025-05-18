@@ -1,6 +1,7 @@
 const table = 'tutors';
 const db = require('../banco/database');
 
+// Função para listar todos os tutores
 const listarTutores = async () => {
     try {
         const tutors = await new Promise((resolve, reject) => {
@@ -15,6 +16,7 @@ const listarTutores = async () => {
     }
 };
 
+// Função para buscar um tutor por ID
 const buscarTutorPorId = async (id) => {
     try {
         const tutor = await new Promise((resolve, reject) => {
@@ -29,6 +31,7 @@ const buscarTutorPorId = async (id) => {
     }
 };
 
+// Função para criar um tutor
 const criarTutor = async (tutorData) => {
     const { name, email, phone, address } = tutorData;
     try {
@@ -50,6 +53,7 @@ const criarTutor = async (tutorData) => {
     }
 };
 
+// Atualização completa (PUT)
 const atualizarTutorCompleto = async (id, { name, email, phone, address }) => {
     try {
         await new Promise((resolve, reject) => {
@@ -57,34 +61,44 @@ const atualizarTutorCompleto = async (id, { name, email, phone, address }) => {
                 `UPDATE ${table} SET name = ?, email = ?, phone = ?, address = ? WHERE id = ?`,
                 [name, email, phone, address, id],
                 function (err) {
-                    if (err) reject(err);
+                    if (err) return reject(err);
+                    if (this.changes === 0) return reject(new Error('Tutor não encontrado para atualizar.'));
                     resolve();
                 }
             );
         });
         return id;
     } catch (err) {
-        throw new Error('Erro ao atualizar tutor completamente: ' + err.message);
+        throw new Error('Erro ao atualizar tutor em todos os campos: ' + err.message);
     }
 };
 
-const atualizarTutorParcial = async (id, dados) => {
-    try {
-        const campos = Object.keys(dados);
-        const valores = Object.values(dados);
+// Função para atualizar um tutor (atualização parcial - PATCH)
+const atualizarTutorParcial = async (id, data) => {
+    const campos = [];
+    const valores = [];
 
-        if (campos.length === 0) {
-            throw new Error('Nenhum campo fornecido para atualização parcial.');
+    for (let chave in data) {
+        if (data[chave] !== undefined) {
+            campos.push(`${chave} = ?`);
+            valores.push(data[chave]);
         }
+    }
+    if (campos.length === 0) {
+        throw new Error('Nenhum campo fornecido para atualização parcial.');
+    }
 
-        const setClause = campos.map(campo => `${campo} = ?`).join(', ');
-        const query = `UPDATE ${table} SET ${setClause} WHERE id = ?`;
-
+    try {
         await new Promise((resolve, reject) => {
-            db.run(query, [...valores, id], function (err) {
-                if (err) reject(err);
-                resolve();
-            });
+            db.run(
+                `UPDATE ${table} SET ${campos.join(', ')} WHERE id = ?`,
+                [...valores, id],
+                function (err) {
+                    if (err) return reject(err);
+                    if (this.changes === 0) return reject(new Error('Tutor não encontrado para atualizar.'));
+                    resolve();
+                }
+            );
         });
         return id;
     } catch (err) {
@@ -102,7 +116,7 @@ const deletarTutor = async (id) => {
         });
         return id;
     } catch (err) {
-        throw new Error('Erro ao apagar tutor: ' + err.message);
+        throw new Error('Erro ao remover tutor: ' + err.message);
     }
 };
 
