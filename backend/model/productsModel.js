@@ -1,13 +1,13 @@
 const table = 'products';
 const db = require('../banco/database');
 
-// Função para pegar todos os produtos
+// Função para listar todos os produtos
 const listarProdutos = async () => {
     try {
         const products = await new Promise((resolve, reject) => {
             db.all(`SELECT * FROM ${table}`, [], (err, rows) => {
                 if (err) reject(err);
-                resolve(rows);
+                else resolve(rows);
             });
         });
         return products;
@@ -52,45 +52,52 @@ const criarProduto = async ({ name, price, category, stock }) => {
 
 // Atualização completa (PUT)
 const atualizarProdutoCompleto = async (id, { name, price, category, stock }) => {
-    if (!name || price == null || !category || stock == null) {
-        throw new Error('Campos obrigatórios ausentes para atualização completa');
-    }
-
     try {
         await new Promise((resolve, reject) => {
             db.run(
                 `UPDATE ${table} SET name = ?, price = ?, category = ?, stock = ? WHERE id = ?`,
                 [name, price, category, stock, id],
                 function (err) {
-                    if (err) reject(err);
+                    if (err) return reject(err);
+                    if (this.changes === 0) return reject(new Error('Produto não encontrado para atualizar.')); 
                     resolve();
                 }
             );
         });
+        return id;
     } catch (err) {
         throw new Error('Erro ao atualizar produto completamente: ' + err.message);
     }
 };
 
 // Atualização parcial (PATCH)
-const atualizarProdutoParcial = async (id, dados) => {
-    try {
-        const campos = Object.keys(dados);
-        const valores = Object.values(dados);
+const atualizarProdutoParcial = async (id, data) => {
+    const campos = [];
+    const valores = [];
 
-        if (campos.length === 0) {
-            throw new Error('Nenhum campo enviado para atualização parcial');
+    for (let chave in data) {
+        if (data[chave] !== undefined) {
+            campos.push(`${chave} = ?`);
+            valores.push(data[chave]);
         }
+    }
+    if (campos.length === 0) {
+        throw new Error('Nenhum campo enviado para atualização parcial');
+    }
 
-        const setClause = campos.map(campo => `${campo} = ?`).join(', ');
-        const query = `UPDATE ${table} SET ${setClause} WHERE id = ?`;
-
+    try {
         await new Promise((resolve, reject) => {
-            db.run(query, [...valores, id], function (err) {
-                if (err) reject(err);
-                resolve();
-            });
+            db.run(
+                `UPDATE ${table} SET ${campos.join(', ')} WHERE id = ?`,
+                [...valores, id],
+                function (err) {
+                    if (err) return reject(err);
+                    if (this.changes === 0) return reject(new Error('Produto não encontrado para atualizar.')); 
+                    resolve();
+                }
+            );
         });
+        return id;
     } catch (err) {
         throw new Error('Erro ao atualizar produto parcialmente: ' + err.message);
     }

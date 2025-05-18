@@ -7,7 +7,7 @@ const listarTutores = async () => {
         const tutors = await new Promise((resolve, reject) => {
             db.all(`SELECT * FROM ${table}`, [], (err, rows) => {
                 if (err) reject(err);
-                resolve(rows);
+                else resolve(rows);
             });
         });
         return tutors;
