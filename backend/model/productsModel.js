@@ -1,6 +1,7 @@
 const table = 'products';
 const db = require('../banco/database');
 
+// Função para pegar todos os produtos
 const listarProdutos = async () => {
     try {
         const products = await new Promise((resolve, reject) => {
@@ -15,6 +16,7 @@ const listarProdutos = async () => {
     }
 };
 
+// Função para pegar um produto por ID
 const buscarProdutoPorId = async (id) => {
     try {
         const product = await new Promise((resolve, reject) => {
@@ -29,6 +31,7 @@ const buscarProdutoPorId = async (id) => {
     }
 };
 
+// Função para criar um produto
 const criarProduto = async ({ name, price, category, stock }) => {
     try {
         const productId = await new Promise((resolve, reject) => {
@@ -93,6 +96,7 @@ const atualizarProdutoParcial = async (id, dados) => {
     }
 };
 
+// Função para remover um produto
 const deletarProduto = async (id) => {
     try {
         await new Promise((resolve, reject) => {
