@@ -1,7 +1,7 @@
 const table = 'pets';
 const db = require('../banco/database');
 
-// Função para pegar todos os pets
+// Função para listar todos os pets
 const listarPets = async () => {
     try {
         const pets = await new Promise((resolve, reject) => {
@@ -18,7 +18,7 @@ const listarPets = async () => {
             `;
             db.all(sql, [], (err, rows) => {
                 if (err) reject(err);
-                else resolve(rows);
+                resolve(rows);
             });
         });
         return pets;
@@ -27,7 +27,7 @@ const listarPets = async () => {
     }
 };
 
-// Função para pegar um pet por ID
+// Função para buscar um pet por ID
 const buscarPetPorId = async (id) => {
     try {
         const pet = await new Promise((resolve, reject) => {
@@ -62,23 +62,57 @@ const criarPet = async (petData) => {
     }
 };
 
-// Função para atualizar um pet
-const atualizarPet = async (id, petData) => {
-    const { name, species, breed, age, tutorId } = petData;
+// Função para atualizar um pet (atualização completa - PUT)
+const atualizarPetCompleto = async (id, { name, species, breed, age, tutorId }) => {
     try {
-        await new Promise((resolve, reject) => {
+        const result = await new Promise((resolve, reject) => {
             db.run(
                 `UPDATE ${table} SET name = ?, species = ?, breed = ?, age = ?, tutorId = ? WHERE id = ?`,
                 [name, species, breed, age, tutorId, id],
                 function (err) {
-                    if (err) reject(err);
+                    if (err) return reject(err);
+                    if (this.changes === 0) return reject(new Error('Pet não encontrado para atualizar.'));
                     resolve();
                 }
             );
         });
-        return id;
+        return result;
     } catch (err) {
-        throw new Error('Erro ao atualizar pet: ' + err.message);
+        throw new Error('Erro ao atualizar pet, com todos os campos: ' + err.message);
+    }
+};
+
+// Atualização parcial (PATCH)
+const atualizarPetParcial = async (id, data) => {
+    const campos = [];
+    const valores = [];
+
+    for (let chave in data) {
+        // Ignorar campos inválidos ou vazios (opcional)
+        if (data[chave] !== undefined) {
+            campos.push(`${chave} = ?`);
+            valores.push(data[chave]);
+        }
+    }
+        if (campos.length === 0) {
+            throw new Error('Nenhum campo enviado para atualização parcial');
+        }
+
+    try {
+        const result = await new Promise((resolve, reject) => {
+            db.run(
+                `UPDATE ${table} SET ${campos.join(', ')} WHERE id = ?`,
+                [...valores, id],
+                function (err) {
+                    if (err) return reject(err);
+                    if (this.changes === 0) return reject(new Error('Pet não encontrado para atualizar.'));
+                    resolve();
+                }
+            );
+        });
+        return result; 
+    } catch (err) {
+        throw new Error('Erro ao atualizar pet parcialmente: ' + err.message);
     }
 };
 
@@ -87,13 +121,13 @@ const deletarPet = async (id) => {
     try {
         await new Promise((resolve, reject) => {
             db.run(`DELETE FROM ${table} WHERE id = ?`, [id], function (err) {
-                if (err) reject(err);
+                if (err) return reject(err);
                 resolve();
             });
         });
         return id;
     } catch (err) {
-        throw new Error('Erro ao apagar pet: ' + err.message);
+        throw new Error('Erro ao remover pet: ' + err.message);
     }
 };
 
@@ -101,6 +135,7 @@ module.exports = {
     listarPets,
     buscarPetPorId,
     criarPet,
-    atualizarPet,
+    atualizarPetCompleto,
+    atualizarPetParcial,
     deletarPet
 };
