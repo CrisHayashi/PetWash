@@ -35,6 +35,7 @@ const tutorscontroller = require('../controllers/tutorscontroller');
  *                     type: string
  */
 
+// Define a rota GET para listar todos os tutores
 router.get('/', tutorscontroller.listarTutores);
 
 // GET - Pegar tutor por ID
@@ -74,6 +75,7 @@ router.get('/', tutorscontroller.listarTutores);
  *         description: Tutor não encontrado
  */
 
+// Define a rota GET para buscar um tutor pelo ID
 router.get('/:id', tutorscontroller.buscarTutorPorId);
 
 // POST - Criar um novo tutor
@@ -116,6 +118,7 @@ router.get('/:id', tutorscontroller.buscarTutorPorId);
  *         description: Dados inválidos
  */
 
+// Define a rota POST para criar um novo tutor
 router.post('/', tutorscontroller.criarTutor);
 
 /**
@@ -159,6 +162,7 @@ router.post('/', tutorscontroller.criarTutor);
  *       404:
  *         description: Tutor não encontrado
  */
+// Define a rota PATCH para atualizar parcialmente os dados de um tutor
 router.patch('/:id', tutorscontroller.atualizarTutorParcial);
 
 // PUT - Atualizar um tutor existente
@@ -210,6 +214,7 @@ router.patch('/:id', tutorscontroller.atualizarTutorParcial);
  *         description: Tutor não encontrado
  */
 
+// Define a rota PUT para atualizar todos os dados de um tutor
 router.put('/:id', tutorscontroller.atualizarTutorCompleto);
 
 // DELETE - Deletar um tutor
@@ -234,6 +239,7 @@ router.put('/:id', tutorscontroller.atualizarTutorCompleto);
  *         description: Tutor não encontrado
  */
 
+// Define a rota DELETE para remover um tutor
 router.delete('/:id', tutorscontroller.deletarTutor);
 
 // Exportando o router para ser utilizado em outros arquivos

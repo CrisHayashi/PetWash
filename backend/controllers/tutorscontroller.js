@@ -1,5 +1,6 @@
 const tutorsModel = require('../model/tutorsModel');
 
+// Função para listar todos os tutores
 const listarTutores = async (req, res, next) => {
     try {
         const tutors = await tutorsModel.listarTutores();
@@ -9,6 +10,7 @@ const listarTutores = async (req, res, next) => {
     }
 };
 
+// Função para buscar um tutor pelo ID
 const buscarTutorPorId = async (req, res, next) => {
     const { id } = req.params;
     try {
@@ -22,6 +24,7 @@ const buscarTutorPorId = async (req, res, next) => {
     }
 };
 
+// Função para criar um novo tutor
 const criarTutor = async (req, res, next) => {
     try {
         if (!req.body || Object.keys(req.body).length === 0) {
@@ -38,6 +41,7 @@ const criarTutor = async (req, res, next) => {
 
 // PUT - Atualização completa
 const atualizarTutorCompleto = async (req, res, next) => {
+    // Extrai o ID dos parâmetros e os campos do corpo da requisição
     const { id } = req.params;
     const { name, email, phone, address } = req.body;
 
@@ -67,6 +71,7 @@ const atualizarTutorCompleto = async (req, res, next) => {
 
 // PATCH - Atualização parcial
 const atualizarTutorParcial = async (req, res, next) => {
+    // Extrai o ID dos parâmetros e os dados a atualizar do corpo da requisição
     const { id } = req.params;
     const camposAtualizar = req.body;
 
@@ -98,7 +103,7 @@ const atualizarTutorParcial = async (req, res, next) => {
     }
 };
 
-
+// Função para deletar um tutor pelo ID
 const deletarTutor = async (req, res, next) => {
     const { id } = req.params;
     try {
@@ -108,7 +113,7 @@ const deletarTutor = async (req, res, next) => {
         next(err);
     }
 };
-
+// Exporta todas as funções definidas para serem utilizadas em outros arquivos
 module.exports = {
     listarTutores,
     buscarTutorPorId,
