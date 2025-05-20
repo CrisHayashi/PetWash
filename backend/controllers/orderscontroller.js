@@ -32,7 +32,7 @@ const criarPedido = async (req, res, next) => {
     try {
         const { tutorId, petId, products = [], services = [], status, total: totalEnviado } = req.body;
 
-        /const totalCalculado = await calcularTotalPedido(products, services);
+        const totalCalculado = await calcularTotalPedido(products, services);
 
         // Verifica se o total enviado é igual ao total calculado
         if (totalEnviado !== undefined && Math.abs(totalCalculado - totalEnviado) > 0.05) {
