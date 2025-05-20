@@ -47,9 +47,7 @@ const {
  *                   status:
  *                     type: string
  */
-router.get('/', function (req, res, next) {
-  listarPedidos(req, res, next);
-});
+router.get('/', listarPedidos);
 
 
 /**
@@ -72,8 +70,6 @@ router.get('/', function (req, res, next) {
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
  *                 type: object
  *                 properties:
  *                   idPedido:
@@ -93,9 +89,7 @@ router.get('/', function (req, res, next) {
  *       404:
  *         description: Pedido não encontrado
  */
-router.get('/:id', function (req, res, next) {
-  buscarPedidoPorId(req, res, next);
-});
+router.get('/:id', buscarPedidoPorId);
 
 
 
@@ -119,7 +113,6 @@ router.get('/:id', function (req, res, next) {
  *               - services
  *               - total
  *               - status
- *               - datetime
  *             properties:
  *               tutorId:
  *                 type: integer
@@ -137,9 +130,6 @@ router.get('/:id', function (req, res, next) {
  *                 type: number
  *               status:
  *                 type: string
- *               datetime:
- *                 type: string
- *                 format: date-time
  *           example:
  *             tutorId: 1
  *             petId: 2
@@ -147,16 +137,13 @@ router.get('/:id', function (req, res, next) {
  *             services: [2]
  *             total: 199.90
  *             status: "em andamento"
- *             datetime: "2025-05-16T10:00:00Z"
  *     responses:
  *       201:
  *         description: Pedido criado com sucesso
  *       400:
  *         description: Dados inválidos
  */
-router.post('/', (req, res) => {
-  criarPedido(req, res);
-});
+router.post('/', criarPedido);
 
 
 
@@ -164,9 +151,9 @@ router.post('/', (req, res) => {
  * @swagger
  * /orders/{id}:
  *   patch:
- *     summary: Atualiza completamente um pedido existente
+ *     summary: Atualiza parcialmente um pedido existente
  *     tags: [Pedidos]
- *     description: Atualiza todos os dados de um pedido pelo ID. Substitui completamente os dados anteriores.
+ *     description: Atualiza os dados solicitados de um pedido pelo ID. Substitui parcialmente os dados anteriores.
  *     parameters:
  *       - in: path
  *         name: id
@@ -180,14 +167,6 @@ router.post('/', (req, res) => {
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - tutorId
- *               - petId
- *               - products
- *               - services
- *               - total
- *               - status
- *               - datetime
  *             properties:
  *               tutorId:
  *                 type: integer
@@ -205,9 +184,6 @@ router.post('/', (req, res) => {
  *                 type: number
  *               status:
  *                 type: string
- *               datetime:
- *                 type: string
- *                 format: date-time
  *           example:
  *             tutorId: 1
  *             petId: 3
@@ -215,7 +191,6 @@ router.post('/', (req, res) => {
  *             services: [1, 4]
  *             total: 250.00
  *             status: "concluído"
- *             datetime: "2025-05-17T09:30:00Z"
  *     responses:
  *       200:
  *         description: Pedido atualizado com sucesso
@@ -224,9 +199,7 @@ router.post('/', (req, res) => {
  *       404:
  *         description: Pedido não encontrado
  */
-router.patch('/:id', (req, res) => {
-  atualizarPedido(req, res);
-});
+router.patch('/:id', atualizarPedido);
 
 
 
@@ -250,8 +223,6 @@ router.patch('/:id', (req, res) => {
  *       404:
  *         description: Pedido não encontrado
  */
-router.delete('/:id', (req, res) => {
-  deletarPedido(req, res);
-});
+router.delete('/:id', deletarPedido);
 
 module.exports = router;

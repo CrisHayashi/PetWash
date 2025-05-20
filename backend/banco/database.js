@@ -94,7 +94,7 @@ db.serialize(() => {
     });
 });
 
-//tabela de agendamentos
+//Tabela Geral de pedidos
 db.serialize(() => {
     db.run(
         `CREATE TABLE IF NOT EXISTS orders (
@@ -113,7 +113,7 @@ db.serialize(() => {
     });
 });
 
-//Tabela de produtos e serviços do agendamento
+//Tabela de produtos solicitados e serviços do agendamento
 db.serialize(() => {
     db.run(
         `CREATE TABLE IF NOT EXISTS order_product (
