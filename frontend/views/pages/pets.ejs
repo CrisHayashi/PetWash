@@ -40,9 +40,10 @@
                     </select>
                 </div>
                 <div class="col s12">
-                    <a id="btn_salvarPet" class="waves-effect waves-light btn green">
+                    <button id="btn_salvarPet" class="waves-effect waves-light btn green" type="submit">
                         <i class="material-icons left">check</i>Salvar
-                    </a>
+                    </button>
+                    <!-- fazer o mesmo no outro botão, adicionar evento, criar função teste -->
                     <a id="btn_voltarPet" class="waves-effect waves-light btn grey">
                         <i class="material-icons left">arrow_back</i>Voltar
                     </a>
@@ -90,8 +91,9 @@
                                 </td>
                                 <td>
                                     <!-- botões de ação (editar, excluir, etc) -->
-                                    <button class="btn-small blue">Editar</button>
-                                    <button class="btn-small red">Excluir</button>
+                                    <button id="editarPet" onclick="editarPet('<%= JSON.stringify(pet) %>')" class="btn-small blue">Editar</button>
+                                    <button id="deletarPet" onclick="deletarPet('<%= JSON.stringify(pet) %>')"
+                                        class="btn-small red">Excluir</button>
                                 </td>
                             </tr>
                             <% }) %>
@@ -107,4 +109,4 @@
 </div>
 
 <!-- Script específico -->
-<script src="/js/pets.js"></script>
+<script src="js/pets.js"></script>
