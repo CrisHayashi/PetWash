@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const url = "https://super-duper-garbanzo-976x6w559wg627rj9-3000.app.github.dev/users";
+const url = process.env.URL_API;
 
 
 /* GET users listing. */
@@ -9,7 +9,7 @@ router.get('/', function(req, res, next) {
   fetch(url, { method: 'GET'})
     .then(res => res.json())
     .then(data => {
-      res.render('layout', { body:'pages/users', title: 'Gestao de usuarios', users: data });
+      res.render('layout/layout', { body:'pages/users', title: 'Gestao de usuarios', users: data });
     })
     .catch(error => {
       console.error('Error fetching users:', error);

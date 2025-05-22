@@ -9,7 +9,12 @@ console.log('URL da API carregada do .env:', url); // Verificação
 // Rota para a página inicial da aplicação
 router.get('/', async (req, res) => {
   try {
-    // Fazendo fetch para os serviços da API DO BACKEND
+// <<<<<<< ramon-crud
+//     // Fazendo fetch para os serviços da API
+//     console.log('tentativa de load page');
+// =======
+//     // Fazendo fetch para os serviços da API DO BACKEND
+// >>>>>>> main
     const servicesResponse = await fetch(`${url}/services`);
       console.log('Status da resposta de serviços:', servicesResponse.status);
     if (!servicesResponse.ok) throw new Error('Erro ao buscar serviços');
@@ -21,9 +26,10 @@ router.get('/', async (req, res) => {
     if (!productsResponse.ok) throw new Error('Erro ao buscar produtos');
     const products = await productsResponse.json();
 
-
-    res.render('pages/index', {
+    console.log('final render page');
+    res.render('layout/layout', { 
       title: 'Página Inicial',
+      body: '../pages/index', 
       services,
       products
     });
