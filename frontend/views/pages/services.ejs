@@ -47,8 +47,34 @@
             </tr>
         </thead>
 
-        <tbody id="servico_list">
-            <!-- lista de serviços gerada aqui -->
-        </tbody>
+        <tbody id="service_list">
+                    <% if (services && services.length> 0) { %>
+                        <% services.forEach(service=> { %>
+                            <tr>
+                                <td>
+                                    <%= service.name %>
+                                </td>
+                                <td>
+                                    <%= service.price %>
+                                </td>
+                                <td>
+                                    <%= service.duration %>
+                                </td>
+                                <td>
+                                    <%= service.description %>
+                                </td>
+                                <td>
+                                    <!-- botões de ação (editar, excluir, etc) -->
+                                    <button class="btn-small blue">Editar</button>
+                                    <button class="btn-small red">Excluir</button>
+                                </td>
+                            </tr>
+                            <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="6">Nenhum service cadastrado.</td>
+                                    </tr>
+                                    <% } %>
+                </tbody>
     </table>
 </div>

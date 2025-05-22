@@ -46,6 +46,35 @@
 
         <tbody id="tutor_list">
             <!-- lista de tutores gerada aqui -->
+             <tbody id="tutor_list">
+                    <% if (tutors && tutors.length> 0) { %>
+                        <% tutors.forEach(tutor=> { %>
+                            <tr>
+                                <td>
+                                    <%= tutor.name %>
+                                </td>
+                                <td>
+                                    <%= tutor.email %>
+                                </td>
+                                <td>
+                                    <%= tutor.phone %>
+                                </td>
+                                <td>
+                                    <%= tutor.address %>
+                                </td>
+                                <td>
+                                    <!-- botões de ação (editar, excluir, etc) -->
+                                    <button class="btn-small blue">Editar</button>
+                                    <button class="btn-small red">Excluir</button>
+                                </td>
+                            </tr>
+                            <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="6">Nenhum tutor cadastrado.</td>
+                                    </tr>
+                                    <% } %>
+                </tbody>
         </tbody>
     </table>
 </div>
