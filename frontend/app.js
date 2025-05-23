@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const cors = require('cors');
 const expressLayouts = require('express-ejs-layouts');
+// const path = require('path');
 
 require('dotenv').config();
 
@@ -27,9 +28,9 @@ app.set('layout', 'layout/layout'); // Define o layout padrão
 app.use(cors());
 app.use(logger('dev'));
 app.use(express.json());
+app.use(express.static('public'));
 app.use(express.urlencoded({ extended: false }));
 app.use(expressLayouts); // Habilita o uso de layouts
-app.use(express.static('public'));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 

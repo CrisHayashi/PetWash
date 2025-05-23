@@ -1,39 +1,64 @@
 <div id="tutorMenu" class="container">
     <div class="row">
-        <div class="col s3">
-            <a id="btn_novoTutor" class="waves-effect waves-light btn">Novo</a>
-        </div>
-
-        <form id="tutorForm" class="col s12">
+        <form id="form" class="col s12">
+            <h4>Cadastro de TUTOR</h4>
             <div class="row">
+                <input type="hidden" id="tutorId" name="tutorId" class="validate">
                 <div class="input-field col s6">
                     <i class="material-icons prefix">person</i>
-                    <input id="nameTutor" name="name" type="text" data-label="Nome do Tutor" class="validate">
-                    <label for="nameTutor">Nome do Tutor</label>
+                    <input id="name" name="name" type="text" data-label="Nome do Tutor" class="validate">
+                    <label for="name">Nome do Tutor</label>
                 </div>
                 <div class="input-field col s6">
                     <i class="material-icons prefix">email</i>
                     <input id="email" name="email" type="text" data-label="Email" class="validate">
-                    <label for="email">Email</label>
+                    <label for="email">E-mail</label>
                 </div>
                 <div class="input-field col s6">
                     <i class="material-icons prefix">phone</i>
                     <input id="phone" name="phone" type="tel" data-label="Telefone" class="validate">
                     <label for="phone">Telefone</label>
                 </div>
-                <div class="input-field col s12">
-                    <!-- está criando uma div invisível para oculpar o bloco -->
+                <div class="input-field col s6">
+                    <i class="material-icons prefix">home</i>
+                    <input id="address" name="address" type="text" data-label="Endereço" class="validate">
+                    <label for="address">Endereço</label>
+                </div>
+
+                <div class="input-field col s3">
+                    <a onclick="salvar()" id="btn_salvarTutor" class="waves-effect waves-light btn">Enviar</a>
                 </div>
                 <div class="col s3">
-                    <a id="btn_salvarTutor" class="waves-effect waves-light btn">Enviar</a>
-                </div>
-                <div class="col s3">
-                    <a id="btn_voltarTutor" class="waves-effect waves-light btn">Voltar</a>
+                    <a onclick="cancelar()" id="btn_voltarTutor" class="waves-effect waves-light btn">Cancelar</a>
                 </div>
             </div>
         </form>
     </div>
+    <div id="table">
+        <div class="adjust-title">
+            <div class="col s12">
+                <h4>Lista de TUTORES</h4>
+                <a onclick="mostrarForm()" class="waves-effect waves-light btn"><i class="material-icons left">add</i>Novo</a>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Telefone</th>
+                        <th>Endereço</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tutor_list">
+                    <!-- os dados virão do JS via DOM -->    
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
+<<<<<<< HEAD
     <table id="table_tutor">
         <thead>
             <tr>
@@ -51,3 +76,8 @@
 </div>
 
 <script src="/js/tutors.js"></script>
+=======
+<% scripts = `
+  <script src="/js/tutors.js"></script>
+` %>
+>>>>>>> main

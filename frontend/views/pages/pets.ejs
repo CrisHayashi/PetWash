@@ -27,20 +27,23 @@
                     <label for="age">Idade</label>
                 </div>
                 <div class="input-field col s6">
-                <i class="material-icons prefix">assignment_ind</i>
-                <select id="tutorId" name="tutorId" class="browser-default" required>
-                    <option value="">Selecione um tutor</option>
-                    <% if (tutors && tutors.length > 0) { %>
-                    <% tutors.forEach(tutor => { %>
-                    <option value="<%= tutor.id %>"><%= tutor.name %></option>
-                    <% }) %>
-                <% } %>
-                </select>
+                    <i class="material-icons prefix">assignment_ind</i>
+                    <select id="tutorId" name="tutorId" class="browser-default" required>
+                        <option value="">Selecione um tutor</option>
+                        <% if (tutors && tutors.length> 0) { %>
+                            <% tutors.forEach(tutor=> { %>
+                                <option value="<%= tutor.id %>">
+                                    <%= tutor.name %>
+                                </option>
+                                <% }) %>
+                                    <% } %>
+                    </select>
                 </div>
                 <div class="col s12">
-                    <a id="btn_salvarPet" class="waves-effect waves-light btn green">
+                    <button id="btn_salvarPet" class="waves-effect waves-light btn green" type="submit">
                         <i class="material-icons left">check</i>Salvar
-                    </a>
+                    </button>
+                    <!-- fazer o mesmo no outro botão, adicionar evento, criar função teste -->
                     <a id="btn_voltarPet" class="waves-effect waves-light btn grey">
                         <i class="material-icons left">arrow_back</i>Voltar
                     </a>
@@ -65,25 +68,40 @@
                     </tr>
                 </thead>
                 <tbody id="pet_list">
-                    <% if (pets && pets.length > 0) { %>
-                        <% pets.forEach(pet => { %>
-                        <tr>
-                            <td><%= pet.name %></td>
-                            <td><%= pet.species %></td>
-                            <td><%= pet.breed %></td>
-                            <td><%= pet.age %></td>
-                            <td><%= pet.tutorId %></td>
-                            <td><%= pet.tutorName || 'Não informado' %></td>
-                            <td>
-                            <!-- botões de ação (editar, excluir, etc) -->
-                            <button class="btn-small blue">Editar</button>
-                            <button class="btn-small red">Excluir</button>
-                            </td>
-                        </tr>
-                        <% }) %>
-                    <% } else { %>
-                        <tr><td colspan="6">Nenhum pet cadastrado.</td></tr>
-                    <% } %>
+                    <% if (pets && pets.length> 0) { %>
+                        <% pets.forEach(pet=> { %>
+                            <tr>
+                                <td>
+                                    <%= pet.name %>
+                                </td>
+                                <td>
+                                    <%= pet.species %>
+                                </td>
+                                <td>
+                                    <%= pet.breed %>
+                                </td>
+                                <td>
+                                    <%= pet.age %>
+                                </td>
+                                <td>
+                                    <%= pet.tutorId %>
+                                </td>
+                                <td>
+                                    <%= pet.tutorName || 'Não informado' %>
+                                </td>
+                                <td>
+                                    <!-- botões de ação (editar, excluir, etc) -->
+                                    <button id="editarPet" onclick="editarPet('<%= JSON.stringify(pet) %>')" class="btn-small blue">Editar</button>
+                                    <button id="deletarPet" onclick="deletarPet('<%= JSON.stringify(pet) %>')"
+                                        class="btn-small red">Excluir</button>
+                                </td>
+                            </tr>
+                            <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="6">Nenhum pet cadastrado.</td>
+                                    </tr>
+                                    <% } %>
                 </tbody>
             </table>
         </div>
@@ -91,4 +109,4 @@
 </div>
 
 <!-- Script específico -->
-<script src="/js/pets.js"></script>
+<script src="js/pets.js"></script>
