@@ -1,4 +1,6 @@
 
+<<<<<<< HEAD
+=======
 // function alertaPersonalizado({ 
 //   titulo = 'Atenção!', 
 //   texto = '', 
@@ -325,3 +327,4 @@
 //     };
 //     if (funcoes[tab]) funcoes[tab]();
 // }
+>>>>>>> main
