@@ -3,18 +3,12 @@ var express = require('express');
 var router = express.Router();
 const fetch = require('node-fetch');  // importar node-fetch
 
-var url = process.env.URL_API;
+var url = process.env.URL_API || 'http://localhost:3000'; // URL padrão caso não esteja definida no .env
 console.log('URL da API carregada do .env:', url); // Verificação
 
 // Rota para a página inicial da aplicação
 router.get('/', async (req, res) => {
   try {
-// <<<<<<< ramon-crud
-//     // Fazendo fetch para os serviços da API
-//     console.log('tentativa de load page');
-// =======
-//     // Fazendo fetch para os serviços da API DO BACKEND
-// >>>>>>> main
     const servicesResponse = await fetch(`${url}/services`);
       console.log('Status da resposta de serviços:', servicesResponse.status);
     if (!servicesResponse.ok) throw new Error('Erro ao buscar serviços');
