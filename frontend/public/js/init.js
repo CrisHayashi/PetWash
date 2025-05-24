@@ -9,7 +9,6 @@
     // Carregamento dinâmico de partes da página
     $("#header").load("/partials/header");
     $("#footer").load("/partials/footer");
-    $("#navbar").load("/partials/navbar");
     $("#loading").load("/partials/loading");
 
   }); // end of document ready

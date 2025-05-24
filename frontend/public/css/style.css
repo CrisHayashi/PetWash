@@ -12,10 +12,98 @@
 .icon-block .material-icons {
 	font-size: inherit;
 }
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
 
+  #tutortable table tbody tr {
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
+      background-color: #f8f9fa; /* tom claro para contraste */
+  }
 
-#banner {
-  background-image: url('/path/to/your/image.jpg');
-  background-size: cover;
-  background-position: center;
+  #tutortable table tbody tr:hover {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      transform: scale(1.01);
+      background-color: #e3f2fd; /* azul claro do Materialize */
+      cursor: pointer;
+  }
+
+  #tutortable table thead {
+      background-color: #1565c0; /* azul escuro */
+      color: white;
+  }
+
+  #tutortable table td, #tutortable table th {
+      padding: 12px;
+  }
+
+  #tutortable .btn-floating i {
+      font-size: 1.2rem;
+  }
+
+  /* Botões mais sutis com hover */
+  .btn-floating:hover {
+      filter: brightness(1.2);
+  }
+
+  /* Footer geral */
+.page-footer {
+  padding-top: 40px;
+  padding-bottom: 20px;
+}
+
+/* Títulos das colunas */
+.page-footer h5 {
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+/* Links úteis e redes sociais */
+.page-footer ul li {
+  margin-bottom: 10px;
+}
+
+/* Ícones alinhados com texto */
+.page-footer i.material-icons {
+  vertical-align: middle;
+  margin-right: 8px;
+  font-size: 20px;
+}
+
+/* Ajuste de responsividade em colunas médias */
+@media only screen and (max-width: 992px) {
+  .page-footer .col {
+    margin-bottom: 20px;
+  }
+}
+
+/* Rodapé inferior com espaçamento e responsividade */
+.footer-copyright {
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 10px 0;
+  font-size: 14px;
+  color: #e0e0e0;
+}
+
+/* Flexível para centralizar e alinhar texto com link */
+.footer-copyright .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Link "Mais informações" no rodapé */
+.footer-copyright a {
+  color: #ffcc80 !important;
+  font-weight: 500;
 }

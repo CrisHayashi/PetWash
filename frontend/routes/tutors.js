@@ -1,33 +1,26 @@
-const fetch = require('node-fetch');
 var express = require('express');
 var router = express.Router();
-<<<<<<< HEAD
-const fetch = require('node-fetch');
-const url = "https://hq90rqnv-3000.brs.devtunnels.ms"
+const tutorsController = require('../../backend/controllers/tutorscontroller');
 
-router.get("/tutores", (req, res) => {
-  res.render("pages/tutors");
-=======
-var url = process.env.URL_API
+var url = process.env.URL_API || 'http://localhost:3000';
 
-router.get('/tutors', async function (req, res, next) {
+router.get('/', async function (req, res, next) {
   try {
-    // Fazendo fetch para os tutores da API
-    const tutorsResponse = await fetch(`${url}/tutors`);
-    const tutors = await tutorsResponse.json();
+    // Faz a requisição para sua API para pegar os tutores
+    const response = await fetch(url + "/tutors/");
+    const tutors = await response.json();
 
-    console.log(tutors);
-
+    // Renderiza a página passando os tutores
     res.render('layout/layout', {
-      title: 'Tutores',
-      body: 'pages/tutors',
-      tutors : tutors
+      title: 'Gestão de Tutores',
+      body: '../pages/tutors', 
+      scripts: '<script src="/js/tutors.js"></script>',
+      tutors: tutors
     });
   } catch (err) {
     console.error(err);
-    res.status(500).send("Erro ao buscar tutors")
+    res.status(500).send("Erro ao buscar tutores");
   }
->>>>>>> main
 });
 
 module.exports = router;
