@@ -1,6 +1,6 @@
 <div id="tutorMenu" class="container">
     <div class="row">
-        <form id="form" class="col s12">
+        <form id="tutorform" class="col s12">
             <h4>Cadastro de TUTOR</h4>
             <div class="row">
                 <input type="hidden" id="tutorId" name="tutorId" class="validate">
@@ -11,7 +11,7 @@
                 </div>
                 <div class="input-field col s6">
                     <i class="material-icons prefix">email</i>
-                    <input id="email" name="email" type="text" data-label="Email" class="validate">
+                    <input id="email" name="email" type="email" data-label="Email" class="validate">
                     <label for="email">E-mail</label>
                 </div>
                 <div class="input-field col s6">
@@ -25,20 +25,21 @@
                     <label for="address">Endereço</label>
                 </div>
 
-                <div class="input-field col s3">
-                    <a onclick="salvar()" id="btn_salvarTutor" class="waves-effect waves-light btn">Enviar</a>
-                </div>
-                <div class="col s3">
-                    <a onclick="cancelar()" id="btn_voltarTutor" class="waves-effect waves-light btn">Cancelar</a>
+                <div class="col s12">
+                    <a onclick="salvar()" id="btn_salvarTutor" class="waves-effect waves-light btn green" type="submit">
+                        <i class="material-icons left">check</i>Salvar</a>
+                    <a onclick="cancelar()" id="btn_cancelarTutor" class="waves-effect waves-light btn grey">
+                        <i class="material-icons left">arrow_back</i>Voltar</a>
                 </div>
             </div>
         </form>
     </div>
-    <div id="table">
+    <div id="tutortable">
         <div class="adjust-title">
             <div class="col s12">
                 <h4>Lista de TUTORES</h4>
-                <a onclick="mostrarForm()" class="waves-effect waves-light btn"><i class="material-icons left">add</i>Novo</a>
+                <a onclick="mostrarForm()" id="btn_novoTutor" class="waves-effect waves-light btn blue darken-3"><i class="material-icons left">add</i>Novo</a>
+                <br><br>
             </div>
             <table>
                 <thead>
@@ -51,33 +52,35 @@
                     </tr>
                 </thead>
                 <tbody id="tutor_list">
-                    <!-- os dados virão do JS via DOM -->    
+                    <% if (tutors && tutors.length> 0) { %>
+                        <% tutors.forEach(tutor=> { %>
+                            <tr>
+                                <td>
+                                    <%= tutor.name %>
+                                </td>
+                                <td>
+                                    <%= tutor.email %>
+                                </td>
+                                <td>
+                                    <%= tutor.phone %>
+                                </td>
+                                <td>
+                                    <%= tutor.address %>
+                                </td>
+                                <td><!-- botões de ação (editar, excluir) -->
+                                    <a class="btn-floating blue" onclick="editarTutor('<%= JSON.stringify(tutor) %>')"><i class="material-icons">edit</i></a>
+                                    <a class="btn-floating red" onclick="deletarTutor('<%= JSON.stringify(tutor) %>')"><i class="material-icons">delete</i></a>
+                                </td>
+                            </tr>
+                            <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="6">Nenhum tutor cadastrado.</td>
+                                    </tr>
+                                    <% } %>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
-<<<<<<< HEAD
-    <table id="table_tutor">
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>Email</th>
-                <th>Telefone</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-
-        <tbody id="tutor_list">
-            <!-- lista de tutores gerada aqui -->
-        </tbody>
-    </table>
-</div>
-
-<script src="/js/tutors.js"></script>
-=======
-<% scripts = `
-  <script src="/js/tutors.js"></script>
-` %>
->>>>>>> main

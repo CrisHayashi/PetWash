@@ -6,10 +6,9 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const cors = require('cors');
 const expressLayouts = require('express-ejs-layouts');
-// const path = require('path');
-
 require('dotenv').config();
 
+//Rotas
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var petsRouter = require('./routes/pets');
@@ -18,22 +17,28 @@ var productsRouter = require('./routes/products');
 var servicesRouter = require('./routes/services');
 var ordersRouter = require('./routes/orders');
 
-var app = express();
 
 // Define a pasta de views para as páginas EJS
 app.set('view engine', 'ejs'); // Define o motor de visualização como EJS
 app.set('views', path.join(__dirname, 'views')); // Define o diretório onde estão os arquivos EJS
 app.set('layout', 'layout/layout'); // Define o layout padrão
+app.use(expressLayouts); // Habilita o uso de layouts
 
+//Middlewares
 app.use(cors());
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.static('public'));
 app.use(express.urlencoded({ extended: false }));
-app.use(expressLayouts); // Habilita o uso de layouts
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// title padrão para todas as páginas
+app.use((req, res, next) => {
+  res.locals.title = 'PetWash'; // Título padrão
+  next();
+});
+
+//rotas
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/pets', petsRouter);
@@ -42,11 +47,6 @@ app.use('/products', productsRouter);
 app.use('/services', servicesRouter);
 app.use('/orders', ordersRouter);
 
-// title padrão para todas as páginas
-app.use((req, res, next) => {
-  res.locals.title = 'PetWash'; // Título padrão
-  next();
-});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
