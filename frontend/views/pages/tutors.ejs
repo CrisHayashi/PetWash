@@ -26,7 +26,7 @@
                 </div>
 
                 <div class="col s12">
-                    <a onclick="salvar()" id="btn_salvarTutor" class="waves-effect waves-light btn green" type="submit">
+                    <a onclick="criarTutor()" id="btn_salvarTutor" class="waves-effect waves-light btn green" type="submit">
                         <i class="material-icons left">check</i>Salvar</a>
                     <a onclick="cancelar()" id="btn_cancelarTutor" class="waves-effect waves-light btn grey">
                         <i class="material-icons left">arrow_back</i>Voltar</a>
@@ -68,8 +68,8 @@
                                     <%= tutor.address %>
                                 </td>
                                 <td><!-- botões de ação (editar, excluir) -->
-                                    <a class="btn-floating blue" onclick="editarTutor('<%= JSON.stringify(tutor) %>')"><i class="material-icons">edit</i></a>
-                                    <a class="btn-floating red" onclick="deletarTutor('<%= JSON.stringify(tutor) %>')"><i class="material-icons">delete</i></a>
+                                    <a class="btn-floating blue" onclick="atualizarTutorParcial(<%= tutor.id %>)"><i class="material-icons">edit</i></a>
+                                    <a class="btn-floating red" onclick="deletarTutor(<%= tutor.id %>)"><i class="material-icons">delete</i></a>
                                 </td>
                             </tr>
                             <% }) %>
