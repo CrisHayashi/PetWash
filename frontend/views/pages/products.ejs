@@ -1,15 +1,13 @@
-<div id="produtoMenu" class="container">
+<div id="productMenu" class="container">
     <div class="row">
-        <div class="col s3">
-            <a id="btn_novoProduto" class="waves-effect waves-light btn">Novo</a>
-        </div>
-
-        <form id="produtoForm" class="col s12">
+        <form id="form" class="col s12">
+            <h4>Cadastro de Produto</h4>
             <div class="row">
+                <input type="hidden" id="productId" name="productId">
                 <div class="input-field col s6">
-                    <i class="material-icons prefix">person</i>
-                    <input id="nameProduto" name="name" type="text" data-label="Nome do Produto" class="validate">
-                    <label for="nameProduto">Nome do Produto</label>
+                    <i class="material-icons prefix">inventory</i>
+                    <input id="name" name="name" type="text" data-label="Nome do Produto" class="validate">
+                    <label for="name">Nome do Produto</label>
                 </div>
                 <div class="input-field col s6">
                     <i class="material-icons prefix">attach_money</i>
@@ -17,71 +15,61 @@
                     <label for="price">Preço</label>
                 </div>
                 <div class="input-field col s6">
-                    <i class="material-icons prefix">phone</i>
+                    <i class="material-icons prefix">category</i>
                     <input id="category" name="category" type="text" data-label="Categoria" class="validate">
                     <label for="category">Categoria</label>
                 </div>
                 <div class="input-field col s6">
-                    <i class="material-icons prefix">phone</i>
+                    <i class="material-icons prefix">store</i>
                     <input id="stock" name="stock" type="number" data-label="Estoque" class="validate">
                     <label for="stock">Estoque</label>
                 </div>
-                <div class="input-field col s12">
-                    <!-- está criando uma div invisível para oculpar o bloco -->
-                </div>
-                <div class="col s3">
-                    <a id="btn_salvarProduto" class="waves-effect waves-light btn">Enviar</a>
-                </div>
-                <div class="col s3">
-                    <a id="btn_voltarProduto" class="waves-effect waves-light btn">Voltar</a>
-                </div>
+            </div>
+            <div class="input-field col s3">
+                <a onclick="salvarProduto()" id="btn_salvarProduto" class="waves-effect waves-light btn">Enviar</a>
+            </div>
+            <div class="col s3">
+                <a onclick="cancelarProduto()" id="btn_voltarProduto" class="waves-effect waves-light btn">Cancelar</a>
             </div>
         </form>
     </div>
 
-    <table id="table_produto">
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>Preço</th>
-                <th>Categoria</th>
-                <th>Estoque</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-
-        <tbody id="produto_list">
-            <!-- lista de productes gerada aqui -->
-             <tbody id="product_list">
-                    <% if (products && products.length> 0) { %>
-                        <% products.forEach(product=> { %>
-                            <tr>
-                                <td>
-                                    <%= product.name %>
-                                </td>
-                                <td>
-                                    <%= product.price %>
-                                </td>
-                                <td>
-                                    <%= product.category %>
-                                </td>
-                                <td>
-                                    <%= product.stock %>
-                                </td>
-                                <td>
-                                    <!-- botões de ação (editar, excluir, etc) -->
-                                    <button class="btn-small blue">Editar</button>
-                                    <button class="btn-small red">Excluir</button>
-                                </td>
-                            </tr>
-                            <% }) %>
-                                <% } else { %>
-                                    <tr>
-                                        <td colspan="6">Nenhum product cadastrado.</td>
-                                    </tr>
-                                    <% } %>
+    <div id="table">
+        <div class="adjust-title">
+            <div class="col s12">
+                <h4>Lista de Produtos</h4>
+                <a onclick="mostrarFormProduto()" class="waves-effect waves-light btn"><i class="material-icons left">add</i>Novo</a>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Preço</th>
+                        <th>Categoria</th>
+                        <th>Estoque</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="product_list">
+                    <!-- os dados virão do JS via DOM -->
                 </tbody>
-        </tbody>
-    </table>
-
+            </table>
+        </div>
+    </div>
 </div>
+
+<!-- Modal para Visualização de Produto -->
+<div id="modalProduct" class="modal">
+    <div class="modal-content">
+        <h4>Detalhes do Produto</h4>
+        <p><b>Nome:</b> <span id="productNome"></span></p>
+        <p><b>Preço:</b> R$<span id="productPrice"></span></p>
+        <p><b>Categoria:</b> <span id="productCategory"></span></p>
+        <p><b>Estoque:</b> <span id="productStock"></span></p>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" class="modal-close waves-effect waves-green btn">Fechar</a>
+    </div>
+</div>
+
+<script src="/js/products.js" defer></script>
