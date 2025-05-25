@@ -1,37 +1,83 @@
 $(document).ready(function () {
-  // Aplicar máscara ao telefone
-  const phoneInput = document.getElementById('phone');
-  if (phoneInput) {
-    IMask(phoneInput, {
-      mask: '(00) 0 0000-0000'
-    });
-  }
-
-  // Esconde o formulário no carregamento
+  $('.modal').modal();
   $("#tutorform").hide();
   $("#tutortable").show();
 
-  // Evento para o botão Novo
-  $("#btn_novoTutor").click(function () {
-    mostrarForm();
-  });
-
-  // Evento para o botão Cancelar (Voltar)
-  $("#btn_cancelarTutor").click(function () {
-    cancelar();
-  });
+  listarTutores();
+  
+  
+  // Aplicar máscara ao telefone
+  const phoneElement = document.getElementById("phone");
+  if (phoneElement) {
+    IMask(phoneElement, { mask: '(00) 0 0000-0000'});
+  }
 });
 
+// Função para listar os tutores
+function listarTutores() {
+  $.get(URL_API + "/tutors", function (data) {
+    console.log("Dados recebidos:", data);
+    // Verifica se a resposta é um objeto e acessa a propriedade correta
+    const tutors = Array.isArray(data) ? data : data.tutors || [];
+    if (!Array.isArray(tutors)) {
+      console.error("Erro: a propriedade 'tutors' não é um array!", tutors);
+      return;
+    }
+    let list = "";
+    tutors.forEach(tutor => {
+      list += `
+        <tr>
+          <td>${tutor.name}</td>
+          <td>${tutor.email}</td>
+          <td>${tutor.phone}</td>
+          <td>${tutor.address}</td>
+          <td>
+            <div class="btn-group">
+              <a onclick="visualizarTutor(${tutor.id})" class="btn-floating waves-effect waves-light blue"><i class="material-icons">visibility</i></a>
+              <a onclick="editarTutor(${tutor.id})" class="btn-floating waves-effect waves-light orange"><i class="material-icons">edit</i></a>
+              <a onclick="deletarTutor(${tutor.id})" class="btn-floating waves-effect waves-light red"><i class="material-icons">delete</i></a>
+            </div>
+          </td>
+        </tr>`;
+  });
+    
+    $("#tutor_list").html(list);
+  }).fail(function (error) {
+    console.error("Erro ao buscar tutores:", error);
+  });
+}
+
+// Função para visualizar um tutor detalhadamente
+function buscarTutorPorId(id) {
+  $.get(URL_API + `/tutors/${id}`, function (tutor) {
+    $("#tutorNome").text(tutor.name);
+    $("#tutorEmail").text(tutor.email);
+    $("#tutorPhone").text(tutor.phone);
+    $("#tutorAddress").text(tutor.address);
+
+    $("#modalTutor").modal("open");
+  }).fail(function (error) {
+    Swal.fire('Erro!', 'Não foi possível carregar os dados do tutor.', 'error');
+  });
+}
+
+// Função para mostrar o formulário de cadastro
 function mostrarForm() {
   $("#tutorform").show();
   $("#tutortable").hide();
 }
 
+// Função para cancelar e limpar formulário
 function cancelar() {
-  // Reseta o formulário e alterna a visualização
-  $("#tutorform")[0].reset();
   $("#tutorform").hide();
   $("#tutortable").show();
+  limparForm();
+}
+
+// Função para limpar o formulário
+function limparForm() {
+  $("#tutorId, #name, #email, #phone, #address").val("");
+  M.updateTextFields();
 }
 
 // Validação simples dos dados antes de salvar
@@ -52,7 +98,7 @@ function validarTutor(data) {
 }
 
 // Função para salvar novo tutor ou atualizar existente
-  window.salvar = async function() {
+  function criarTutor() {
     const id = $("#tutorId").val();
     const tutorData = {
       name: $("#name").val(),
@@ -61,96 +107,67 @@ function validarTutor(data) {
       address: $("#address").val()
     };
 
-    if (!validarTutor(tutorData)) return;
+    if (!validarTutor(data)) return;
 
-    try {
-      showLoading(); // ✅ MOSTRA LOADING
-      let response;
-      if (id) {
-        // Atualizar tutor existente
-        response = await fetch(`/tutors/${id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(tutorData)
-        });
-      } else {
-        // Criar novo tutor
-        response = await fetch('/tutors', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(tutorData)
-        });
-      }
+    const method = id ? 'PUT' : 'POST';
+    const url = id ? URL_API + `/tutors/${id}` : URL_API + `/tutors`;
 
-      if (response.ok) {
-        // SweetAlert sucesso
-        Swal.fire({
-          icon: 'success',
-          title: 'Sucesso!',
-          text: 'Tutor salvo com sucesso.',
-          timer: 2000,
-          showConfirmButton: false
-        }).then(() => location.reload());
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Erro',
-          text: 'Falha ao salvar o tutor.'
-        });
-      }
-    } catch (error) {
-      console.error(error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Erro',
-        text: 'Falha ao salvar o tutor.'
-      });
-    } finally {
-    hideLoading(); // ✅ ESCONDE LOADING
-    }
-  };
+    $.ajax({
+        url: url,
+        method: method,
+        contentType: "application/json",
+        data: JSON.stringify(data),
+        success: function () {
+            listarTutores();
+            cancelar();
+            Swal.fire('Sucesso!', 'Tutor salvo com sucesso.', 'success');
+        },
+        error: function () {
+            Swal.fire('Erro!', 'Não foi possível salvar o tutor.', 'error');
+        }
+    });
+}
 
-  // Função para preencher formulário com dados para edição
-  window.editarTutor = function(tutorJson) {
-    const tutor = JSON.parse(tutorJson);
 
-    $("#tutorId").val(tutor.id); // ajustar se usa outro nome
+// Função para editar um tutor
+function atualizarTutorParcial (id) {
+  $.get(URL_API + `/tutors/${id}`, function (tutor) {
+
+    $("#tutorId").val(tutor.id);
     $("#name").val(tutor.name);
     $("#email").val(tutor.email);
     $("#phone").val(tutor.phone);
     $("#address").val(tutor.address);
     M.updateTextFields();
 
-    $("#tutorform").show();
-    $("#tutortable").hide();
-  };
+    mostrarForm();
+  }).fail(function () {
+          Swal.fire('Erro!', 'Não foi possível carregar os dados do tutor.', 'error');
+      });
+}
 
-  // Função para deletar tutor
-  window.deletarTutor = async function(tutorJson) {
-    const tutor = JSON.parse(tutorJson);
-
-    Swal.fire({
-      title: `Excluir tutor: ${tutor.name}?`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sim, excluir',
-      cancelButtonText: 'Cancelar'
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          showLoading(); // ✅ MOSTRA LOADING
-          const response = await fetch(`/tutors/${tutor.id}`, { method: 'DELETE' });
-          if (response.ok) {
-            Swal.fire('Excluído!', 'Tutor removido com sucesso.', 'success').then(() => location.reload());
-          } else {
-            Swal.fire('Erro', 'Não foi possível excluir o tutor.', 'error');
-          }
-        } catch (error) {
-          console.error(error);
-          Swal.fire('Erro', 'Não foi possível excluir o tutor.', 'error');
-        } finally {
-          hideLoading(); // ✅ ESCONDE LOADING
-        }
-      }
-    });
-  };
+// Função para deletar tutor
+function deletarTutor (id) {
+  Swal.fire({
+    title: 'Tem certeza?',
+    text: "Você não poderá reverter isso!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sim, excluir!',
+    cancelButtonText: 'Cancelar!'
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      $.ajax({
+              url: URL_API + `/tutors/${id}`,
+              method: 'DELETE',
+              success: function () {
+                  listarTutores();
+                  Swal.fire('Deletado!', 'O tutor foi removido.', 'success');
+              },
+              error: function () {
+                  Swal.fire('Erro!', 'Não foi possível deletar o tutor.', 'error');
+              }
+      });
+    }
+  });
+}

@@ -1,72 +1,65 @@
-<!--Layout principal banner-->
-<div class="section no-pad-bot" id="index-banner">
-  <div class="container">
-    <br><br>
-    <h1 class="header center orange-text">PetShop</h1>
-    <div class="row center">
-      <h5 class="header col s12 light">Seu pet merece o melhor!</h5>
-    </div>
-    <div class="row center">
-      <a href="#servicos" class="btn-large waves-effect waves-light orange">Confira nossos serviços</a>
-    </div>
+<!-- Layout principal com mascote -->
+<div class="section no-pad-bot banner-topo" id="index-banner">
+  <div class="container center-align">
+    <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Mascote Pet" width="100">
+    <h1 class="header orange-text text-darken-3">PetWash</h1>
+    <h5 class="light">Cuidando com amor de quem você ama 💛</h5>
+    <a href="/services" class="btn-large waves-effect waves-light orange darken-2 pulse">Conheça nossos serviços</a>
+  </div>
+</div>
+<br><br>
+<!-- Dashboard -->
+<div class="container">
+  <h4 class="center-align titulo-dashboard">
+    <i class="material-icons left">dashboard</i> Visão Geral do Sistema
+  </h4>
 
-    <!-- Seção de Serviços -->
-    <div class="container">
-      <h3 class="center-align">Serviços Populares</h3>
-      <div class="row">
-        <% services.forEach(service => { %>
-          <div class="col s12 m4 l3">
-            <div class="card">
-              <div class="card-image">
-                <img src="<%= service.image %>" alt="<%= service.name %>">
-              </div>
-              <div class="card-content">
-                <span class="card-title"><%= service.name %></span>
-                <p><%= service.description %></p>
-              </div>
-              <div class="card-action">
-                <a href="#" class="modal-trigger" data-target="modalAgendamento<%= service.id %>">Agendar</a>
-              </div>
-            </div>
-          </div>
-        <% }) %>
-      </div>
-    </div>
-
-    <!-- Seção de Produtos -->
-    <div class="container">
-      <h3 class="center-align">Produtos em Destaque</h3>
-      <div class="row">
-        <% products.forEach(product => { %>
-          <div class="col s12 m4 l3">
-            <div class="card">
-              <div class="card-image">
-                <img src="<%= product.image %>" alt="<%= product.name %>">
-              </div>
-              <div class="card-content">
-                <span class="card-title"><%= product.name %></span>
-                <p><%= product.price %></p>
-              </div>
-              <div class="card-action">
-                <a href="#">Comprar Agora</a>
-              </div>
-            </div>
-          </div>
-        <% }) %>
+  <div class="row">
+    <!-- Indicadores -->
+    <div class="col s12 m4">
+      <div class="card-panel card-custom">
+        <h5 class="center orange-text text-darken-2">Indicadores Gerais</h5>
+        <div class="card-indicador">
+          <span><i class="material-icons">pets</i> Pets</span>
+          <strong id="totalPets">0</strong>
+        </div>
+        <div class="card-indicador">
+          <span><i class="material-icons">person</i> Tutores</span>
+          <strong id="totalTutores">0</strong>
+        </div>
+        <div class="card-indicador">
+          <span><i class="material-icons">build</i> Serviços</span>
+          <strong id="totalServicos">0</strong>
+        </div>
+        <div class="card-indicador">
+          <span><i class="material-icons">shopping_cart</i> Produtos</span>
+          <strong id="totalProdutos">0</strong>
+        </div>
+        <div class="card-indicador">
+          <span><i class="material-icons">receipt</i> Pedidos</span>
+          <strong id="totalPedidos">0</strong>
+        </div>
       </div>
     </div>
 
-    <!-- Modal de Aviso ou Promoção -->
-    <div id="modalPromo" class="modal">
-      <div class="modal-content">
-        <h4>Promoção Especial!</h4>
-        <p>Aproveite 10% de desconto em todos os brinquedos para pets! Não perca essa oportunidade.</p>
-      </div>
-      <div class="modal-footer">
-        <a href="#!" class="modal-close waves-effect waves-green btn-flat">Fechar</a>
+    <!-- Gráfico de Serviços -->
+    <div class="col s12 m4">
+      <div class="card-panel card-custom">
+        <h5 class="center green-text text-darken-2">Serviços Mais Populares</h5>
+        <div class="grafico-container">
+          <canvas id="graficoServicos"></canvas>
+        </div>
       </div>
     </div>
-    <div id="loader" style="display:none;">Carregando...</div>
-      <br><br>
+
+    <!-- Gráfico de Produtos -->
+    <div class="col s12 m4">
+      <div class="card-panel card-custom">
+        <h5 class="center blue-text text-darken-2">Produtos Mais Vendidos</h5>
+        <div class="grafico-container">
+          <canvas id="graficoProdutos"></canvas>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
