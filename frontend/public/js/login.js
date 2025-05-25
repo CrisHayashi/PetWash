@@ -1,37 +1,104 @@
-import { vars } from './vars.js';
+document.addEventListener('DOMContentLoaded', function () {
+    // Esconde o formulário de registro e mostra o de login ao carregar a página
+    document.getElementById('register').style.display = 'none';
+    document.getElementById('login').style.display = 'block';
 
-function login() {
-    $('#loginForm').on('submit', async function (event) {
-        event.preventDefault(); // Evita o recarregamento da página
+    M.updateTextFields(); // Materialize: garante campos flutuantes visuais
+});
 
-        const username = $('#username').val();
-        const password = $('#password').val();
-
-        try {
-            const response = await fetch(url + 'users/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                localStorage.setItem('token', data.token); // Armazena o token no navegador
-                localStorage.setItem('user', username); // Armazena os dados do usuário
-                M.toast({ html: 'Login bem-sucedido!', classes: 'green' }); // Exibe notificação com Materialize
-                setTimeout(() => {
-                    window.location.href = '/'; // Redireciona para página inicial após 1 segundo
-                }, 1000);
-            } else {
-                M.toast({ html: data.message, classes: 'red' }); // Exibe mensagem de erro
-            }
-        } catch (error) {
-            M.toast({ html: 'Erro ao conectar com o servidor.', classes: 'red' });
-        }
-    });
+function mostrarLogin() {
+    console.log("teste botão hiden2");
+    $("#login").show();
+    $("#register").hide();
 }
 
-export const auth = {
-    login
-};
+function mostrarRegistro() {
+    console.log("teste botão hiden2");
+    $("#register").show();
+    $("#login").hide();
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    M.updateTextFields();
+});
+
+document.getElementById('loginForm').addEventListener('submit', async function (event) {
+    event.preventDefault();
+    console.log("botão submit funcionando");
+
+    const email = document.getElementById('emailLogin').value.trim();
+    const password = document.getElementById('passwordLogin').value;
+
+    console.log(email);
+    console.log(password);
+
+    if (!email || !password) {
+        M.toast({ html: 'Por favor, preencha todos os campos', classes: 'red' });
+        return;
+    }
+
+    try {
+        const response = await fetch(`https://ubiquitous-fishstick-j6qrrpq7rpp3q975-3000.app.github.dev/users/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Erro no login');
+        }
+
+        localStorage.setItem('token', data.token); // Guarda o token
+
+        const decoded = jwt_decode(data.token);
+        localStorage.setItem('userName', decoded.name); // salva o nome
+
+        Swal.fire('Login realizado!', '', 'success').then(() => {
+            window.location.href = '/';
+            console.log("realiza direcionamento");
+        });
+    } catch (error) {
+        Swal.fire('Erro', error.message, 'error');
+    }
+});
+
+document.getElementById('registerForm').addEventListener('submit', async function (event) {
+    event.preventDefault();
+    console.log("Botão de cadastro funcionando");
+
+    const name = document.getElementById('nameRegister').value.trim();
+    const email = document.getElementById('emailRegister').value.trim();
+    const password = document.getElementById('passwordRegister').value;
+
+    console.log(name, email, password);
+
+    if (!name || !email || !password) {
+        M.toast({ html: 'Por favor, preencha todos os campos', classes: 'red' });
+        return;
+    }
+
+    try {
+        const response = await fetch('https://ubiquitous-fishstick-j6qrrpq7rpp3q975-3000.app.github.dev/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, password })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Erro ao cadastrar');
+        }
+
+        Swal.fire('Cadastro realizado com sucesso!', '', 'success').then(() => {
+            // Após o cadastro, troca para a tela de login
+            document.getElementById('register').style.display = 'none';
+            document.getElementById('login').style.display = 'block';
+        });
+    } catch (error) {
+        Swal.fire('Erro', error.message, 'error');
+    }
+});
+

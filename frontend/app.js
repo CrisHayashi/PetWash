@@ -16,6 +16,7 @@ var tutorsRouter = require('./routes/tutors');
 var productsRouter = require('./routes/products');
 var servicesRouter = require('./routes/services');
 var ordersRouter = require('./routes/orders');
+var loginRouter = require('./routes/login');
 
 
 
@@ -47,6 +48,7 @@ app.use('/tutors', tutorsRouter);
 app.use('/products', productsRouter);
 app.use('/services', servicesRouter);
 app.use('/orders', ordersRouter);
+app.use('/login', loginRouter);
 
 
 // catch 404 and forward to error handler

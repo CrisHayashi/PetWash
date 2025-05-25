@@ -1,4 +1,4 @@
-<div class="register">
+<div id="register" class="register">
     <div class="row">
         <div class="col s12 m6 offset-m3">
             <div class="card">
@@ -7,25 +7,19 @@
                     <form id="registerForm">
                         <div class="input-field">
                             <i class="material-icons prefix">account_circle</i>
-                            <input type="text" id="nome" name="nome">
+                            <input type="text" id="nameRegister" name="nome">
                             <label for="nome">Nome Completo</label>
                         </div>
 
                         <div class="input-field">
-                            <i class="material-icons prefix">person</i>
-                            <input type="text" id="usuario" name="usuario" required>
-                            <label for="usuario">Nome de Usuário</label>
-                        </div>
-
-                        <div class="input-field">
                             <i class="material-icons prefix">email</i>
-                            <input type="email" id="email" name="email" required>
+                            <input type="email" id="emailRegister" name="email" required>
                             <label for="email">E-mail</label>
                         </div>
 
                         <div class="input-field">
                             <i class="material-icons prefix">lock</i>
-                            <input type="password" id="senha" name="senha" required>
+                            <input type="password" id="passwordRegister" name="senha" required>
                             <label for="senha">Senha</label>
                         </div>
 
@@ -37,90 +31,46 @@
                     </form>
                 </div>
                 <div class="card-action center-align">
-                    <a href="/login" class="blue-text text-darken-3">Já tem conta? Faça login</a>
+                    <a onclick="mostrarLogin()" id="btn-criarNovaConta" class="waves-effect waves-light btn blue darken-3">
+                        <i class="material-icons left">login</i>Login</a>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="login">
+<div id="login" class="login">
     <div class="row">
         <div class="col s12 m6 offset-m3">
-          <h4>Lista de TUTORES</h4>
-                <a onclick="mostrarForm()" id="btn_novoTutor" class="waves-effect waves-light btn blue darken-3"><i class="material-icons left">add</i>Criar Conta</a>
-                <br><br>
+            <h4>Realize o seu Login !</h4>
+            <br>
             <div class="card">
-                <div class="card-content"> 
-                    <h3 class="card-title center-align>Login</h3>
+                <div class="card-content">
+                    <h3 class="card-title center-align>Login"></h3>
                     <form id="loginForm">
                         <div class="input-field">
                             <i class="material-icons prefix">email</i>
-                            <input id="email" type="email" name="email" required>
-                            <label for="email">Email</label>
+                            <input id="emailLogin" type="email" name="email" required>
+                            <label for="emailLogin">Email</label>
                         </div>
                         <div class="input-field">
                             <i class="material-icons prefix">lock</i>
-                            <input id="password" type="password" name="password" required>
-                            <label for="password">Senha</label>
+                            <input id="passwordLogin" type="password" name="password" required>
+                            <label for="passwordLogin">Senha</label>
                         </div>
                         <div class="center-align">
                             <button type="submit" class="btn waves-effect waves-light">Login</button><br>
                         </div>
-                    </form>
+                        </form>
                 </div>
-                 <div class="card-action center-align">
-                    <a href="/register" class="blue-text text-darken-3">Criar conta</a>
+                <div class="card-action center-align">
+                    <a onclick="mostrarRegistro()" id="btn-criarNovaConta" class="waves-effect waves-light btn blue darken-3">
+                        <i class="material-icons left">person_add</i>Criar Conta</a>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    M.updateTextFields();
-  });
-
-  document.getElementById('loginForm').addEventListener('submit', async function (event) {
-    event.preventDefault();
-
-
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-
-
-    if (!email || !password) {
-        M.toast({ html: 'Por favor, preencha todos os campos', classes: 'red' });
-        return;
-    }
-
-     try {
-      const response = await fetch('/api/users/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Erro no login');
-      }
-
-      localStorage.setItem('token', data.token); // Guarda o token
-
-      // Decodifica o token para capturar o nome do usuário
-      const decoded = jwt_decode(data.token);
-      localStorage.setItem('userName', decoded.name); // salva o nome
-
-      Swal.fire('Login realizado!', '', 'success').then(() => {
-        window.location.href = '/dashboard'; // Redireciona
-      });
-    } catch (error) {
-      Swal.fire('Erro', error.message, 'error');
-    }
-  });
-
-</script>
 <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+<script src="/js/login.js"></script>
