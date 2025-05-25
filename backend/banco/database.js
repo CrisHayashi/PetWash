@@ -15,8 +15,7 @@ db.serialize(() => {
            id INTEGER PRIMARY KEY AUTOINCREMENT,
            name VARCHAR(150),
            email VARCHAR(150) NOT NULL UNIQUE,
-           password VARCHAR(150) NOT NULL,
-           role VARCHAR(50) DEFAULT 'client'
+           password VARCHAR(150) NOT NULL
        )`, (err) => {
         if (err) {
             throw new Error(`Erro ao criar tabela de usuarios: ${err.message}`);

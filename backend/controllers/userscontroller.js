@@ -32,7 +32,8 @@ const criarUsuario = async (req, res, next) => {
   const { name, email, password } = req.body;  // Assumindo que os dados sejam enviados no corpo da requisição
   try {
     const novoUsuario = await usersModel.criarUsuario({ name, email, password });
-    res.status(201).json(novoUsuario);  // Retorna o usuário criado com status 201
+    console.log(novoUsuario)
+    res.status(201).json({ message: 'Usuário Criado'});  // Retorna o usuário criado com status 201
   } catch (err) {
     console.error(err);  // Log do erro para debug
     next(err);

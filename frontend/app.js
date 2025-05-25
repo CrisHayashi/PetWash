@@ -18,6 +18,7 @@ var servicesRouter = require('./routes/services');
 var ordersRouter = require('./routes/orders');
 
 
+
 // Define a pasta de views para as páginas EJS
 app.set('view engine', 'ejs'); // Define o motor de visualização como EJS
 app.set('views', path.join(__dirname, 'views')); // Define o diretório onde estão os arquivos EJS

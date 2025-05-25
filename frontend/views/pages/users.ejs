@@ -23,13 +23,12 @@
         <td><%= user.id %></td>
         <td><%= user.name %></td>
         <td><%= user.email %></td>
-        <td><%= user.role %></td>
+
         <td>
             <a href="#!" class="btn-small blue modal-trigger btn-edit" 
             data-id="<%= user.id %>" 
             data-name="<%= user.name %>" 
-            data-email="<%= user.email %>" 
-            data-role="<%= user.role %>">Editar</a>
+            data-email="<%= user.email %>">Editar</a>
             <a href="#!" class="btn-small red btn-delete" data-id="<%= user.id %>">Excluir</a>
         </td>
         </tr>
@@ -56,14 +55,7 @@
         <input id="email" name="email" type="email" required>
         <label for="email">Email</label>
     </div>
-    <div class="input-field">
-        <select id="role" name="role" required>
-        <option value="" disabled selected>Escolha o tipo</option>
-        <option value="admin">Administrador</option>
-        <option value="user">Cliente</option>
-        </select>
-        <label for="role">Tipo</label>
-    </div>
+    
     <div class="input-field">
         <input id="password" name="password" type="password">
         <label for="password">Senha <small>(deixe vazio para manter a atual)</small></label>
@@ -115,7 +107,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('userId').value = button.dataset.id;
         document.getElementById('name').value = button.dataset.name;
         document.getElementById('email').value = button.dataset.email;
-        document.getElementById('role').value = button.dataset.role;
 
         M.updateTextFields();
         const selects = document.querySelectorAll('select');
@@ -161,14 +152,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const id = this.id.value;
     const name = this.name.value;
     const email = this.email.value;
-    const role = this.role.value;
     const password = this.password.value;
 
     const url = id ? `/users/${id}` : '/users';
     const method = id ? 'PUT' : 'POST';
 
     // Monta objeto para envio
-    const bodyData = { name, email, role };
+    const bodyData = { name, email };
     if (password) bodyData.password = password;
 
     try {

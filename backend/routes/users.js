@@ -34,7 +34,7 @@ const userscontroller = require('../controllers/userscontroller');
  *                   password:
  *                     type: string
  */
-router.get('/', authenticateToken, userscontroller.listarUsuarios);
+router.get('/', userscontroller.listarUsuarios);
 
 // GET - Pegar usuário por ID
 /**
@@ -67,31 +67,39 @@ router.get('/', authenticateToken, userscontroller.listarUsuarios);
  *       404:
  *         description: Usuário não encontrado
  */
-router.get('/:id', authenticateToken, userscontroller.buscarUsuarioPorId);
+router.get('/:id', userscontroller.buscarUsuarioPorId);
 
 // POST - Criar um novo usuário
 /**
  * @swagger
  * /users:
- *  post:
- *    summary: Cria um novo usuário
- *    tags: [Usuários]
- *    description: Cria um novo usuário com os dados fornecidos
- *    requestBody:
- *      required: true
- *      content:
- *        application/json:
- *          schema:
- *            type: object
- *            properties:
- *              name:
- *                type: string
- *              email:
- *                type: string
- *              password:
- *                type: string
+ *   post:
+ *     summary: Cria um novo usuário
+ *     tags: [Usuários]
+ *     description: Cria um novo usuário com os dados fornecidos
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Usuário criado com sucesso
+ *       500:
+ *         description: Erro usuario não criado
  */
+
 router.post('/', userscontroller.criarUsuario);
+
+
 
 // PUT - Atualizar um usuário
 /**
@@ -126,7 +134,7 @@ router.post('/', userscontroller.criarUsuario);
  *       400:
  *         description: Dados inválidos
  */
-router.put('/:id', authenticateToken, userscontroller.atualizarUsuario);
+router.put('/:id', userscontroller.atualizarUsuario);
 
 // DELETE - Deletar um usuário
 /**
@@ -148,7 +156,7 @@ router.put('/:id', authenticateToken, userscontroller.atualizarUsuario);
  *       404:
  *         description: Usuário não encontrado
  */
-router.delete('/:id', authenticateToken, userscontroller.deletarUsuario);
+router.delete('/:id', userscontroller.deletarUsuario);
 
 // POST - Login de usuário
 /**
