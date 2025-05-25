@@ -1,6 +1,55 @@
-<div class="container">
+<div class="register">
     <div class="row">
         <div class="col s12 m6 offset-m3">
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title center-align blue-text text-darken-3">Criar Conta</span>
+                    <form id="registerForm">
+                        <div class="input-field">
+                            <i class="material-icons prefix">account_circle</i>
+                            <input type="text" id="nome" name="nome">
+                            <label for="nome">Nome Completo</label>
+                        </div>
+
+                        <div class="input-field">
+                            <i class="material-icons prefix">person</i>
+                            <input type="text" id="usuario" name="usuario" required>
+                            <label for="usuario">Nome de Usuário</label>
+                        </div>
+
+                        <div class="input-field">
+                            <i class="material-icons prefix">email</i>
+                            <input type="email" id="email" name="email" required>
+                            <label for="email">E-mail</label>
+                        </div>
+
+                        <div class="input-field">
+                            <i class="material-icons prefix">lock</i>
+                            <input type="password" id="senha" name="senha" required>
+                            <label for="senha">Senha</label>
+                        </div>
+
+                        <div class="center">
+                            <button id="register" type="submit" class="btn waves-effect waves-light blue darken-3">
+                                <i class="material-icons left">person_add</i>Cadastrar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-action center-align">
+                    <a href="/login" class="blue-text text-darken-3">Já tem conta? Faça login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="login">
+    <div class="row">
+        <div class="col s12 m6 offset-m3">
+          <h4>Lista de TUTORES</h4>
+                <a onclick="mostrarForm()" id="btn_novoTutor" class="waves-effect waves-light btn blue darken-3"><i class="material-icons left">add</i>Criar Conta</a>
+                <br><br>
             <div class="card">
                 <div class="card-content"> 
                     <h3 class="card-title center-align>Login</h3>
@@ -19,6 +68,9 @@
                             <button type="submit" class="btn waves-effect waves-light">Login</button><br>
                         </div>
                     </form>
+                </div>
+                 <div class="card-action center-align">
+                    <a href="/register" class="blue-text text-darken-3">Criar conta</a>
                 </div>
             </div>
         </div>
