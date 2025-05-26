@@ -68,8 +68,8 @@
                                     <%= tutor.address %>
                                 </td>
                                 <td><!-- botões de ação (editar, excluir) -->
-                                    <a class="btn-floating blue" onclick="atualizarTutorParcial(<%= tutor.id %>)"><i class="material-icons">edit</i></a>
-                                    <a class="btn-floating red" onclick="deletarTutor(<%= tutor.id %>)"><i class="material-icons">delete</i></a>
+                                    <a class="btn-floating blue" onclick="editarTutor('<%= tutor.id %>')"><i class="material-icons">edit</i></a>
+                                    <a class="btn-floating red" onclick="deletarTutor('<%= tutor.id %>')"><i class="material-icons">delete</i></a>
                                 </td>
                             </tr>
                             <% }) %>
@@ -83,4 +83,4 @@
         </div>
     </div>
 </div>
-
+<script src="/js/tutors.js" defer></script>

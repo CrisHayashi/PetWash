@@ -1,14 +1,13 @@
 var express = require('express');
 var router = express.Router();
-const tutorsController = require('../../backend/controllers/tutorscontroller');
 
 var url = process.env.URL_API || 'http://localhost:3000';
 
 router.get('/', async function (req, res, next) {
   try {
     // Faz a requisição para sua API para pegar os tutores
-    const response = await fetch(url + "/tutors/");
-    const tutors = await response.json();
+    const tutorsresponse = await fetch(`${url}/tutors/`);
+    const tutors = await tutorsresponse.json();
 
     // Renderiza a página passando os tutores
     res.render('layout/layout', {

@@ -13,8 +13,18 @@ $(document).ready(function () {
   }
 });
 
+// Funções para mostrar/esconder loading
+function mostrarLoading() {
+  $("#loading").removeClass("hide");
+}
+
+function esconderLoading() {
+  $("#loading").addClass("hide");
+}
+
 // Função para listar os tutores
 function listarTutores() {
+  mostrarLoading();
   $.get(URL_API + "/tutors", function (data) {
     console.log("Dados recebidos:", data);
     // Verifica se a resposta é um objeto e acessa a propriedade correta
@@ -44,21 +54,29 @@ function listarTutores() {
     $("#tutor_list").html(list);
   }).fail(function (error) {
     console.error("Erro ao buscar tutores:", error);
+    Swal.fire('Erro!', 'Não foi possível carregar a lista de tutores.', 'error');
+  })
+  .always(function () {
+    esconderLoading();
   });
 }
 
 // Função para visualizar um tutor detalhadamente
 function buscarTutorPorId(id) {
+  mostrarLoading();
   $.get(URL_API + `/tutors/${id}`, function (tutor) {
     $("#tutorNome").text(tutor.name);
     $("#tutorEmail").text(tutor.email);
     $("#tutorPhone").text(tutor.phone);
     $("#tutorAddress").text(tutor.address);
-
+    $('#modalTutor').modal();
     $("#modalTutor").modal("open");
   }).fail(function (error) {
     Swal.fire('Erro!', 'Não foi possível carregar os dados do tutor.', 'error');
-  });
+  })
+  .always(function () {
+    esconderLoading();
+  }); 
 }
 
 // Função para mostrar o formulário de cadastro
@@ -100,7 +118,7 @@ function validarTutor(data) {
 // Função para salvar novo tutor ou atualizar existente
   function criarTutor() {
     const id = $("#tutorId").val();
-    const tutorData = {
+    const data = {
       name: $("#name").val(),
       email: $("#email").val(),
       phone: $("#phone").val(),
@@ -111,6 +129,8 @@ function validarTutor(data) {
 
     const method = id ? 'PUT' : 'POST';
     const url = id ? URL_API + `/tutors/${id}` : URL_API + `/tutors`;
+
+    mostrarLoading();
 
     $.ajax({
         url: url,
@@ -124,26 +144,31 @@ function validarTutor(data) {
         },
         error: function () {
             Swal.fire('Erro!', 'Não foi possível salvar o tutor.', 'error');
+        },
+        complete: function () {
+            esconderLoading();
         }
     });
 }
 
 
 // Função para editar um tutor
-function atualizarTutorParcial (id) {
+function editarTutor(id) {
+  mostrarLoading();
   $.get(URL_API + `/tutors/${id}`, function (tutor) {
-
     $("#tutorId").val(tutor.id);
     $("#name").val(tutor.name);
     $("#email").val(tutor.email);
     $("#phone").val(tutor.phone);
     $("#address").val(tutor.address);
     M.updateTextFields();
-
     mostrarForm();
   }).fail(function () {
           Swal.fire('Erro!', 'Não foi possível carregar os dados do tutor.', 'error');
-      });
+      })
+  .always(function () {
+    esconderLoading();
+  }); 
 }
 
 // Função para deletar tutor
@@ -157,6 +182,7 @@ function deletarTutor (id) {
     cancelButtonText: 'Cancelar!'
   }).then(async (result) => {
     if (result.isConfirmed) {
+      mostrarLoading();
       $.ajax({
               url: URL_API + `/tutors/${id}`,
               method: 'DELETE',
@@ -166,7 +192,10 @@ function deletarTutor (id) {
               },
               error: function () {
                   Swal.fire('Erro!', 'Não foi possível deletar o tutor.', 'error');
-              }
+              },
+              complete: function () {
+                  esconderLoading();
+              } 
       });
     }
   });

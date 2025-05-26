@@ -24,6 +24,7 @@ router.get('/', async (req, res) => {
     res.render('layout/layout', { 
       title: 'Página Inicial',
       body: '../pages/index', 
+      scripts: `<script src="/js/home.js"></script>`,
       services,
       products
     });

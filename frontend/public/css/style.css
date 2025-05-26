@@ -25,6 +25,7 @@
   z-index: 9999;
 }
 
+/* CSS na pagina TUTOR */
 #tutortable table tbody tr {
     transition: box-shadow 0.2s ease, transform 0.2s ease;
     background-color: #f8f9fa; /* tom claro para contraste */
@@ -49,6 +50,7 @@
 #tutortable .btn-floating i {
     font-size: 1.2rem;
 }
+
 
 /* Título principal do dashboard */
 .titulo-dashboard {
