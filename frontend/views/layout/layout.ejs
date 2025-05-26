@@ -4,7 +4,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=2" />
-  <title><%= title %> | PetWash </title>
+  <title>
+    <%= title %> | PetWash
+  </title>
   <!-- Google Fonts - Material Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <!-- Materialize CSS -->
@@ -20,40 +22,44 @@
 <body>
   <!-- Cabeçalho -->
   <header>
-  <%- include('../partials/header') %>
+    <%- include('../partials/header') %>
   </header>
 
   <!-- Conteúdo Principal -->
-   
+
   <%- include('../partials/loading') %>
 
-      
-  <main class="section">
-    <div class="row">
-      <div class="col s12 m12 l12">
-        <%- include(body) %>
+
+    <main class="section">
+      <div class="row">
+        <div class="col s12 m12 l12">
+          <%- include(body) %>
+        </div>
       </div>
-    </div>
-  </main>
+    </main>
 
-  <%- include('../partials/footer') %>
+    <%- include('../partials/footer') %>
 
-  <!-- Scripts -->
-  <!-- jQuery -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <!-- Materialize JS -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-  <!-- SweetAlert2 -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <!-- IMask -->
-  <script src="https://unpkg.com/imask"></script>
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Scripts específicos da página -->
-  <%- typeof scripts !=='undefined' ? scripts : '' %>
-  <!-- seu JS customizado -->
-  <script src="/js/init.js"></script>
-  <script src="/js/script.js"></script>
+      <!-- Scripts -->
+      <!-- jQuery -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+      <script>
+        const URL_API = '<%= process.env.URL_API || "http://localhost:3000/" %>';
+      </script>
+      <!-- Materialize JS -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+      <!-- SweetAlert2 -->
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <!-- IMask -->
+      <script src="https://unpkg.com/imask"></script>
+      <!-- Chart.js -->
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <!-- Scripts específicos da página -->
+      <%- typeof scripts !=='undefined' ? scripts : '' %>
+        <!-- seu JS customizado -->
+        <script src="/js/init.js"></script>
+        <script src="/js/script.js"></script>
 </body>
 
 </html>

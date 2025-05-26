@@ -5,8 +5,7 @@ const gerarToken = (user) => {
   const payload = {
     id: user.id,
     name: user.name,
-    email: user.email,
-    role: user.role, // Adicionando o papel do usuário
+    email: user.email 
   };
 
   const secret = process.env.JWT_SECRET;
