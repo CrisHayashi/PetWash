@@ -63,3 +63,19 @@
     </div>
   </div>
 </div>
+
+<script>
+  // Variáveis para os dados do dashboard
+  const pets = '<%- JSON.stringify(pets) %>';
+  const tutores = '<%- JSON.stringify(tutors) %>';
+  const services = '<%- JSON.stringify(services) %>';
+  const products = '<%- JSON.stringify(products) %>';
+  const pedidos = '<%- JSON.stringify(orders) %>';
+  // Convertendo os dados JSON para objetos JavaScript
+  const petsData = JSON.parse(pets);
+  const tutoresData = JSON.parse(tutores);
+  const servicesData = JSON.parse(services);
+  const productsData = JSON.parse(products);
+  const pedidosData = JSON.parse(pedidos);
+</script>
+<script src="/js/home.js"></script>

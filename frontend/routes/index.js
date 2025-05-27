@@ -9,37 +9,39 @@ console.log('URL da API carregada do .env:', url); // Verificação
 // Rota para a página inicial da aplicação
 router.get('/', async (req, res) => {
   try {
-    const servicesResponse = await fetch(`${url}/services`);
-      console.log('Status da resposta de serviços:', servicesResponse.status);
-    if (!servicesResponse.ok) throw new Error('Erro ao buscar serviços');
-    const services = await servicesResponse.json();
+    const endpoints = ['services', 'products', 'pets', 'tutors', 'orders'];
+    const results = await Promise.all(
+      endpoints.map(endpoint => fetch(`${url}/${endpoint}`))
+    );
 
-    // Fazendo fetch para os produtos da API
-    const productsResponse = await fetch(`${url}/products`);
-    console.log('Status da resposta de produtos:', productsResponse.status);
-    if (!productsResponse.ok) throw new Error('Erro ao buscar produtos');
-    const products = await productsResponse.json();
+    const [servicesRes, productsRes, petsRes, tutoresRes, pedidosRes] = results;
 
-    console.log('final render page');
-    res.render('layout/layout', { 
+    if (!servicesRes.ok || !productsRes.ok || !petsRes.ok || !tutoresRes.ok || !pedidosRes.ok) {
+      throw new Error('Erro ao buscar dados de um ou mais endpoints');
+    }
+
+    const [services, products, pets, tutores, pedidos] = await Promise.all([
+      servicesRes.json(),
+      productsRes.json(),
+      petsRes.json(),
+      tutoresRes.json(),
+      pedidosRes.json()
+    ]);
+
+    res.render('layout/layout', {
       title: 'Página Inicial',
-      body: '../pages/index', 
-      scripts: `<script src="/js/home.js"></script>`,
+      body: '../pages/index',
       services,
-      products
+      products,
+      pets,
+      tutors: tutores,
+      orders: pedidos
     });
+
   } catch (error) {
     console.error('Erro ao carregar dados:', error.message);
     res.status(500).send('Erro no servidor');
   }
 });
-
-// Rota para carregar os partials dinamicamente
-router.get('/partials/:name', (req, res) => {
-  const partial = req.params.name;
-  res.render(`partials/${partial}`);
-});
-
-
 
 module.exports = router;

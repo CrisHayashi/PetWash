@@ -1,7 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const authenticateToken = require('../auth/authenticateToken');
-const authorizeAdmin = require('../auth/authorizeAdmin');
 const dashboardscontroller = require('../controllers/dashboardscontroller');
 
 /**
@@ -57,13 +55,6 @@ const dashboardscontroller = require('../controllers/dashboardscontroller');
  *         description: Erro no servidor
  */
 
-// Middleware de autenticação
-router.use(authenticateToken);
 
-// Middleware de autorização
-router.use(authorizeAdmin); // só admins podem acessar
-
-// Rota protegida do dashboard
-router.get('/', dashboardscontroller.dashboardStats);
 
 module.exports = router;

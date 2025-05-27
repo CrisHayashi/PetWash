@@ -46,9 +46,7 @@ app.use('/services', servicesRouter);
 app.use('/orders', ordersRouter);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/login', loginRouter);
-
-// Rotas protegidas do dashboard
-app.use('/dashboard', dashboardRouter);
+app.use('/', dashboardRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -64,6 +62,19 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.send({erro: 'Not Found'});
+});
+
+app.use((err, req, res, next) => {
+  console.error('Erro interno:', err);    // Log no console para debugging
+  res.status(500).json({ 
+    erro: 'Erro interno no servidor', 
+    detalhes: err.message 
+  });
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ erro: err.message });
 });
 
 module.exports = app;

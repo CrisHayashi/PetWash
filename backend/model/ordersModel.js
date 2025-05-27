@@ -30,11 +30,11 @@ const listarPedidos = async () => {
   try {
     const pedidos = await allQuery(`SELECT * FROM orders`);
         for (const pedido of pedidos) {
-          pedido.produtos = await allQuery(
+          pedido.products = await allQuery(
             `SELECT productId, prodQtd, prodPrice, prodTotal FROM order_product WHERE orderId = ?`,
             [pedido.id]
           );
-          pedido.servicos = await allQuery(
+          pedido.services = await allQuery(
             `SELECT serviceId, servQtd, servPrice, servTotal FROM order_service WHERE orderId = ?`,
             [pedido.id]
           );
@@ -51,12 +51,12 @@ const buscarPedidoPorId = async (id) => {
     const pedido = await getQuery(`SELECT * FROM orders WHERE id = ?`, [id]);
     if (!pedido) throw new Error('Pedido não encontrado');
 
-    pedido.produtos = await allQuery(
+    pedido.products = await allQuery(
       `SELECT productId, prodQtd, prodPrice, prodTotal FROM order_product WHERE orderId = ?`,
       [id]
     );
 
-    pedido.servicos = await allQuery(
+    pedido.services = await allQuery(
       `SELECT serviceId, servQtd, servPrice, servTotal FROM order_service WHERE orderId = ?`,
         [id]
     );
@@ -68,62 +68,62 @@ const buscarPedidoPorId = async (id) => {
 
 // Função para criar um pedido com produtos e serviços associados
 const criarPedido = async (pedidoData) => {
-  const { tutorId, petId, total, status, produtos = [], servicos = [] } = pedidoData;
+  const { tutorId, petId, status, products = [], services = [] } = pedidoData;
 
     try {
         await runQuery('BEGIN TRANSACTION');
 
+        // Insere o pedido com total 0 temporariamente
         const result = await runQuery(
-        `INSERT INTO orders (tutorId, petId, total, status) VALUES (?, ?, ?, ?)`,
-        [tutorId, petId, total, status]
-    );
+          `INSERT INTO orders (tutorId, petId, total, status) VALUES (?, ?, ?, ?)`,
+          [tutorId, petId, 0, status]
+        );
+        const orderId = result.lastID;
 
-    const orderId = result.lastID;
-
-    // Inserir produtos sequencialmente com await
-    for (const prod of produtos) {
-        await runQuery(
-            `INSERT INTO order_product (orderId, productId, prodQtd, prodPrice) VALUES (?, ?, ?, ?)`,
+        // Inserir produtos
+        for (const prod of products) {
+          await runQuery(
+            `INSERT INTO order_product (orderId, productId, prodQtd, prodPrice)
+            VALUES (?, ?, ?, ?)`,
             [orderId, prod.productId, prod.prodQtd, prod.prodPrice]
+          );
+        }
+
+        // Inserir serviços
+        for (const serv of services) {
+          await runQuery(
+            `INSERT INTO order_service (orderId, serviceId, servQtd, servPrice)
+            VALUES (?, ?, ?, ?)`,
+            [orderId, serv.serviceId, serv.servQtd, serv.servPrice]
+          );
+        }
+
+        // Buscar os totais calculados no banco
+        const produtosTotais = await allQuery(
+          `SELECT prodTotal FROM order_product WHERE orderId = ?`,
+          [orderId]
         );
-    }
-
-    // Inserir serviços sequencialmente com await
-    for (const serv of servicos) {
-        await runQuery(
-        `INSERT INTO order_service (orderId, serviceId, servQtd, servPrice) VALUES (?, ?, ?, ?)`,
-        [orderId, serv.serviceId, serv.servQtd, serv.servPrice]
+        const servicosTotais = await allQuery(
+          `SELECT servTotal FROM order_service WHERE orderId = ?`,
+          [orderId]
         );
-    }
 
-    await runQuery('COMMIT');
-    resolve(orderId);
-    } catch (err) {
-    await runQuery('ROLLBACK');
-    reject(err);
-    }
-};
+        const totalProdutos = produtosTotais.reduce((acc, p) => acc + p.prodTotal, 0);
+        const totalServicos = servicosTotais.reduce((acc, s) => acc + s.servTotal, 0);
+        const total = totalProdutos + totalServicos;
 
-// Função para calcular o total de produtos e serviços
-async function calcularTotalProdutos(ids) {
-  if (!ids || ids.length === 0) return 0;
+        // Atualiza o total do pedido
+        await runQuery(`UPDATE orders SET total = ? WHERE id = ?`, [total, orderId]);
 
-  const placeholders = ids.map(() => '?').join(',');
-  const query = `SELECT preco FROM produtos WHERE id IN (${placeholders})`;
+        await runQuery('COMMIT');
+        return orderId;
 
-  const rows = await db.all(query, ids);
-  return rows.reduce((acc, item) => acc + item.preco, 0);
-}
+      } catch (err) {
+        await runQuery('ROLLBACK');
+        throw new Error('Erro ao criar pedido: ' + err.message);
+      }
+    };
 
-async function calcularTotalServicos(ids) {
-  if (!ids || ids.length === 0) return 0;
-
-  const placeholders = ids.map(() => '?').join(',');
-  const query = `SELECT preco FROM servicos WHERE id IN (${placeholders})`;
-
-  const rows = await db.all(query, ids);
-  return rows.reduce((acc, item) => acc + item.preco, 0);
-}
 
 // Função para atualizar um pedido com dados novos e parciais
 const atualizarPedido = async (id, dadosAtualizados) => {
@@ -134,8 +134,60 @@ const atualizarPedido = async (id, dadosAtualizados) => {
       throw new Error('Pedido não encontrado');
     }
 
-    // Campos possíveis que podem ser atualizados na tabela orders (exceto produtos e serviços, que são tratados à parte)
-    const campos = ['tutorId', 'petId', 'total', 'status'];
+    // Atualiza produtos se enviados
+    if (Array.isArray(dadosAtualizados.products)) {
+      await runQuery('DELETE FROM order_product WHERE orderId = ?', [id]);
+
+      for (const prod of dadosAtualizados.products) {
+        const { productId, prodQtd, prodPrice } = prod;
+
+        if (!productId || !prodQtd || !prodPrice) {
+          throw new Error('Produtos inválidos: productId, prodQtd e prodPrice são obrigatórios');
+        }
+
+        await runQuery(
+          `INSERT INTO order_product (orderId, productId, prodQtd, prodPrice)
+           VALUES (?, ?, ?, ?)`,
+          [id, productId, prodQtd, prodPrice]
+        );
+      }
+    }
+
+    // Atualiza serviços se enviados
+    if (Array.isArray(dadosAtualizados.services)) {
+      await runQuery('DELETE FROM order_service WHERE orderId = ?', [id]);
+
+      for (const serv of dadosAtualizados.services) {
+        const { serviceId, servQtd, servPrice } = serv;
+
+        if (!serviceId || !servQtd || !servPrice) {
+          throw new Error('Serviços inválidos: serviceId, servQtd e servPrice são obrigatórios');
+        }
+
+        await runQuery(
+          `INSERT INTO order_service (orderId, serviceId, servQtd, servPrice)
+           VALUES (?, ?, ?, ?)`,
+          [id, serviceId, servQtd, servPrice]
+        );
+      }
+    }
+
+    // Recalcular o total baseado nos valores armazenados no banco
+    const produtosTotais = await allQuery(
+      `SELECT prodTotal FROM order_product WHERE orderId = ?`,
+      [id]
+    );
+    const servicosTotais = await allQuery(
+      `SELECT servTotal FROM order_service WHERE orderId = ?`,
+      [id]
+    );
+
+    const totalProdutos = produtosTotais.reduce((acc, p) => acc + p.prodTotal, 0);
+    const totalServicos = servicosTotais.reduce((acc, s) => acc + s.servTotal, 0);
+    const total = totalProdutos + totalServicos;
+
+    // Atualiza os campos do pedido
+    const campos = ['tutorId', 'petId', 'status'];
     const camposParaAtualizar = [];
     const valores = [];
 
@@ -146,50 +198,18 @@ const atualizarPedido = async (id, dadosAtualizados) => {
       }
     }
 
-    if (camposParaAtualizar.length > 0) {
-      const sql = `UPDATE orders SET ${camposParaAtualizar.join(', ')} WHERE id = ?`;
-      valores.push(id);
-      await runQuery(sql, valores);
-    }
+    // Atualiza também o total
+    camposParaAtualizar.push('total = ?');
+    valores.push(total);
 
-    // Atualizar produtos, se enviado
-    if (Array.isArray(dadosAtualizados.produtos)) {
-      // Remove os produtos antigos do pedido
-      await runQuery('DELETE FROM order_product WHERE orderId = ?', [id]);
+    const setClause = camposParaAtualizar.join(', ');
+    await runQuery(
+      `UPDATE orders SET ${setClause} WHERE id = ?`,
+      [...valores, id]
+    );
 
-      // Insere os novos produtos
-      for (const prod of dadosAtualizados.produtos) {
-        const { productId, prodQtd, prodPrice } = prod;
-        if (!productId || !prodQtd || !prodPrice) {
-          throw new Error('Produtos inválidos: productId, prodQtd e prodPrice são obrigatórios');
-        }
-        await runQuery(
-          `INSERT INTO order_product (orderId, productId, prodQtd, prodPrice) VALUES (?, ?, ?, ?)`,
-          [id, productId, prodQtd, prodPrice]
-        );
-      }
-    }
+    return true;
 
-    // Atualizar serviços, se enviado
-    if (Array.isArray(dadosAtualizados.servicos)) {
-      // Remove os serviços antigos do pedido
-      await runQuery('DELETE FROM order_service WHERE orderId = ?', [id]);
-
-      // Insere os novos serviços
-      for (const serv of dadosAtualizados.servicos) {
-        const { serviceId, servQtd, servPrice } = serv;
-        if (!serviceId || !servQtd || !servPrice) {
-          throw new Error('Serviços inválidos: serviceId, servQtd e servPrice são obrigatórios');
-        }
-        await runQuery(
-          `INSERT INTO order_service (orderId, serviceId, servQtd, servPrice) VALUES (?, ?, ?, ?)`,
-          [id, serviceId, servQtd, servPrice]
-        );
-      }
-    }
-
-    // Retorna o pedido atualizado completo
-    return await buscarPedidoPorId(id);
   } catch (err) {
     throw new Error('Erro ao atualizar pedido: ' + err.message);
   }
@@ -197,6 +217,8 @@ const atualizarPedido = async (id, dadosAtualizados) => {
 
 // Função para deletar pedido
 const deletarPedido = async (id) => {
+  const pedido = await getQuery(`SELECT * FROM orders WHERE id = ?`, [id]);
+  if (!pedido) throw new Error('Pedido não encontrado');
   return new Promise((resolve, reject) => {
     db.serialize(() => {
       db.run('BEGIN TRANSACTION');

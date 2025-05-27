@@ -80,8 +80,12 @@ router.get('/', listarPedidos);
  *                     type: string
  *                   productNames:
  *                     type: string
- *                   quantidade:
+ *                   quantidadeProduto:
  *                     type: integer
+ *                 serviceNames:
+ *                    type: string
+ *                  quantidadeServico:
+ *                    type: integer
  *                   total:
  *                     type: number
  *                   status:
@@ -98,8 +102,9 @@ router.get('/:id', buscarPedidoPorId);
  * /orders:
  *   post:
  *     summary: Cria um novo pedido
- *     tags: [Pedidos]
- *     description: Cria um novo pedido associando tutor, pet, produtos e serviços.
+ *     tags:
+ *       - Pedidos
+ *     description: Cria um pedido associando tutor, pet, produtos e serviços com quantidade e preço.
  *     requestBody:
  *       required: true
  *       content:
@@ -111,40 +116,87 @@ router.get('/:id', buscarPedidoPorId);
  *               - petId
  *               - products
  *               - services
- *               - total
  *               - status
  *             properties:
  *               tutorId:
  *                 type: integer
+ *                 description: ID do tutor do pet
  *               petId:
  *                 type: integer
+ *                 description: ID do pet
  *               products:
  *                 type: array
+ *                 description: Lista de produtos com quantidade e preço
  *                 items:
- *                   type: integer
+ *                   type: object
+ *                   required:
+ *                     - productId
+ *                     - prodQtd
+ *                     - prodPrice
+ *                   properties:
+ *                     productId:
+ *                       type: integer
+ *                       description: ID do produto
+ *                     prodQtd:
+ *                       type: integer
+ *                       description: Quantidade do produto
+ *                     prodPrice:
+ *                       type: number
+ *                       format: float
+ *                       description: Preço unitário do produto
  *               services:
  *                 type: array
+ *                 description: Lista de serviços com quantidade e preço
  *                 items:
- *                   type: integer
- *               total:
- *                 type: number
+ *                   type: object
+ *                   required:
+ *                     - serviceId
+ *                     - servQtd
+ *                     - servPrice
+ *                   properties:
+ *                     serviceId:
+ *                       type: integer
+ *                       description: ID do serviço
+ *                     servQtd:
+ *                       type: integer
+ *                       description: Quantidade do serviço
+ *                     servPrice:
+ *                       type: number
+ *                       format: float
+ *                       description: Preço unitário do serviço
  *               status:
  *                 type: string
- *           example:
- *             tutorId: 1
- *             petId: 2
- *             products: [1, 3]
- *             services: [2]
- *             total: 199.90
- *             status: "em andamento"
+ *                 description: Status do pedido
+ *             example:
+ *               tutorId: 1
+ *               petId: 3
+ *               products:
+ *                 - productId: 1
+ *                   prodQtd: 2
+ *                   prodPrice: 29.90
+ *                 - productId: 6
+ *                   prodQtd: 1
+ *                   prodPrice: 129.90
+ *               services:
+ *                 - serviceId: 1
+ *                   servQtd: 1
+ *                   servPrice: 44.90
+ *               status: "em andamento"
  *     responses:
  *       201:
  *         description: Pedido criado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 orderId:
+ *                   type: integer
+ *                   description: ID do pedido criado
  *       400:
  *         description: Dados inválidos
  */
 router.post('/', criarPedido);
-
 
 
 /**
@@ -153,12 +205,12 @@ router.post('/', criarPedido);
  *   patch:
  *     summary: Atualiza parcialmente um pedido existente
  *     tags: [Pedidos]
- *     description: Atualiza os dados solicitados de um pedido pelo ID. Substitui parcialmente os dados anteriores.
+ *     description: Atualiza dados do pedido, incluindo produtos, serviços, tutor, pet e status.
  *     parameters:
  *       - in: path
  *         name: id
- *         required: true
  *         description: ID do pedido a ser atualizado
+ *         required: true
  *         schema:
  *           type: integer
  *     requestBody:
@@ -175,22 +227,52 @@ router.post('/', criarPedido);
  *               products:
  *                 type: array
  *                 items:
- *                   type: integer
+ *                   type: object
+ *                   required:
+ *                     - productId
+ *                     - prodQtd
+ *                     - prodPrice
+ *                   properties:
+ *                     productId:
+ *                       type: integer
+ *                     prodQtd:
+ *                       type: integer
+ *                     prodPrice:
+ *                       type: number
+ *                       format: float
  *               services:
  *                 type: array
  *                 items:
- *                   type: integer
- *               total:
- *                 type: number
+ *                   type: object
+ *                   required:
+ *                     - serviceId
+ *                     - servQtd
+ *                     - servPrice
+ *                   properties:
+ *                     serviceId:
+ *                       type: integer
+ *                     servQtd:
+ *                       type: integer
+ *                     servPrice:
+ *                       type: number
+ *                       format: float
  *               status:
  *                 type: string
- *           example:
- *             tutorId: 1
- *             petId: 3
- *             products: [2]
- *             services: [1, 4]
- *             total: 250.00
- *             status: "concluído"
+ *             example:
+ *               tutorId: 1
+ *               petId: 3
+ *               products:
+ *                 - productId: 2
+ *                   prodQtd: 1
+ *                   prodPrice: 12.00
+ *               services:
+ *                 - serviceId: 1
+ *                   servQtd: 2
+ *                   servPrice: 30.00
+ *                 - serviceId: 4
+ *                   servQtd: 1
+ *                   servPrice: 45.00
+ *               status: "concluído"
  *     responses:
  *       200:
  *         description: Pedido atualizado com sucesso

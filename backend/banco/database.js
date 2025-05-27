@@ -100,8 +100,6 @@ db.serialize(() => {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             tutorId INTEGER NOT NULL REFERENCES tutors(id),
             petId INTEGER REFERENCES pets(id),
-            products TEXT,
-            services TEXT,
             total REAL NOT NULL,
             status VARCHAR(50) NOT NULL
         )`, (err) => {
