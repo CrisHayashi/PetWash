@@ -83,7 +83,6 @@ db.serialize(() => {
            id INTEGER PRIMARY KEY AUTOINCREMENT,
            name VARCHAR(150) NOT NULL,
            price REAL NOT NULL,
-           duration VARCHAR(10),
            description VARCHAR(500) 
        )`, (err) => {
         if (err) {

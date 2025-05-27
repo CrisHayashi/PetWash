@@ -4,7 +4,7 @@ var router = express.Router();
 const fetch = require('node-fetch');  // importar node-fetch
 
 var url = process.env.URL_API || 'http://localhost:3000'; // URL padrão caso não esteja definida no .env
-console.log('URL da API carregada do .env:', url); // Verificação
+//console.log('URL da API carregada do .env:', url); // Verificação
 
 // Rota para a página inicial da aplicação
 router.get('/', async (req, res) => {
@@ -14,19 +14,21 @@ router.get('/', async (req, res) => {
       endpoints.map(endpoint => fetch(`${url}/${endpoint}`))
     );
 
-    const [servicesRes, productsRes, petsRes, tutoresRes, pedidosRes] = results;
+    const [servicesRes, productsRes, petsRes, tutorsRes, ordersRes] = results;
 
-    if (!servicesRes.ok || !productsRes.ok || !petsRes.ok || !tutoresRes.ok || !pedidosRes.ok) {
+    if (!servicesRes.ok || !productsRes.ok || !petsRes.ok || !tutorsRes.ok || !ordersRes.ok) {
       throw new Error('Erro ao buscar dados de um ou mais endpoints');
     }
 
-    const [services, products, pets, tutores, pedidos] = await Promise.all([
+    const [services, products, pets, tutors, orders] = await Promise.all([
       servicesRes.json(),
       productsRes.json(),
       petsRes.json(),
-      tutoresRes.json(),
-      pedidosRes.json()
+      tutorsRes.json(),
+      ordersRes.json()
     ]);
+
+    //console.log("Pedidos carregados:", JSON.stringify(orders, null, 2));
 
     res.render('layout/layout', {
       title: 'Página Inicial',
@@ -34,8 +36,8 @@ router.get('/', async (req, res) => {
       services,
       products,
       pets,
-      tutors: tutores,
-      orders: pedidos
+      tutors,
+      orders
     });
 
   } catch (error) {

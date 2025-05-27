@@ -19,7 +19,6 @@ const petsRouter = require('./routes/pets');
 const productsRouter = require('./routes/products');
 const servicesRouter = require('./routes/services');
 const ordersRouter = require('./routes/orders');
-const dashboardRouter = require('./routes/dashboard');
 const loginRouter = require('./routes/login');
 
 var app = express();
@@ -46,7 +45,6 @@ app.use('/services', servicesRouter);
 app.use('/orders', ordersRouter);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/login', loginRouter);
-app.use('/', dashboardRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

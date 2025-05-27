@@ -30,9 +30,6 @@ const servicescontroller = require('../controllers/servicescontroller');
  *                   price:
  *                     type: number
  *                     example: 49.90
- *                   duration:
- *                     type: string
- *                     example: "1h30min"
  *                   description:
  *                     type: string
  *                     example: "Banho completo com shampoo e secagem."
@@ -71,9 +68,6 @@ router.get('/', servicescontroller.listarServicos);
  *                 price:
  *                   type: number
  *                   example: 120.00
- *                 duration:
- *                   type: string
- *                   example: "1h45min"
  *                 description:
  *                   type: string
  *                   example: "Avaliação completa pelo veterinário."
@@ -113,9 +107,6 @@ router.get('/:id', servicescontroller.buscarServicoPorId);
  *               price:
  *                 type: number
  *                 example: 39.90
- *               duration:
- *                 type: string
- *                 example: "40min"
  *               description:
  *                 type: string
  *                 example: "Tosa completa e higienização."
@@ -166,9 +157,6 @@ router.post('/', servicescontroller.criarServico);
  *               price:
  *                 type: number
  *                 example: 39.90
- *               duration:
- *                 type: string
- *                 example: "40min"
  *               description:
  *                 type: string
  *                 example: "Tosa completa e higienização."
@@ -219,9 +207,6 @@ router.patch('/:id', servicescontroller.atualizarServicoParcial);
  *               price:
  *                 type: number
  *                 example: 150
- *               duration:
- *                 type: string
- *                 example: "1h12min"
  *               description:
  *                 type: string
  *                 example: "Tosa para animais de pequeno porte."

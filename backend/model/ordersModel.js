@@ -31,11 +31,17 @@ const listarPedidos = async () => {
     const pedidos = await allQuery(`SELECT * FROM orders`);
         for (const pedido of pedidos) {
           pedido.products = await allQuery(
-            `SELECT productId, prodQtd, prodPrice, prodTotal FROM order_product WHERE orderId = ?`,
+            `SELECT op.productId, p.name AS productName, op.prodQtd, op.prodPrice, op.prodTotal
+            FROM order_product op
+            JOIN products p ON p.id = op.productId
+            WHERE op.orderId = ?`,
             [pedido.id]
           );
           pedido.services = await allQuery(
-            `SELECT serviceId, servQtd, servPrice, servTotal FROM order_service WHERE orderId = ?`,
+            `SELECT os.serviceId, s.name AS serviceName, os.servQtd, os.servPrice, os.servTotal
+            FROM order_service os
+            JOIN services s ON s.id = os.serviceId
+            WHERE os.orderId = ?`,
             [pedido.id]
           );
         }
@@ -45,6 +51,7 @@ const listarPedidos = async () => {
   }
 };
 
+
 // Função para buscar pedido por ID
 const buscarPedidoPorId = async (id) => {
   try {
@@ -52,12 +59,18 @@ const buscarPedidoPorId = async (id) => {
     if (!pedido) throw new Error('Pedido não encontrado');
 
     pedido.products = await allQuery(
-      `SELECT productId, prodQtd, prodPrice, prodTotal FROM order_product WHERE orderId = ?`,
+      `SELECT op.productId, p.name AS productName, op.prodQtd, op.prodPrice, op.prodTotal
+      FROM order_product op
+      JOIN products p ON p.id = op.productId
+      WHERE op.orderId = ?`,
       [id]
     );
 
     pedido.services = await allQuery(
-      `SELECT serviceId, servQtd, servPrice, servTotal FROM order_service WHERE orderId = ?`,
+      `SELECT os.serviceId, s.name AS serviceName, os.servQtd, os.servPrice, os.servTotal
+      FROM order_service os
+      JOIN services s ON s.id = os.serviceId
+      WHERE os.orderId = ?`,
         [id]
     );
     return pedido;
