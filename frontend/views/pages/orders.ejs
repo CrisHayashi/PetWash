@@ -1,1 +1,110 @@
-<h1>Página de pedidos a ser implementada</h1>
+<div id="pedidoMenu" class="container">
+  <!-- Cabeçalho e botão novo pedido -->
+  <div class="row valign-wrapper">
+    <div class="col s6">
+      <h5><i class="material-icons left">assignment</i>Gestão de Pedidos</h5>
+    </div>
+    <div class="col s6 right-align">
+      <a id="btn_novoPedido" class="waves-effect waves-light btn blue darken-3">
+        <i class="material-icons left">add</i>Novo Pedido
+      </a>
+    </div>
+  </div>
+
+  <!-- Formulário de Pedido -->
+  <form id="pedidoForm" class="card-panel blue lighten-5" style="display: none;">
+    <div class="row">
+        <input type="hidden" id="orderId" name="orderId" class="validate">
+      <!-- Tutor -->
+      <div class="input-field col s6">
+        <i class="material-icons prefix">person</i>
+        <select id="tutorId" name="tutorId" class="browser-default" required>
+          <option value="" disabled selected>Selecione o Tutor</option>
+          <!-- Opções serão carregadas dinamicamente -->
+        </select>
+      </div>
+
+      <!-- Pet -->
+      <div class="input-field col s6">
+        <i class="material-icons prefix">pets</i>
+        <select id="petId" name="petId" class="browser-default" required>
+          <option value="" disabled selected>Selecione o Pet</option>
+          <!-- Opções serão carregadas dinamicamente -->
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Produtos -->
+      <div class="col s12">
+        <h6><i class="material-icons left">add_shopping_cart</i>Produtos</h6>
+        <div id="produtos_container" class="card-panel">
+          <!-- Lista de produtos será adicionada dinamicamente -->
+        </div>
+        <a id="btn_produtoAdd" class="waves-effect waves-light btn green">
+          <i class="material-icons left">add</i>Adicionar Produto
+        </a>
+      </div>
+
+      <!-- Serviços -->
+      <div class="col s12" style="margin-top: 20px;">
+        <h6><i class="material-icons left">local_hospital</i>Serviços</h6>
+        <div id="servicos_container" class="card-panel">
+          <!-- Lista de serviços será adicionada dinamicamente -->
+        </div>
+        <a id="btn_servicoAdd" class="waves-effect waves-light btn orange darken-2">
+          <i class="material-icons left">add</i>Adicionar Serviço
+        </a>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Status -->
+      <div class="input-field col s3">
+        <i class="material-icons prefix">sync</i>
+        <select id="status" name="status" class="browser-default" required>
+          <option value="pendente">Pendente</option>
+          <option value="finalizado">Finalizado</option>
+        </select>
+      </div>
+
+      <!-- Total -->
+      <div class="input-field col s3">
+        <i class="material-icons prefix">attach_money</i>
+        <input type="text" id="totalPedido" class="validate" value="0.00" readonly />
+        <label for="totalPedido">Total (R$)</label>
+      </div>
+
+      <!-- Botões -->
+      <div class="col s6 right-align">
+        <a id="btn_salvarPedido" class="btn green">
+          <i class="material-icons left">save</i>Salvar Pedido
+        </a>
+        <a id="btn_voltarPedido" class="btn red">
+          <i class="material-icons left">cancel</i>Cancelar
+        </a>
+      </div>
+    </div>
+  </form>
+
+  <!-- Tabela de Pedidos -->
+  <div class="row">
+    <table id="table_pedido" class="highlight centered striped responsive-table">
+      <thead class="blue darken-3 white-text">
+        <tr>
+          <th>Nº Nota</th>
+          <th>Tutor</th>
+          <th>Pet</th>
+          <th>Produtos</th>
+          <th>Serviços</th>
+          <th>Status</th>
+          <th>Total (R$)</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="pedido_list">
+        <!-- Pedidos serão inseridos dinamicamente aqui -->
+      </tbody>
+    </table>
+  </div>
+</div>

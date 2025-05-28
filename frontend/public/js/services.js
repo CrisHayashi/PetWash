@@ -1,12 +1,24 @@
 $(document).ready(function () {
+    $('.modal').modal();
     $("#form").hide();
     $("#table").show();
 
     listarServices();
 });
 
-// 📌 Função para listar os serviços
+// Funções para mostrar/esconder loading
+function mostrarLoading() {
+  $("#loading").removeClass("hide");
+}
+
+function esconderLoading() {
+  $("#loading").addClass("hide");
+}
+
+
+// Função para listar os serviços
 function listarServices() {
+    mostrarLoading();
     $.get(URL_API + "/services", function (data) {
         console.log("Dados recebidos:", data);
 
@@ -38,44 +50,51 @@ function listarServices() {
         $("#service_list").html(list);
     }).fail(function (error) {
         console.error("Erro ao buscar serviços:", error);
+        Swal.fire('Erro!', 'Não foi possível carregar a lista de serviços.', 'error');
+    })
+    .always(function () {
+        esconderLoading();
     });
 }
 
-// 📌 Função para visualizar um serviço detalhadamente
+// Função para visualizar um serviço detalhadamente
 function visualizarService(id) {
+    mostrarLoading();
     $.get(URL_API + `/services/${id}`, function (service) {
         $("#serviceNome").text(service.name);
         $("#servicePrice").text(service.price.toFixed(2));
         $("#serviceDuration").text(service.duration);
         $("#serviceDescription").text(service.description);
-
         $('#modalService').modal();
         $('#modalService').modal('open');
     }).fail(function () {
         Swal.fire('Erro!', 'Não foi possível carregar os dados do serviço.', 'error');
-    });
+    })
+    .always(function () {
+    esconderLoading();
+  }); 
 }
 
-// 📌 Função para exibir o formulário
+// Função para exibir o formulário
 function mostrarFormService() {
     $("#form").show();
     $("#table").hide();
 }
 
-// 📌 Função para cancelar e limpar formulário
+// Função para cancelar e limpar formulário
 function cancelarService() {
     $("#form").hide();
     $("#table").show();
     limparFormService();
 }
 
-// 📌 Função para limpar o formulário
+// Função para limpar o formulário
 function limparFormService() {
     $("#serviceId, #name, #price, #duration, #description").val("");
     M.updateTextFields();
 }
 
-// 📌 Função para salvar ou atualizar um serviço
+// Função para salvar ou atualizar um serviço
 function salvarService() {
     const id = $("#serviceId").val();
     const data = {
@@ -87,6 +106,8 @@ function salvarService() {
 
     const method = id ? 'PUT' : 'POST';
     const url = id ? URL_API + `/services/${id}` : URL_API + `/services`;
+
+    mostrarLoading();
 
     $.ajax({
         url: url,
@@ -100,12 +121,16 @@ function salvarService() {
         },
         error: function () {
             Swal.fire('Erro!', 'Não foi possível salvar o serviço.', 'error');
+        },
+        complete: function () {
+            esconderLoading();
         }
     });
 }
 
-// 📌 Função para editar um serviço
+// Função para editar um serviço
 function editarService(id) {
+    mostrarLoading();
     $.get(URL_API + `/services/${id}`, function (service) {
         $("#serviceId").val(service.id);
         $("#name").val(service.name);
@@ -117,10 +142,13 @@ function editarService(id) {
         mostrarFormService();
     }).fail(function () {
         Swal.fire('Erro!', 'Não foi possível carregar os dados do serviço.', 'error');
-    });
+    })
+    .always(function () {
+        esconderLoading();
+    }); 
 }
 
-// 📌 Função para deletar um serviço
+// Função para deletar um serviço
 function deletarService(id) {
     Swal.fire({
         title: 'Tem certeza?',
@@ -131,6 +159,7 @@ function deletarService(id) {
         cancelButtonText: 'Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
+            mostrarLoading();
             $.ajax({
                 url: URL_API + `/services/${id}`,
                 method: 'DELETE',
@@ -140,6 +169,9 @@ function deletarService(id) {
                 },
                 error: function () {
                     Swal.fire('Erro!', 'Não foi possível deletar o serviço.', 'error');
+                },
+                complete: function () {
+                  esconderLoading();
                 }
             });
         }

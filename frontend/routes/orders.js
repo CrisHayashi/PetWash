@@ -1,11 +1,23 @@
 var express = require('express');
 var router = express.Router();
 
-router.get('/', function (req, res, next) {
-  res.render('layout/layout', {
-    title: 'Express',  // Passando o title corretamente para o layout
-    body: '../pages/orders'  // Passando a página dinâmica
-  });
+
+router.get('/', async function (req, res, next) {
+  try {
+    console.log('URL_API:', process.env.URL_API);
+    res.render('layout/layout', {
+      title: 'Pedidos',
+      body: '../pages/orders',
+      URL_API: process.env.URL_API 
+    });
+  } catch (err) {
+    console.error('Erro ao carregar a página de pedidos:', err.message);
+    res.render('layout/layout', {
+      title: 'Pedidos',
+      body: '../pages/orders',
+      URL_API: process.env.URL_API 
+    });
+  }
 });
 
 module.exports = router;

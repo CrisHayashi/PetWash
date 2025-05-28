@@ -65,18 +65,18 @@ const criarPet = async (petData) => {
 // Função para atualizar um pet (atualização completa - PUT)
 const atualizarPetCompleto = async (id, { name, species, breed, age, tutorId }) => {
     try {
-        const result = await new Promise((resolve, reject) => {
+        const changes = await new Promise((resolve, reject) => {
             db.run(
                 `UPDATE ${table} SET name = ?, species = ?, breed = ?, age = ?, tutorId = ? WHERE id = ?`,
                 [name, species, breed, age, tutorId, id],
                 function (err) {
                     if (err) return reject(err);
                     if (this.changes === 0) return reject(new Error('Pet não encontrado para atualizar.'));
-                    resolve();
+                    resolve(this.changes);
                 }
             );
         });
-        return result;
+        return changes;
     } catch (err) {
         throw new Error('Erro ao atualizar pet, com todos os campos: ' + err.message);
     }

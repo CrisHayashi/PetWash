@@ -1,23 +1,21 @@
 <div id="petMenu" class="container">
     <div class="row">
-        <div class="col s3">
-            <a id="btn_novoPet" class="waves-effect waves-light btn">Novo</a>
-        </div>
-
-        <form id="petForm" class="col s12">
+        <form id="petform" class="col s12">
+            <h4> Cadastro de PET</h4>
             <div class="row">
+                <input type="hidden" id="petId" name="petId" class="validate">
                 <div class="input-field col s6">
                     <i class="material-icons prefix">pets</i>
                     <input id="name" name="name" type="text" class="validate" data-label="Nome do Pet">
                     <label for="name">Nome do Pet</label>
                 </div>
                 <div class="input-field col s6">
-                    <i class="material-icons prefix">android</i>
+                    <i class="material-icons prefix">emoji_nature</i>
                     <input id="species" name="species" type="text" class="validate" data-label="Espécie">
                     <label for="species">Espécie</label>
                 </div>
                 <div class="input-field col s6">
-                    <i class="material-icons prefix">category</i>
+                    <i class="material-icons prefix">label</i>
                     <input id="breed" name="breed" type="text" class="validate" data-label="Raça">
                     <label for="breed">Raça</label>
                 </div>
@@ -26,9 +24,8 @@
                     <input id="age" name="age" type="number" class="validate">
                     <label for="age">Idade</label>
                 </div>
-                <div class="input-field col s6">
-                    <i class="material-icons prefix">assignment_ind</i>
-                    <select id="tutorId" name="tutorId" class="browser-default" required>
+                <div id="tutorSelect" class="input-field col s6">
+                    <select id="tutorId" name="tutorId" class="browser-default" data-label="Tutor" required>
                         <option value="">Selecione um tutor</option>
                         <% if (tutors && tutors.length> 0) { %>
                             <% tutors.forEach(tutor=> { %>
@@ -40,73 +37,68 @@
                     </select>
                 </div>
                 <div class="col s12">
-                    <button id="btn_salvarPet" class="waves-effect waves-light btn green" type="submit">
-                        <i class="material-icons left">check</i>Salvar
-                    </button>
-                    <!-- fazer o mesmo no outro botão, adicionar evento, criar função teste -->
-                    <a id="btn_voltarPet" class="waves-effect waves-light btn grey">
-                        <i class="material-icons left">arrow_back</i>Voltar
-                    </a>
+                    <a onclick="criarPet()" id="btn_salvarPet" class="waves-effect waves-light btn green" tuype="submit">
+                        <i class="material-icons left">check</i>Salvar</a>
+                    <a onclick="cancelar()" id="btn_cancelarPet" class="waves-effect waves-light btn grey">
+                        <i class="material-icons left">arrow_back</i>Voltar</a>
                 </div>
             </div>
         </form>
-
     </div>
-
-    <div class="row">
-        <div class="col s12">
-            <h5>Lista de Pets</h5>
-            <table class="striped highlight responsive-table">
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Espécie</th>
-                        <th>Raça</th>
-                        <th>Idade</th>
-                        <th>Tutor</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody id="pet_list">
-                    <% if (pets && pets.length> 0) { %>
-                        <% pets.forEach(pet=> { %>
-                            <tr>
-                                <td>
-                                    <%= pet.name %>
-                                </td>
-                                <td>
-                                    <%= pet.species %>
-                                </td>
-                                <td>
-                                    <%= pet.breed %>
-                                </td>
-                                <td>
-                                    <%= pet.age %>
-                                </td>
-                                <td>
-                                    <%= pet.tutorId %>
-                                </td>
-                                <td>
-                                    <%= pet.tutorName || 'Não informado' %>
-                                </td>
-                                <td>
-                                    <!-- botões de ação (editar, excluir, etc) -->
-                                    <button id="editarPet" onclick="editarPet('<%= JSON.stringify(pet) %>')" class="btn-small blue">Editar</button>
-                                    <button id="deletarPet" onclick="deletarPet('<%= JSON.stringify(pet) %>')"
-                                        class="btn-small red">Excluir</button>
-                                </td>
-                            </tr>
-                            <% }) %>
-                                <% } else { %>
-                                    <tr>
-                                        <td colspan="6">Nenhum pet cadastrado.</td>
-                                    </tr>
-                                    <% } %>
-                </tbody>
-            </table>
+    <div id="pettable">
+        <div class=""adjust-title">
+            <div class="col s12">
+                <h4>Lista de PETS</h4>
+                <a onclick="mostrarForm()" id="btn_novopet" class="waves-effect waves-light btn blue darken-3"><i class="material-icons left">add</i>Novo</a>
+                <br><br>
+            </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Espécie</th>
+                            <th>Raça</th>
+                            <th>Idade</th>
+                            <th>Tutor</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pet_list">
+                        <% if (pets && pets.length> 0) { %>
+                            <% pets.forEach(pet=> { %>
+                                <tr>
+                                    <td>
+                                        <%= pet.name %>
+                                    </td>
+                                    <td>
+                                        <%= pet.species %>
+                                    </td>
+                                    <td>
+                                        <%= pet.breed %>
+                                    </td>
+                                    <td>
+                                        <%= pet.age %>
+                                    </td>
+                                    <td>
+                                        <%= pet.tutorName || 'Não informado' %>
+                                    </td>
+                                    <td>
+                                        <!-- botões de ação (editar, excluir, etc) -->
+                                        <a class="btn-floating blue" onclick="editarPet('<%= pet.id %>')"><i class="material-icons">edit</i></a>
+                                        <a class="btn-floating red" onclick="deletarPet('<%= pet.id %>')"><i class="material-icons">delete</i></a>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="6">Nenhum pet cadastrado.</td>
+                                        </tr>
+                                        <% } %>
+                    </tbody>
+                </table>
         </div>
     </div>
 </div>
 
 <!-- Script específico -->
-<script src="js/pets.js"></script>
+<script src="js/pets.js" defer></script>

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 // Importando o controller para pets
-const petsController = require('../controllers/petscontroller');
+const petscontroller = require('../controllers/petscontroller');
 
 /// GET - Listar todos os pets
 /**
@@ -35,21 +35,7 @@ const petsController = require('../controllers/petscontroller');
  *                   tutorId:
  *                     type: integer
  */
-router.get('/', petsController.listarPets);
-
-// GET - Página de pets (ex: paginada ou custom)
- /**
-  * @swagger
-  * /pets/pagina:
-  *   get:
-  *     summary: Retorna página de pets (paginada ou funcionalidade específica)
-  *     tags: [Pets]
-  *     responses:
-  *       200:
-  *         description: Página de pets retornada com sucesso
-  */
-router.get('/pagina', petsController.paginaPets);
-
+router.get('/', petscontroller.listarPets);
 
 // GET - Buscar pet por ID
 /**
@@ -89,7 +75,7 @@ router.get('/pagina', petsController.paginaPets);
  *       404:
  *         description: Pet não encontrado
  */
-router.get('/:id', petsController.buscarPetPorId);
+router.get('/:id', petscontroller.buscarPetPorId);
 
 
 // POST - Criar um novo pet
@@ -144,7 +130,7 @@ router.get('/:id', petsController.buscarPetPorId);
  *       400:
  *         description: Dados inválidos
  */
-router.post('/', petsController.criarPet);
+router.post('/', petscontroller.criarPet);
 
 
 // PATCH - Atualizar parcialmente um pet existente
@@ -191,8 +177,69 @@ router.post('/', petsController.criarPet);
  *       404:
  *         description: Pet não encontrado
  */
-router.patch('/:id', petsController.atualizarPet);
+router.patch('/:id', petscontroller.atualizarPetParcial);
 
+
+/**
+ * @swagger
+ * /pets/{id}:
+ *   put:
+ *     summary: Atualiza completamente um pet existente
+ *     tags: [Pets]
+ *     description: Atualiza todos os dados de um pet com base no ID fornecido. Todos os campos devem ser informados.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID do pet a ser atualizado
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - species
+ *               - breed
+ *               - age
+ *               - tutorId
+ *             properties:
+ *               name:
+ *                 type: string
+ *               species:
+ *                 type: string
+ *               breed:
+ *                 type: string
+ *               age:
+ *                 type: integer
+ *               tutorId:
+ *                 type: integer
+ *           example:
+ *             name: "Rex"
+ *             species: "Cachorro"
+ *             breed: "Labrador"
+ *             age: 5
+ *             tutorId: 8
+ *     responses:
+ *       200:
+ *         description: Pet atualizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensagem:
+ *                   type: string
+ *                   example: "Pet atualizado com sucesso"
+ *       400:
+ *         description: Dados inválidos
+ *       404:
+ *         description: Pet não encontrado
+ */
+router.put('/:id', petscontroller.atualizarPetCompleto);
 
 // DELETE - Deletar um pet pelo ID
 /**
@@ -214,6 +261,6 @@ router.patch('/:id', petsController.atualizarPet);
  *       404:
  *         description: Pet não encontrado
  */
-router.delete('/:id', petsController.deletarPet);
+router.delete('/:id', petscontroller.deletarPet);
 
 module.exports = router;
