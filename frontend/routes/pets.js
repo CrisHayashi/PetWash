@@ -4,28 +4,25 @@ const petsController = require('../../backend/controllers/petscontroller');
 
 var url = process.env.URL_API || 'http://localhost:3000';
 
-router.get('/', async function (req, res, next) {
+router.get('/', async function (req, res) {
   try {
-    // Faz a requisição para sua API para pegar os pets
-    const response = await fetch(url + "/pets/");
-    const pets = await response.json();
+    // Faz a requisição para a API de pedidos
+    const response = await fetch(`${url}/orders`);
+    const orders = await response.json();
 
-    // Fazendo fetch para os tutores da API
-    const tutorsResponse = await fetch(`${url}/tutors`);
-    console.log('Status da resposta de tutores:', tutorsResponse.status);
-    if (!tutorsResponse.ok) throw new Error('Erro ao buscar tutores');
-    const tutors = await tutorsResponse.json();
-
-    // Renderiza a página passando os pets
+    // Renderiza a página, passando os pedidos para a view
     res.render('layout/layout', {
-      title: 'Gestão de Pets',
-      body: '../pages/pets', 
-      pets: pets,
-      tutors : tutors
+      title: 'Gestão de Pedidos',
+      body: '../pages/orders',
+      orders: orders
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).send("Erro ao buscar pets");
+    console.error('Erro ao buscar pedidos:', err);
+    res.render('layout/layout', {
+      title: 'Gestão de Pedidos',
+      body: '../pages/orders',
+      orders: []
+    });
   }
 });
 

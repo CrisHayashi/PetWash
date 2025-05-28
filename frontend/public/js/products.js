@@ -1,12 +1,23 @@
 $(document).ready(function () {
+    $('.modal').modal();
     $("#form").hide();
     $("#table").show();
 
     listarProdutos();
 });
 
-// 📌 Função para listar os produtos
+// Funções para mostrar/esconder loading
+function mostrarLoading() {
+  $("#loading").removeClass("hide");
+}
+
+function esconderLoading() {
+  $("#loading").addClass("hide");
+}
+
+// Função para listar os produtos
 function listarProdutos() {
+    mostrarLoading();
     $.get(URL_API + "/products", function (data) {
         console.log("Dados recebidos:", data);
 
@@ -38,44 +49,51 @@ function listarProdutos() {
         $("#product_list").html(list);
     }).fail(function (error) {
         console.error("Erro ao buscar produtos:", error);
-    });
+        Swal.fire('Erro!', 'Não foi possível carregar a lista de produtos.', 'error');
+    })
+    .always(function () {
+        esconderLoading();
+  });
 }
 
-// 📌 Função para visualizar um produto detalhadamente
+// Função para visualizar um produto detalhadamente
 function visualizarProduto(id) {
+    mostrarLoading();
     $.get(URL_API + `/products/${id}`, function (product) {
         $("#productNome").text(product.name);
         $("#productPrice").text(product.price.toFixed(2));
         $("#productCategory").text(product.category);
         $("#productStock").text(product.stock);
-
         $('#modalProduct').modal();
         $('#modalProduct').modal('open');
-    }).fail(function () {
+    }).fail(function (error) {
         Swal.fire('Erro!', 'Não foi possível carregar os dados do produto.', 'error');
+    })
+    .always(function () {
+        esconderLoading();
     });
 }
 
-// 📌 Função para exibir o formulário
+// Função para exibir o formulário
 function mostrarFormProduto() {
     $("#form").show();
     $("#table").hide();
 }
 
-// 📌 Função para cancelar e limpar formulário
+// Função para cancelar e limpar formulário
 function cancelarProduto() {
     $("#form").hide();
     $("#table").show();
     limparFormProduto();
 }
 
-// 📌 Função para limpar o formulário
+// Função para limpar o formulário
 function limparFormProduto() {
     $("#productId, #name, #price, #category, #stock").val("");
     M.updateTextFields();
 }
 
-// 📌 Função para salvar ou atualizar um produto
+// Função para salvar ou atualizar um produto
 function salvarProduto() {
     const id = $("#productId").val();
     const data = {
@@ -87,6 +105,8 @@ function salvarProduto() {
 
     const method = id ? 'PUT' : 'POST';
     const url = id ? URL_API + `/products/${id}` : URL_API + `/products`;
+
+    mostrarLoading();
 
     $.ajax({
         url: url,
@@ -100,12 +120,16 @@ function salvarProduto() {
         },
         error: function () {
             Swal.fire('Erro!', 'Não foi possível salvar o produto.', 'error');
+        },
+        complete: function () {
+            esconderLoading();
         }
     });
 }
 
-// 📌 Função para editar um produto
+// Função para editar um produto
 function editarProduto(id) {
+    mostrarLoading();
     $.get(URL_API + `/products/${id}`, function (product) {
         $("#productId").val(product.id);
         $("#name").val(product.name);
@@ -117,10 +141,13 @@ function editarProduto(id) {
         mostrarFormProduto();
     }).fail(function () {
         Swal.fire('Erro!', 'Não foi possível carregar os dados do produto.', 'error');
+    })
+    .always(function () {
+    esconderLoading();
     });
 }
 
-// 📌 Função para deletar um produto
+// Função para deletar um produto
 function deletarProduto(id) {
     Swal.fire({
         title: 'Tem certeza?',
@@ -131,6 +158,7 @@ function deletarProduto(id) {
         cancelButtonText: 'Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
+            mostrarLoading();
             $.ajax({
                 url: URL_API + `/products/${id}`,
                 method: 'DELETE',
@@ -140,7 +168,10 @@ function deletarProduto(id) {
                 },
                 error: function () {
                     Swal.fire('Erro!', 'Não foi possível deletar o produto.', 'error');
-                }
+                },
+                complete: function () {
+                  esconderLoading();
+                } 
             });
         }
     });

@@ -15,21 +15,6 @@ const listarTutores = async () => {
   return tutors;
 };
 
-const paginaPets = async (req, res, next) => {
-  try {
-    const pets = await petsModel.listarPets();
-    const tutors = await tutorsModel.listarTutores();
-    res.render('layout/layout', {
-      title: 'Gestão de Pets',
-      body: 'pages/pets',
-      pets,
-      tutors
-    });
-  } catch (err) {
-    next(err);
-  }
-};
-
 const buscarPetPorId = async (req, res, next) => {
     const { id } = req.params;
     try {
@@ -52,12 +37,28 @@ const criarPet = async (req, res, next) => {
     }
 };
 
-const atualizarPet = async (req, res, next) => {
+const atualizarPetParcial = async (req, res, next) => {
     const { id } = req.params;
     try {
-        await petsModel.atualizarPet(id, req.body);
+        await petsModel.atualizarPetParcial(id, req.body);
+        res.json({ mensagem: 'Pet atualizado parcialmente com sucesso' });
+    } catch (err) {
+        if (err.message.includes('Pet não encontrado')) {
+            return res.status(404).json({ erro: err.message });
+        }
+        next(err);
+    }
+};
+
+const atualizarPetCompleto = async (req, res, next) => {
+    const { id } = req.params;
+    try {
+        await petsModel.atualizarPetCompleto(id, req.body);
         res.json({ mensagem: 'Pet atualizado com sucesso' });
     } catch (err) {
+        if (err.message.includes('Pet não encontrado')) {
+            return res.status(404).json({ erro: err.message });
+        }
         next(err);
     }
 };
@@ -75,9 +76,9 @@ const deletarPet = async (req, res, next) => {
 module.exports = {
     listarPets,
     listarTutores,
-    paginaPets,
     buscarPetPorId,
     criarPet,
-    atualizarPet,
+    atualizarPetParcial,
+    atualizarPetCompleto,
     deletarPet
 };
