@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const authenticateToken = require('../auth/authenticateToken');
 
 const {
   listarPedidos,
@@ -9,7 +10,11 @@ const {
   deletarPedido
 } = require('../controllers/orderscontroller');
 
-
+router.get('/', authenticateToken, listarPedidos);
+router.get('/:id', authenticateToken, buscarPedidoPorId);
+router.post('/', authenticateToken, criarPedido);
+router.patch('/:id', authenticateToken, atualizarPedido);
+router.delete('/:id', authenticateToken, deletarPedido);
 
 /**
  * @swagger
@@ -18,6 +23,8 @@ const {
  *     summary: Lista todos os pedidos
  *     tags: [Pedidos]
  *     description: Retorna todos os pedidos cadastrados no sistema, incluindo tutor, pet, produtos e serviços.
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Lista de pedidos retornada com sucesso
@@ -47,7 +54,7 @@ const {
  *                   status:
  *                     type: string
  */
-router.get('/', listarPedidos);
+router.get('/', authenticateToken, listarPedidos);
 
 
 /**
@@ -57,7 +64,10 @@ router.get('/', listarPedidos);
  *     summary: Obtém um pedido específico
  *     tags: [Pedidos]
  *     description: Retorna os detalhes de um pedido pelo ID.
- *     parameters:
+ *     security:
+ *       - bearerAuth: []
+ * 
+ *      parameters:
  *       - in: path
  *         name: id
  *         required: true
@@ -105,7 +115,9 @@ router.get('/:id', buscarPedidoPorId);
  *     tags:
  *       - Pedidos
  *     description: Cria um pedido associando tutor, pet, produtos e serviços com quantidade e preço.
- *     requestBody:
+ *     security:
+ *       - bearerAuth: []
+ *      requestBody:
  *       required: true
  *       content:
  *         application/json:
@@ -206,7 +218,9 @@ router.post('/', criarPedido);
  *     summary: Atualiza parcialmente um pedido existente
  *     tags: [Pedidos]
  *     description: Atualiza dados do pedido, incluindo produtos, serviços, tutor, pet e status.
- *     parameters:
+ *     security:
+ *       - bearerAuth: []
+ *      parameters:
  *       - in: path
  *         name: id
  *         description: ID do pedido a ser atualizado
@@ -292,7 +306,9 @@ router.patch('/:id', atualizarPedido);
  *     summary: Remove um pedido existente
  *     tags: [Pedidos]
  *     description: Exclui um pedido do sistema com base no ID fornecido.
- *     parameters:
+ *     security:
+ *       - bearerAuth: []
+ *      parameters:
  *       - in: path
  *         name: id
  *         required: true
