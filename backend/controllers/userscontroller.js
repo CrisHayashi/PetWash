@@ -73,7 +73,7 @@ const criarUsuario = async (req, res, next) => {
       return res.status(400).json({ mensagem: 'E-mail já cadastrado' });
     }
 
-    const novoUsuario = await usersModel.criarUsuario( name, email, password );
+    const novoUsuario = await usersModel.criarUsuario({ name, email, password });
     console.log(novoUsuario)
     res.status(201).json({ message: 'Usuário Criado com sucesso', usuario: novoUsuario});  // Retorna o usuário criado com status 201
   } catch (error) {
