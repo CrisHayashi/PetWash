@@ -69,33 +69,38 @@ const buscarPedidoPorId = async (id) => {
 };
 
 const criarPedido = async ({ tutorId, petId, products = [], services = [], status }) => {
+  let transactionStarted = false;
+
   try {
     await runQuery('BEGIN TRANSACTION');
+    transactionStarted = true;
 
+    // Insere o pedido (sem total ainda)
     const result = await runQuery(
       `INSERT INTO orders (tutorId, petId, total, status) VALUES (?, ?, ?, ?)`,
       [tutorId, petId, 0, status]
     );
     const orderId = result.lastID;
 
+    // Insere os produtos
     for (const prod of products) {
-      const total = prod.prodQtd * prod.prodPrice;
       await runQuery(
-        `INSERT INTO order_product (orderId, productId, prodQtd, prodPrice, prodTotal)
-         VALUES (?, ?, ?, ?, ?)`,
-        [orderId, prod.productId, prod.prodQtd, prod.prodPrice, total]
+        `INSERT INTO order_product (orderId, productId, prodQtd, prodPrice)
+         VALUES (?, ?, ?, ?)`,
+        [orderId, prod.productId, prod.prodQtd, prod.prodPrice]
       );
     }
 
+    // Insere os serviços
     for (const serv of services) {
-      const total = serv.servQtd * serv.servPrice;
       await runQuery(
-        `INSERT INTO order_service (orderId, serviceId, servQtd, servPrice, servTotal)
-         VALUES (?, ?, ?, ?, ?)`,
-        [orderId, serv.serviceId, serv.servQtd, serv.servPrice, total]
+        `INSERT INTO order_service (orderId, serviceId, servQtd, servPrice)
+         VALUES (?, ?, ?, ?)`,
+        [orderId, serv.serviceId, serv.servQtd, serv.servPrice]
       );
     }
 
+    // Calcula o total final
     const produtosTotais = await allQuery(`SELECT prodTotal FROM order_product WHERE orderId = ?`, [orderId]);
     const servicosTotais = await allQuery(`SELECT servTotal FROM order_service WHERE orderId = ?`, [orderId]);
 
@@ -104,11 +109,16 @@ const criarPedido = async ({ tutorId, petId, products = [], services = [], statu
     const total = totalProdutos + totalServicos;
 
     await runQuery(`UPDATE orders SET total = ? WHERE id = ?`, [total, orderId]);
+
     await runQuery('COMMIT');
     return orderId;
 
   } catch (err) {
-    await runQuery('ROLLBACK');
+    if (transactionStarted) {
+      await runQuery('ROLLBACK').catch(rollbackErr =>
+        console.error("Erro no ROLLBACK:", rollbackErr.message)
+      );
+    }
     throw new Error('Erro ao criar pedido: ' + err.message);
   }
 };
@@ -121,9 +131,9 @@ const atualizarPedido = async (id, dadosAtualizados) => {
     await runQuery('DELETE FROM order_product WHERE orderId = ?', [id]);
     for (const prod of dadosAtualizados.products) {
       await runQuery(
-        `INSERT INTO order_product (orderId, productId, prodQtd, prodPrice, prodTotal)
-         VALUES (?, ?, ?, ?, ?)`,
-        [id, prod.productId, prod.prodQtd, prod.prodPrice, prod.prodQtd * prod.prodPrice]
+        `INSERT INTO order_product (orderId, productId, prodQtd, prodPrice)
+          VALUES (?, ?, ?, ?)`,
+        [id, prod.productId, prod.prodQtd, prod.prodPrice]
       );
     }
   }
@@ -132,9 +142,9 @@ const atualizarPedido = async (id, dadosAtualizados) => {
     await runQuery('DELETE FROM order_service WHERE orderId = ?', [id]);
     for (const serv of dadosAtualizados.services) {
       await runQuery(
-        `INSERT INTO order_service (orderId, serviceId, servQtd, servPrice, servTotal)
+        `INSERT INTO order_service (orderId, serviceId, servQtd, servPrice)
          VALUES (?, ?, ?, ?, ?)`,
-        [id, serv.serviceId, serv.servQtd, serv.servPrice, serv.servQtd * serv.servPrice]
+        [id, serv.serviceId, serv.servQtd, serv.servPrice]
       );
     }
   }
