@@ -1,308 +1,172 @@
-$(document).ready(function () {
-    $('.modal').modal();
+$(document).ready(() => {
+  carregarTutores();
+  carregarPets();
+  listarPedidos();
+
+  $("#pedidoForm").hide();
+
+  // Botão "Novo Pedido"
+  $("#btn_novoPedido").on("click", () => {
+    $("#pedidoForm").show();
+    $("#table_pedido").hide();
+  });
+
+  // Botão "Cancelar"
+  $("#btn_voltarPedido").on("click", (e) => {
+    e.preventDefault();
     $("#pedidoForm").hide();
     $("#table_pedido").show();
-   
-    listarOrders();
-    carregarProdutos();
-    carregarServicos();
-    carregarTutores();
-    carregarPets();
+    limparPedidoForm();
+  });
+
+  // Botão "Salvar Pedido"
+  $("#btn_salvarPedido").on("click", (e) => {
+    e.preventDefault();
+    salvarPedido();
+  });
+
+  // Adicionar produto/serviço dinamicamente
+  $("#btn_produtoAdd").on("click", adicionarProduto);
+  $("#btn_servicoAdd").on("click", adicionarServico);
 });
 
-
-    $("#btnSalvarPedido").on("click", salvarOrder);
-    $("#btn_voltarPedido").on("click", cancelarOrder);
-    $("#btn_novoPedido").on("click", novoPedido);
-
-    // Recalcular total ao alterar quantidade
-    $("#produtos_container, #servicos_container").on("input", ".qtd", calcularTotal);
-
-// LISTAR PEDIDOS
-function listarOrders() {
-    $.get(URL_API + "/orders", function (data) {
-        // Verifica se a resposta é um objeto e acessa a propriedade correta
-        const orders = Array.isArray(data) ? data : data.orders || [];
-        if (!Array.isArray(orders)) {
-            console.error("Erro: a propriedade 'orders' não é um array!", orders);
-            return;
-        }
-        let list = "";
-        orders.forEach(order => {
-            list += `
-            <tr>
-                <td>${order.id}</td>
-                <td>${order.tutorId}</td>
-                <td>${order.petId}</td>
-                <td>${order.products ? order.products.map(p => `${p.productId} (x${p.qtd})`).join(", ") : ''}
-                </td>
-                <td>${order.services ? order.services.map(s => `${s.serviceId} (x${s.qtd})`).join(", ") : ''}
-                </td>
-                <td>${order.status}</td>
-                <td>R$ ${order.total.toFixed(2)}</td>
-                <td>
-                    <div class="btn-group">
-                    <a onclick="visualizarOrder(${order.id})" class="btn-floating waves-effect waves-light blue"><i class="material-icons">visibility</i></a>
-                    <a onclick="editarOrder(${order.id})" class="btn-floating waves-effect waves-light orange"><i class="material-icons">edit</i></a>
-                    <a onclick="excluirOrder(${order.id})" class="btn-floating waves-effect waves-light red"><i class="material-icons">delete</i></a>
-                    </div>
-                </td>
-            </tr>`;
-        });
-        $("#pedido_list").html(list);
-        $("#pedidoForm").hide();
-        $("#table_pedido").show();
+function carregarTutores() {
+  $.get(URL_API + "/tutors", (data) => {
+    const tutors = data.tutors || data;
+    tutors.forEach(t => {
+      $("#tutorId").append(`<option value="${t.id}">${t.name}</option>`);
     });
+  });
 }
 
-function carregarTutores(callback) {
-    $.get(URL_API + "/tutores", function (data) {
-        let options = '<option value="" disabled selected>Escolha o tutor</option>';
-        data.forEach(tutor => {
-            options += `<option value="${tutor.id}">${tutor.nome}</option>`;
-        });
-        $("#tutorId").html(options);
-        if (callback) callback();
+function carregarPets() {
+  $.get(URL_API + "/pets", (data) => {
+    const pets = data.pets || data;
+    pets.forEach(p => {
+      $("#petId").append(`<option value="${p.id}">${p.name}</option>`);
     });
+  });
 }
 
-function carregarPets(callback) {
-    $.get(URL_API + "/pets", function (data) {
-        let options = '<option value="" disabled selected>Escolha o pet</option>';
-        data.forEach(pet => {
-            options += `<option value="${pet.id}">${pet.nome}</option>`;
-        });
-        $("#petId").html(options);
-        if (callback) callback();
+function listarPedidos() {
+  $.get(URL_API + "/orders", (data) => {
+    const orders = data.orders || data;
+    let html = "";
+    orders.forEach(order => {
+      html += `
+        <tr>
+          <td>${order.id}</td>
+          <td>${order.tutorName || ''}</td>
+          <td>${order.petName || ''}</td>
+          <td>${(order.products || []).map(p => p.productName).join(", ")}</td>
+          <td>${(order.services || []).map(s => s.serviceName).join(", ")}</td>
+          <td>${order.status}</td>
+          <td>${order.total.toFixed(2)}</td>
+          <td><!-- Ações futuras aqui --></td>
+        </tr>
+      `;
     });
+    $("#pedido_list").html(html);
+  });
 }
 
-// CARREGAR PRODUTOS
-function carregarProdutos(callback) {
-    $.get(URL_API + "/produtos", function (data) {
-        let html = "";
-        data.forEach(p => {
-            html += `
-            <div class="produto-item" data-id="${p.id}" style="margin-bottom: 8px;">
-                <span>${p.nome} - R$${p.preco.toFixed(2)}</span>
-                <input type="number" class="qtd" min="0" placeholder="Qtd" style="width: 60px; margin-left: 10px;">
-            </div>`;
-        });
-        $("#produtos_container").html(html);
-        if (callback) callback();
-    });
+// Adiciona novo campo de produto
+function adicionarProduto() {
+  $.get(URL_API + "/products", (products) => {
+    const select = $(`
+      <div class="input-field">
+        <select class="browser-default produtoSelect">
+          <option value="">Selecione um produto</option>
+          ${products.map(prod => `
+            <option value="${prod.id}" data-price="${prod.prodPrice}">
+              ${prod.productName} - R$ ${prod.prodPrice}
+            </option>`).join('')}
+        </select>
+      </div>
+    `);
+    $("#produtos_container").append(select);
+  });
 }
 
-// CARREGAR SERVIÇOS
-function carregarServicos(callback) {
-    $.get(URL_API + "/servicos", function (data) {
-        let html = "";
-        data.forEach(s => {
-            html += `
-            <div class="servico-item" data-id="${s.id}" style="margin-bottom: 8px;">
-                <span>${s.nome} - R$${s.preco.toFixed(2)}</span>
-                <input type="number" class="qtd" min="0" placeholder="Qtd" style="width: 60px; margin-left: 10px;">
-            </div>`;
-        });
-        $("#servicos_container").html(html);
-        if (callback) callback();
-    });
+// Adiciona novo campo de serviço
+function adicionarServico() {
+  $.get(URL_API + "/services", (services) => {
+    const select = $(`
+      <div class="input-field">
+        <select class="browser-default servicoSelect">
+          <option value="">Selecione um serviço</option>
+          ${services.map(serv => `
+            <option value="${serv.id}" data-price="${serv.servPrice}">
+              ${serv.serviceName} - R$ ${serv.servPrice}
+            </option>`).join('')}
+        </select>
+      </div>
+    `);
+    $("#servicos_container").append(select);
+  });
 }
 
-// CALCULAR TOTAL
-function calcularTotal() {
-    let total = 0;
+// Salvar o pedido
+function salvarPedido() {
+  const produtos = [];
+  $(".produtoSelect").each(function () {
+    const id = $(this).val();
+    const price = $(this).find(":selected").data("price");
+    if (id) produtos.push({ productId: parseInt(id), prodPrice: parseFloat(price), prodQtd: 1 });
+  });
 
-    // Somar produtos
-    $("#produtos_container .produto-item").each(function () {
-        const id = $(this).data("id");
-        const qtd = parseInt($(this).find(".qtd").val()) || 0;
-        if (qtd > 0) {
-            const preco = parseFloat($(this).find("span").text().split("R$")[1]);
-            total += preco * qtd;
-        }
-    });
+  const servicos = [];
+  $(".servicoSelect").each(function () {
+    const id = $(this).val();
+    const price = $(this).find(":selected").data("price");
+    if (id) servicos.push({ serviceId: parseInt(id), servPrice: parseFloat(price), servQtd: 1 });
+  });
 
-    // Somar serviços
-    $("#servicos_container .servico-item").each(function () {
-        const id = $(this).data("id");
-        const qtd = parseInt($(this).find(".qtd").val()) || 0;
-        if (qtd > 0) {
-            const preco = parseFloat($(this).find("span").text().split("R$")[1]);
-            total += preco * qtd;
-        }
-    });
+  const total = calculaTotal(produtos, servicos);
 
-    $("#totalPedido").val(total.toFixed(2));
-}
+  const data = {
+    tutorId: $("#tutorId").val(),
+    petId: $("#petId").val(),
+    status: $("#status").val(),
+    products: produtos,
+    services: servicos,
+    total: total
+  };
 
-// Função para mostrar o formulário de cadastro
-function mostrarForm() {
-  $("#pedidoForm").show();
-  $("#table_pedido").hide();
-}
-
-
-// LIMPAR FORMULÁRIO
-function limparFormOrder() {
-    $("#tutorId").val("").change();
-    $("#petId").val("").change();
-    $("#produtos_container").empty();
-    $("#servicos_container").empty();
-    $("#status").val("pendente").change();
-    $("#totalPedido").val("0.00");
-    M.updateTextFields();
-}
-
-// CANCELAR EDIÇÃO/CRIAR NOVO
-function cancelarOrder() {
-    limparFormOrder();
-    $("#pedidoForm").hide();
-    $("#table_pedido").show();
-}
-
-function novoPedido() {
-    limparFormOrder();
-
-    // Carregar selects de tutor e pet antes de mostrar formulário
-    carregarTutores(() => {
-        carregarPets(() => {
-            $("#pedidoForm").show();
-            $("#table_pedido").hide();
-        });
-    });
-}
-
-// SALVAR PEDIDO (POST ou PUT)
-function salvarOrder() {
-    const tutorId = parseInt($("#tutorId").val());
-    const petId = parseInt($("#petId").val());
-    const status = $("#status").val();
-
-    if (!tutorId || !petId) {
-        Swal.fire("Atenção", "Tutor e Pet são obrigatórios", "warning");
-        return;
+  $.ajax({
+    url: URL_API + "/orders",
+    method: "POST",
+    contentType: "application/json",
+    data: JSON.stringify(data),
+    success: () => {
+      Swal.fire("Sucesso!", "Pedido salvo com sucesso!", "success");
+      listarPedidos();
+      $("#pedidoForm").hide();
+      $("#table_pedido").show();
+      limparPedidoForm();
+    },
+    error: () => {
+      Swal.fire("Erro!", "Erro ao salvar pedido", "error");
     }
-
-    const products = [];
-    $("#produtos_container .produto-item").each(function () {
-        const id = $(this).data("id");
-        const qtd = parseInt($(this).find(".qtd").val()) || 0;
-        if (qtd > 0) products.push({ productId: id, qtd });
-    });
-
-    const services = [];
-    $("#servicos_container .servico-item").each(function () {
-        const id = $(this).data("id");
-        const qtd = parseInt($(this).find(".qtd").val()) || 0;
-        if (qtd > 0) services.push({ serviceId: id, qtd });
-    });
-
-    const total = parseFloat($("#totalPedido").val());
-
-    if (products.length === 0 && services.length === 0) {
-        Swal.fire("Atenção", "Informe pelo menos um produto ou serviço com quantidade maior que zero", "warning");
-        return;
-    }
-
-    const orderData = { tutorId, petId, products, services, status, total };
-    const editId = $("#pedidoForm").data("edit-id");
-
-    if (editId) {
-        // PUT para atualizar pedido existente
-        $.ajax({
-            url: URL_API + "/orders/" + editId,
-            type: "PUT",
-            contentType: "application/json",
-            data: JSON.stringify(orderData),
-            success: function () {
-                Swal.fire("Sucesso", "Pedido atualizado com sucesso!", "success");
-                cancelarOrder();
-                listarOrders();
-                $("#pedidoForm").removeData("edit-id");
-            },
-            error: function () {
-                Swal.fire("Erro", "Não foi possível atualizar o pedido", "error");
-            }
-        });
-    } else {
-        // POST para criar novo pedido
-        $.ajax({
-            url: URL_API + "/orders",
-            type: "POST",
-            contentType: "application/json",
-            data: JSON.stringify(orderData),
-            success: function () {
-                Swal.fire("Sucesso", "Pedido salvo com sucesso!", "success");
-                cancelarOrder();
-                listarOrders();
-            },
-            error: function () {
-                Swal.fire("Erro", "Não foi possível salvar o pedido", "error");
-            }
-        });
-    }
+  });
 }
 
-// EDITAR PEDIDO - carregar dados no formulário para edição
-function editarOrder(id) {
-    $.get(URL_API + `/orders/${id}`, function (order) {
-        $("#pedidoForm").show();
-        $("#table_pedido").hide();
-        $("#pedidoForm").data("edit-id", order.id);
-
-        carregarTutores(() => {
-            $("#tutorId").val(order.tutorId).change();
-            carregarPets(() => {
-                $("#petId").val(order.petId).change();
-                $("#status").val(order.status);
-
-        // Carregar produtos e depois preencher quantidades
-        carregarProdutos(() => {
-            order.products.forEach(pedidoProd => {
-                const div = $(`#produtos_container .produto-item[data-id='${pedidoProd.productId}']`);
-                div.find(".qtd").val(pedidoProd.qtd || pedidoProd.prodQtd || 0);
-            });
-            calcularTotal();
-        });
-
-        // Carregar serviços e depois preencher quantidades
-        carregarServicos(() => {
-            order.services.forEach(pedidoServ => {
-                const div = $(`#servicos_container .servico-item[data-id='${pedidoServ.serviceId}']`);
-                div.find(".qtd").val(pedidoServ.qtd || pedidoServ.servQtd || 0);
-            });
-            calcularTotal();
-        });
-    });
-});
-    }).fail(() => {
-        Swal.fire("Erro", "Não foi possível carregar os dados do pedido", "error");
-    });
+// Cálculo do total
+function calculaTotal(produtos, servicos) {
+  const totalProdutos = produtos.reduce((sum, p) => sum + (p.prodPrice * (p.prodQtd || 1)), 0);
+  const totalServicos = servicos.reduce((sum, s) => sum + (s.servPrice * (s.servQtd || 1)), 0);
+  const total = (totalProdutos + totalServicos).toFixed(2);
+  $("#totalPedido").val(total);
+  return parseFloat(total);
 }
 
-// EXCLUIR PEDIDO
-function excluirOrder(id) {
-    Swal.fire({
-        title: "Tem certeza?",
-        text: "Não será possível recuperar este pedido!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Sim, excluir!",
-        cancelButtonText: "Cancelar"
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url: URL_API + "/orders/" + id,
-                type: "DELETE",
-                success: function () {
-                    Swal.fire("Excluído!", "Pedido excluído com sucesso.", "success");
-                    listarOrders();
-                },
-                error: function () {
-                    Swal.fire("Erro", "Não foi possível excluir o pedido.", "error");
-                }
-            });
-        }
-    });
+// Limpa formulário
+function limparPedidoForm() {
+  $("#orderId").val("");
+  $("#tutorId").val("");
+  $("#petId").val("");
+  $("#status").val("pendente");
+  $("#totalPedido").val("0.00");
+  $("#produtos_container").html("");
+  $("#servicos_container").html("");
 }

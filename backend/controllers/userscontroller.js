@@ -1,4 +1,4 @@
-const usersModel = require('../model/usersModel');  // Importa o modelo de usuários
+const usersModel = require('../models/usersModel');  // Importa o modelo de usuários
 const bcrypt = require('bcryptjs');
 const gerarToken = require('../auth/gerarToken');  // Função para gerar o token JWT
 
