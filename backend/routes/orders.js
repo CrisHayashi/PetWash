@@ -24,24 +24,24 @@ const {
  *            schema:
  *              type: object             
  *              properties:               
- *                idPedido:               
- *                  type: integer
- *                tutorName:
- *                  type: string
- *                petName:
- *                  type: string
- *                productNames:
- *                  type: string
- *                quantidadeProduto:
- *                  type: integer
- *                serviceNames:
- *                  type: string
- *                quantidadeServico:
- *                  type: integer
- *                total:
- *                  type: number
- *                status:
- *                  type: string
+ *              idPedido:               
+ *              type: integer
+ *              tutorName:
+ *              type: string
+ *              petName:
+ *              type: string
+ *              productNames:
+ *              type: string
+ *              quantidadeProduto:
+ *              type: integer
+ *              serviceNames:
+ *              type: string
+ *              quantidadeServico:
+ *              type: integer
+ *              total:
+ *              type: number
+ *              status:
+ *              type: string
  */
 router.get('/', listarPedidos);
 

@@ -8,8 +8,6 @@ $(document).ready(function () {
     carregarServicos();
     carregarTutores();
     carregarPets();
-});
-
 
     $("#btnSalvarPedido").on("click", salvarOrder);
     $("#btn_voltarPedido").on("click", cancelarOrder);
@@ -17,6 +15,7 @@ $(document).ready(function () {
 
     // Recalcular total ao alterar quantidade
     $("#produtos_container, #servicos_container").on("input", ".qtd", calcularTotal);
+});
 
 // LISTAR PEDIDOS
 function listarOrders() {
@@ -54,7 +53,7 @@ function listarOrders() {
 }
 
 function carregarTutores(callback) {
-    $.get(URL_API + "/tutores", function (data) {
+    $.get(URL_API + "/tutors", function (data) {
         let options = '<option value="" disabled selected>Escolha o tutor</option>';
         data.forEach(tutor => {
             options += `<option value="${tutor.id}">${tutor.nome}</option>`;
@@ -77,7 +76,7 @@ function carregarPets(callback) {
 
 // CARREGAR PRODUTOS
 function carregarProdutos(callback) {
-    $.get(URL_API + "/produtos", function (data) {
+    $.get(URL_API + "/products", function (data) {
         let html = "";
         data.forEach(p => {
             html += `
@@ -93,7 +92,7 @@ function carregarProdutos(callback) {
 
 // CARREGAR SERVIÇOS
 function carregarServicos(callback) {
-    $.get(URL_API + "/servicos", function (data) {
+    $.get(URL_API + "/services", function (data) {
         let html = "";
         data.forEach(s => {
             html += `
