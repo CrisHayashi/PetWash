@@ -66,8 +66,7 @@ router.get('/', authenticateToken, listarPedidos);
  *     description: Retorna os detalhes de um pedido pelo ID.
  *     security:
  *       - bearerAuth: []
- * 
- *      parameters:
+ *     parameters:
  *       - in: path
  *         name: id
  *         required: true
@@ -80,30 +79,30 @@ router.get('/', authenticateToken, listarPedidos);
  *         content:
  *           application/json:
  *             schema:
- *                 type: object
- *                 properties:
- *                   idPedido:
- *                     type: integer
- *                   tutorName:
- *                     type: string
- *                   petName:
- *                     type: string
- *                   productNames:
- *                     type: string
- *                   quantidadeProduto:
- *                     type: integer
+ *               type: object
+ *               properties:
+ *                 idPedido:
+ *                   type: integer
+ *                 tutorName:
+ *                   type: string
+ *                 petName:
+ *                   type: string
+ *                 productNames:
+ *                   type: string
+ *                 quantidadeProduto:
+ *                   type: integer
  *                 serviceNames:
- *                    type: string
- *                  quantidadeServico:
- *                    type: integer
- *                   total:
- *                     type: number
- *                   status:
- *                     type: string
+ *                   type: string
+ *                 quantidadeServico:
+ *                   type: integer
+ *                 total:
+ *                   type: number
+ *                 status:
+ *                   type: string
  *       404:
  *         description: Pedido não encontrado
  */
-router.get('/:id', buscarPedidoPorId);
+router.get('/:id', authenticateToken, buscarPedidoPorId);
 
 
 
@@ -112,12 +111,11 @@ router.get('/:id', buscarPedidoPorId);
  * /orders:
  *   post:
  *     summary: Cria um novo pedido
- *     tags:
- *       - Pedidos
+ *     tags: [Pedidos]
  *     description: Cria um pedido associando tutor, pet, produtos e serviços com quantidade e preço.
  *     security:
  *       - bearerAuth: []
- *      requestBody:
+ *     requestBody:
  *       required: true
  *       content:
  *         application/json:
@@ -132,13 +130,10 @@ router.get('/:id', buscarPedidoPorId);
  *             properties:
  *               tutorId:
  *                 type: integer
- *                 description: ID do tutor do pet
  *               petId:
  *                 type: integer
- *                 description: ID do pet
  *               products:
  *                 type: array
- *                 description: Lista de produtos com quantidade e preço
  *                 items:
  *                   type: object
  *                   required:
@@ -148,17 +143,13 @@ router.get('/:id', buscarPedidoPorId);
  *                   properties:
  *                     productId:
  *                       type: integer
- *                       description: ID do produto
  *                     prodQtd:
  *                       type: integer
- *                       description: Quantidade do produto
  *                     prodPrice:
  *                       type: number
  *                       format: float
- *                       description: Preço unitário do produto
  *               services:
  *                 type: array
- *                 description: Lista de serviços com quantidade e preço
  *                 items:
  *                   type: object
  *                   required:
@@ -168,17 +159,13 @@ router.get('/:id', buscarPedidoPorId);
  *                   properties:
  *                     serviceId:
  *                       type: integer
- *                       description: ID do serviço
  *                     servQtd:
  *                       type: integer
- *                       description: Quantidade do serviço
  *                     servPrice:
  *                       type: number
  *                       format: float
- *                       description: Preço unitário do serviço
  *               status:
  *                 type: string
- *                 description: Status do pedido
  *             example:
  *               tutorId: 1
  *               petId: 3
@@ -204,12 +191,10 @@ router.get('/:id', buscarPedidoPorId);
  *               properties:
  *                 orderId:
  *                   type: integer
- *                   description: ID do pedido criado
  *       400:
  *         description: Dados inválidos
  */
-router.post('/', criarPedido);
-
+router.post('/', authenticateToken, criarPedido);
 
 /**
  * @swagger
@@ -220,11 +205,11 @@ router.post('/', criarPedido);
  *     description: Atualiza dados do pedido, incluindo produtos, serviços, tutor, pet e status.
  *     security:
  *       - bearerAuth: []
- *      parameters:
+ *     parameters:
  *       - in: path
  *         name: id
- *         description: ID do pedido a ser atualizado
  *         required: true
+ *         description: ID do pedido a ser atualizado
  *         schema:
  *           type: integer
  *     requestBody:
@@ -295,9 +280,7 @@ router.post('/', criarPedido);
  *       404:
  *         description: Pedido não encontrado
  */
-router.patch('/:id', atualizarPedido);
-
-
+router.patch('/:id', authenticateToken, atualizarPedido);
 
 /**
  * @swagger
@@ -308,7 +291,7 @@ router.patch('/:id', atualizarPedido);
  *     description: Exclui um pedido do sistema com base no ID fornecido.
  *     security:
  *       - bearerAuth: []
- *      parameters:
+ *     parameters:
  *       - in: path
  *         name: id
  *         required: true
@@ -321,6 +304,6 @@ router.patch('/:id', atualizarPedido);
  *       404:
  *         description: Pedido não encontrado
  */
-router.delete('/:id', deletarPedido);
+router.delete('/:id', authenticateToken, deletarPedido);
 
 module.exports = router;
