@@ -1,5 +1,4 @@
 const db = require('../banco/database');
-const { all } = require('../routes/orders');
 
 const runQuery = (sql, params = []) =>
   new Promise((resolve, reject) => {
@@ -25,240 +24,162 @@ const getQuery = (sql, params = []) =>
     });
   });
 
-// Função para listar todos os pedidos com produtos e serviços associados
 const listarPedidos = async () => {
-  try {
-    const pedidos = await allQuery(`SELECT * FROM orders`);
-        for (const pedido of pedidos) {
-          pedido.products = await allQuery(
-            `SELECT op.productId, p.name AS productName, op.prodQtd, op.prodPrice, op.prodTotal
-            FROM order_product op
-            JOIN products p ON p.id = op.productId
-            WHERE op.orderId = ?`,
-            [pedido.id]
-          );
-          pedido.services = await allQuery(
-            `SELECT os.serviceId, s.name AS serviceName, os.servQtd, os.servPrice, os.servTotal
-            FROM order_service os
-            JOIN services s ON s.id = os.serviceId
-            WHERE os.orderId = ?`,
-            [pedido.id]
-          );
-        }
-    return pedidos;
-  } catch (error) {
-    throw new Error('Erro ao listar pedidos: ' + error.message);
-  }
-};
-
-
-// Função para buscar pedido por ID
-const buscarPedidoPorId = async (id) => {
-  try {
-    const pedido = await getQuery(`SELECT * FROM orders WHERE id = ?`, [id]);
-    if (!pedido) throw new Error('Pedido não encontrado');
-
+  const pedidos = await allQuery(`SELECT * FROM orders`);
+  for (const pedido of pedidos) {
     pedido.products = await allQuery(
       `SELECT op.productId, p.name AS productName, op.prodQtd, op.prodPrice, op.prodTotal
-      FROM order_product op
-      JOIN products p ON p.id = op.productId
-      WHERE op.orderId = ?`,
-      [id]
+       FROM order_product op
+       JOIN products p ON p.id = op.productId
+       WHERE op.orderId = ?`,
+      [pedido.id]
     );
-
     pedido.services = await allQuery(
       `SELECT os.serviceId, s.name AS serviceName, os.servQtd, os.servPrice, os.servTotal
-      FROM order_service os
-      JOIN services s ON s.id = os.serviceId
-      WHERE os.orderId = ?`,
-        [id]
+       FROM order_service os
+       JOIN services s ON s.id = os.serviceId
+       WHERE os.orderId = ?`,
+      [pedido.id]
     );
-    return pedido;
-  } catch (error) {
-    throw new Error('Erro ao buscar pedido: ' + error.message);
   }
+  return pedidos;
 };
 
-// Função para criar um pedido com produtos e serviços associados
-const criarPedido = async (pedidoData) => {
-  const { tutorId, petId, status, products = [], services = [] } = pedidoData;
+const buscarPedidoPorId = async (id) => {
+  const pedido = await getQuery(`SELECT * FROM orders WHERE id = ?`, [id]);
+  if (!pedido) throw new Error('Pedido não encontrado');
 
-    try {
-        await runQuery('BEGIN TRANSACTION');
+  pedido.products = await allQuery(
+    `SELECT op.productId, p.name AS productName, op.prodQtd, op.prodPrice, op.prodTotal
+     FROM order_product op
+     JOIN products p ON p.id = op.productId
+     WHERE op.orderId = ?`,
+    [id]
+  );
 
-        // Insere o pedido com total 0 temporariamente
-        const result = await runQuery(
-          `INSERT INTO orders (tutorId, petId, total, status) VALUES (?, ?, ?, ?)`,
-          [tutorId, petId, 0, status]
-        );
-        const orderId = result.lastID;
+  pedido.services = await allQuery(
+    `SELECT os.serviceId, s.name AS serviceName, os.servQtd, os.servPrice, os.servTotal
+     FROM order_service os
+     JOIN services s ON s.id = os.serviceId
+     WHERE os.orderId = ?`,
+    [id]
+  );
 
-        // Inserir produtos
-        for (const prod of products) {
-          await runQuery(
-            `INSERT INTO order_product (orderId, productId, prodQtd, prodPrice)
-            VALUES (?, ?, ?, ?)`,
-            [orderId, prod.productId, prod.prodQtd, prod.prodPrice]
-          );
-        }
+  return pedido;
+};
 
-        // Inserir serviços
-        for (const serv of services) {
-          await runQuery(
-            `INSERT INTO order_service (orderId, serviceId, servQtd, servPrice)
-            VALUES (?, ?, ?, ?)`,
-            [orderId, serv.serviceId, serv.servQtd, serv.servPrice]
-          );
-        }
-
-        // Buscar os totais calculados no banco
-        const produtosTotais = await allQuery(
-          `SELECT prodTotal FROM order_product WHERE orderId = ?`,
-          [orderId]
-        );
-        const servicosTotais = await allQuery(
-          `SELECT servTotal FROM order_service WHERE orderId = ?`,
-          [orderId]
-        );
-
-        const totalProdutos = produtosTotais.reduce((acc, p) => acc + p.prodTotal, 0);
-        const totalServicos = servicosTotais.reduce((acc, s) => acc + s.servTotal, 0);
-        const total = totalProdutos + totalServicos;
-
-        // Atualiza o total do pedido
-        await runQuery(`UPDATE orders SET total = ? WHERE id = ?`, [total, orderId]);
-
-        await runQuery('COMMIT');
-        return orderId;
-
-      } catch (err) {
-        await runQuery('ROLLBACK');
-        throw new Error('Erro ao criar pedido: ' + err.message);
-      }
-    };
-
-
-// Função para atualizar um pedido com dados novos e parciais
-const atualizarPedido = async (id, dadosAtualizados) => {
+const criarPedido = async ({ tutorId, petId, products = [], services = [], status }) => {
   try {
-    // Primeiro verifica se o pedido existe
-    const pedidoExistente = await getQuery('SELECT * FROM orders WHERE id = ?', [id]);
-    if (!pedidoExistente) {
-      throw new Error('Pedido não encontrado');
-    }
+    await runQuery('BEGIN TRANSACTION');
 
-    // Atualiza produtos se enviados
-    if (Array.isArray(dadosAtualizados.products)) {
-      await runQuery('DELETE FROM order_product WHERE orderId = ?', [id]);
-
-      for (const prod of dadosAtualizados.products) {
-        const { productId, prodQtd, prodPrice } = prod;
-
-        if (!productId || !prodQtd || !prodPrice) {
-          throw new Error('Produtos inválidos: productId, prodQtd e prodPrice são obrigatórios');
-        }
-
-        await runQuery(
-          `INSERT INTO order_product (orderId, productId, prodQtd, prodPrice)
-           VALUES (?, ?, ?, ?)`,
-          [id, productId, prodQtd, prodPrice]
-        );
-      }
-    }
-
-    // Atualiza serviços se enviados
-    if (Array.isArray(dadosAtualizados.services)) {
-      await runQuery('DELETE FROM order_service WHERE orderId = ?', [id]);
-
-      for (const serv of dadosAtualizados.services) {
-        const { serviceId, servQtd, servPrice } = serv;
-
-        if (!serviceId || !servQtd || !servPrice) {
-          throw new Error('Serviços inválidos: serviceId, servQtd e servPrice são obrigatórios');
-        }
-
-        await runQuery(
-          `INSERT INTO order_service (orderId, serviceId, servQtd, servPrice)
-           VALUES (?, ?, ?, ?)`,
-          [id, serviceId, servQtd, servPrice]
-        );
-      }
-    }
-
-    // Recalcular o total baseado nos valores armazenados no banco
-    const produtosTotais = await allQuery(
-      `SELECT prodTotal FROM order_product WHERE orderId = ?`,
-      [id]
+    const result = await runQuery(
+      `INSERT INTO orders (tutorId, petId, total, status) VALUES (?, ?, ?, ?)`,
+      [tutorId, petId, 0, status]
     );
-    const servicosTotais = await allQuery(
-      `SELECT servTotal FROM order_service WHERE orderId = ?`,
-      [id]
-    );
+    const orderId = result.lastID;
+
+    for (const prod of products) {
+      const total = prod.prodQtd * prod.prodPrice;
+      await runQuery(
+        `INSERT INTO order_product (orderId, productId, prodQtd, prodPrice, prodTotal)
+         VALUES (?, ?, ?, ?, ?)`,
+        [orderId, prod.productId, prod.prodQtd, prod.prodPrice, total]
+      );
+    }
+
+    for (const serv of services) {
+      const total = serv.servQtd * serv.servPrice;
+      await runQuery(
+        `INSERT INTO order_service (orderId, serviceId, servQtd, servPrice, servTotal)
+         VALUES (?, ?, ?, ?, ?)`,
+        [orderId, serv.serviceId, serv.servQtd, serv.servPrice, total]
+      );
+    }
+
+    const produtosTotais = await allQuery(`SELECT prodTotal FROM order_product WHERE orderId = ?`, [orderId]);
+    const servicosTotais = await allQuery(`SELECT servTotal FROM order_service WHERE orderId = ?`, [orderId]);
 
     const totalProdutos = produtosTotais.reduce((acc, p) => acc + p.prodTotal, 0);
     const totalServicos = servicosTotais.reduce((acc, s) => acc + s.servTotal, 0);
     const total = totalProdutos + totalServicos;
 
-    // Atualiza os campos do pedido
-    const campos = ['tutorId', 'petId', 'status'];
-    const camposParaAtualizar = [];
-    const valores = [];
-
-    for (const campo of campos) {
-      if (dadosAtualizados.hasOwnProperty(campo)) {
-        camposParaAtualizar.push(`${campo} = ?`);
-        valores.push(dadosAtualizados[campo]);
-      }
-    }
-
-    // Atualiza também o total
-    camposParaAtualizar.push('total = ?');
-    valores.push(total);
-
-    const setClause = camposParaAtualizar.join(', ');
-    await runQuery(
-      `UPDATE orders SET ${setClause} WHERE id = ?`,
-      [...valores, id]
-    );
-
-    return true;
+    await runQuery(`UPDATE orders SET total = ? WHERE id = ?`, [total, orderId]);
+    await runQuery('COMMIT');
+    return orderId;
 
   } catch (err) {
-    throw new Error('Erro ao atualizar pedido: ' + err.message);
+    await runQuery('ROLLBACK');
+    throw new Error('Erro ao criar pedido: ' + err.message);
   }
 };
 
-// Função para deletar pedido
+const atualizarPedido = async (id, dadosAtualizados) => {
+  const pedidoExistente = await getQuery('SELECT * FROM orders WHERE id = ?', [id]);
+  if (!pedidoExistente) throw new Error('Pedido não encontrado');
+
+  if (Array.isArray(dadosAtualizados.products)) {
+    await runQuery('DELETE FROM order_product WHERE orderId = ?', [id]);
+    for (const prod of dadosAtualizados.products) {
+      await runQuery(
+        `INSERT INTO order_product (orderId, productId, prodQtd, prodPrice, prodTotal)
+         VALUES (?, ?, ?, ?, ?)`,
+        [id, prod.productId, prod.prodQtd, prod.prodPrice, prod.prodQtd * prod.prodPrice]
+      );
+    }
+  }
+
+  if (Array.isArray(dadosAtualizados.services)) {
+    await runQuery('DELETE FROM order_service WHERE orderId = ?', [id]);
+    for (const serv of dadosAtualizados.services) {
+      await runQuery(
+        `INSERT INTO order_service (orderId, serviceId, servQtd, servPrice, servTotal)
+         VALUES (?, ?, ?, ?, ?)`,
+        [id, serv.serviceId, serv.servQtd, serv.servPrice, serv.servQtd * serv.servPrice]
+      );
+    }
+  }
+
+  const produtosTotais = await allQuery(`SELECT prodTotal FROM order_product WHERE orderId = ?`, [id]);
+  const servicosTotais = await allQuery(`SELECT servTotal FROM order_service WHERE orderId = ?`, [id]);
+
+  const totalProdutos = produtosTotais.reduce((acc, p) => acc + p.prodTotal, 0);
+  const totalServicos = servicosTotais.reduce((acc, s) => acc + s.servTotal, 0);
+  const total = totalProdutos + totalServicos;
+
+  const campos = ['tutorId', 'petId', 'status'];
+  const camposParaAtualizar = [];
+  const valores = [];
+
+  for (const campo of campos) {
+    if (dadosAtualizados.hasOwnProperty(campo)) {
+      camposParaAtualizar.push(`${campo} = ?`);
+      valores.push(dadosAtualizados[campo]);
+    }
+  }
+
+  camposParaAtualizar.push('total = ?');
+  valores.push(total);
+
+  const setClause = camposParaAtualizar.join(', ');
+  await runQuery(`UPDATE orders SET ${setClause} WHERE id = ?`, [...valores, id]);
+
+  return true;
+};
+
 const deletarPedido = async (id) => {
   const pedido = await getQuery(`SELECT * FROM orders WHERE id = ?`, [id]);
   if (!pedido) throw new Error('Pedido não encontrado');
   return new Promise((resolve, reject) => {
     db.serialize(() => {
       db.run('BEGIN TRANSACTION');
-
       db.run(`DELETE FROM order_product WHERE orderId = ?`, [id], (err) => {
-        if (err) {
-          db.run('ROLLBACK');
-          return reject(err);
-        }
-
+        if (err) return rollback(reject, err);
         db.run(`DELETE FROM order_service WHERE orderId = ?`, [id], (err) => {
-          if (err) {
-            db.run('ROLLBACK');
-            return reject(err);
-          }
-
+          if (err) return rollback(reject, err);
           db.run(`DELETE FROM orders WHERE id = ?`, [id], (err) => {
-            if (err) {
-              db.run('ROLLBACK');
-              return reject(err);
-            }
-
+            if (err) return rollback(reject, err);
             db.run('COMMIT', (err) => {
-              if (err) {
-                db.run('ROLLBACK');
-                return reject(err);
-              }
+              if (err) return rollback(reject, err);
               resolve();
             });
           });
@@ -268,10 +189,14 @@ const deletarPedido = async (id) => {
   });
 };
 
+const rollback = (reject, err) => {
+  db.run('ROLLBACK', () => reject(err));
+};
+
 module.exports = {
-    listarPedidos,
-    buscarPedidoPorId,
-    criarPedido,
-    atualizarPedido,
-    deletarPedido
+  listarPedidos,
+  buscarPedidoPorId,
+  criarPedido,
+  atualizarPedido,
+  deletarPedido
 };
