@@ -34,10 +34,8 @@ function listarOrders() {
                 <td>${order.id}</td>
                 <td>${order.tutorId}</td>
                 <td>${order.petId}</td>
-                <td>${order.products ? order.products.map(p => `${p.productId} (x${p.qtd})`).join(", ") : ''}
-                </td>
-                <td>${order.services ? order.services.map(s => `${s.serviceId} (x${s.qtd})`).join(", ") : ''}
-                </td>
+                <td>${order.products ? order.products.map(p => p.productId).join(", ") : ''}</td>
+                <td>${order.services ? order.services.map(s => s.serviceId).join(", ") : ''}</td>
                 <td>${order.status}</td>
                 <td>R$ ${order.total.toFixed(2)}</td>
                 <td>
