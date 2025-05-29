@@ -12,18 +12,19 @@ const { swaggerUi, swaggerSpec } = require('./routes/swagger');
 const swaggerJsdoc = require('swagger-jsdoc');
 
 //Importe das rotas /ROUTES
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
 const tutorsRouter = require('./routes/tutors');
 const petsRouter = require('./routes/pets');
 const productsRouter = require('./routes/products');
 const servicesRouter = require('./routes/services');
 const ordersRouter = require('./routes/orders');
-const loginRouter = require('./routes/login');
+
+const authenticateToken = require('./auth/authenticateToken');  // IMPORTAÇÃO do middleware
 
 var app = express();
 
-// view engine setup
+// Configurações do app (views, parser, etc)
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
@@ -35,16 +36,21 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/libs', express.static(path.join(__dirname, '../frontend/libs')));
 
-//Define os endpoints para as rotas
+// ROTAS PÚBLICAS (login e cadastro de usuários)
+app.use('/users', usersRouter);  // Se criar usuários for permitido sem token (caso contrário, proteja também)
+
+// A partir daqui, todas as rotas são protegidas pelo middleware
+app.use(authenticateToken);
+
+// ROTAS PROTEGIDAS (apenas com token válido)
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/tutors', tutorsRouter);
 app.use('/pets', petsRouter);
 app.use('/products', productsRouter);
 app.use('/services', servicesRouter);
 app.use('/orders', ordersRouter);
+
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.use('/login', loginRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

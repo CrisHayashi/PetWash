@@ -1,3 +1,12 @@
+// Funções para mostrar/esconder loading
+function mostrarLoading() {
+  $("#loading").removeClass("hide");
+}
+
+function esconderLoading() {
+  $("#loading").addClass("hide");
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     // Esconde o formulário de registro e mostra o de login ao carregar a página
     document.getElementById('register').style.display = 'none';
@@ -18,19 +27,13 @@ function mostrarRegistro() {
     $("#login").hide();
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-    M.updateTextFields();
-});
-
 document.getElementById('loginForm').addEventListener('submit', async function (event) {
     event.preventDefault();
     console.log("botão submit funcionando");
+    mostrarLoading();
 
     const email = document.getElementById('emailLogin').value.trim();
     const password = document.getElementById('passwordLogin').value;
-
-    console.log(email);
-    console.log(password);
 
     if (!email || !password) {
         M.toast({ html: 'Por favor, preencha todos os campos', classes: 'red' });
@@ -38,7 +41,7 @@ document.getElementById('loginForm').addEventListener('submit', async function (
     }
 
     try {
-        const response = await fetch(`https://ubiquitous-fishstick-j6qrrpq7rpp3q975-3000.app.github.dev/users/login`, {
+        const response = await fetch(`${url}/users/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
@@ -61,12 +64,15 @@ document.getElementById('loginForm').addEventListener('submit', async function (
         });
     } catch (error) {
         Swal.fire('Erro', error.message, 'error');
+    } finally {
+        esconderLoading();
     }
 });
 
 document.getElementById('registerForm').addEventListener('submit', async function (event) {
     event.preventDefault();
     console.log("Botão de cadastro funcionando");
+    mostrarLoading();
 
     const name = document.getElementById('nameRegister').value.trim();
     const email = document.getElementById('emailRegister').value.trim();
@@ -80,7 +86,7 @@ document.getElementById('registerForm').addEventListener('submit', async functio
     }
 
     try {
-        const response = await fetch('https://ubiquitous-fishstick-j6qrrpq7rpp3q975-3000.app.github.dev/users', {
+        const response = await fetch(`${url}/users`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, email, password })
@@ -99,6 +105,8 @@ document.getElementById('registerForm').addEventListener('submit', async functio
         });
     } catch (error) {
         Swal.fire('Erro', error.message, 'error');
+    } finally {
+        esconderLoading(); // Sempre esconde o loading ao final
     }
 });
 

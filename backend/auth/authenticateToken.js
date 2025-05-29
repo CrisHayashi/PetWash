@@ -3,18 +3,19 @@ const jwt = require('jsonwebtoken');
 
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
+  // Verifica se o token foi fornecido no formato Bearer <token>
   const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
-  // Verifica se o token foi fornecido
 
   if (!token) {
     return res.status(401).json({ error: 'Token não fornecido.' });
   }
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
-      return res.status(403).json({ error: 'Token inválido.' });
+      return res.status(403).json({ error: 'Token inválido ou expirado.' });
     }
-    req.user = user; // Aqui vem id, name, email
+    // Decodifica o payload do token (id, name, email)
+    req.user = decoded; // Aqui vem id, name, email
     next();
   });
 }
