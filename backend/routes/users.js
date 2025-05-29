@@ -1,7 +1,5 @@
 var express = require('express');
 var router = express.Router();
-const gerarToken = require('../auth/gerarToken');
-const authenticateToken = require('../auth/authenticateToken');
 
 // Importando o controller para usuários
 const userscontroller = require('../controllers/userscontroller');
@@ -36,6 +34,71 @@ const userscontroller = require('../controllers/userscontroller');
  */
 router.get('/', userscontroller.listarUsuarios);
 
+// POST - Criar um novo usuário
+/**
+ * @swagger
+ * /users:
+ *   post:
+ *     summary: Cria um novo usuário
+ *     tags: [Usuários]
+ *     description: Cria um novo usuário com os dados fornecidos
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Usuário criado com sucesso
+ *       500:
+ *         description: Erro usuario não criado
+ */
+
+router.post('/', userscontroller.criarUsuario);
+
+// POST - Login de usuário
+/**
+ * @swagger
+ * /users/login:
+ *   post:
+ *     summary: Autentica um usuário e retorna um token JWT
+ *     tags: [Usuários]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: user@example.com
+ *               password:
+ *                 type: string
+ *                 example: senha123
+ *     responses:
+ *       200:
+ *         description: Login bem-sucedido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *       401:
+ *         description: Credenciais inválidas
+ */
+router.post('/login', userscontroller.login);
+
 // GET - Pegar usuário por ID
 /**
  * @swagger
@@ -68,37 +131,6 @@ router.get('/', userscontroller.listarUsuarios);
  *         description: Usuário não encontrado
  */
 router.get('/:id', userscontroller.buscarUsuarioPorId);
-
-// POST - Criar um novo usuário
-/**
- * @swagger
- * /users:
- *   post:
- *     summary: Cria um novo usuário
- *     tags: [Usuários]
- *     description: Cria um novo usuário com os dados fornecidos
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               email:
- *                 type: string
- *               password:
- *                 type: string
- *     responses:
- *       200:
- *         description: Usuário criado com sucesso
- *       500:
- *         description: Erro usuario não criado
- */
-
-router.post('/', userscontroller.criarUsuario);
-
 
 
 // PUT - Atualizar um usuário
@@ -158,39 +190,5 @@ router.put('/:id', userscontroller.atualizarUsuario);
  */
 router.delete('/:id', userscontroller.deletarUsuario);
 
-// POST - Login de usuário
-/**
- * @swagger
- * /users/login:
- *   post:
- *     summary: Autentica um usuário e retorna um token JWT
- *     tags: [Usuários]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *                 example: user@example.com
- *               password:
- *                 type: string
- *                 example: senha123
- *     responses:
- *       200:
- *         description: Login bem-sucedido
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 token:
- *                   type: string
- *       401:
- *         description: Credenciais inválidas
- */
-router.post('/login', userscontroller.login);
 
 module.exports = router;
