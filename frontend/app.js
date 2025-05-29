@@ -1,3 +1,4 @@
+require('dotenv').config();
 var createError = require('http-errors');
 var express = require('express');
 var app = express();
@@ -6,7 +7,11 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const cors = require('cors');
 const expressLayouts = require('express-ejs-layouts');
-require('dotenv').config();
+
+const port = process.env.PORT || 5000;
+app.listen(port, () => {
+  console.log(`Servidor frontend rodando na porta ${port}`);
+});
 
 //Rotas
 var indexRouter = require('./routes/index');
@@ -17,8 +22,6 @@ var productsRouter = require('./routes/products');
 var servicesRouter = require('./routes/services');
 var ordersRouter = require('./routes/orders');
 var loginRouter = require('./routes/login');
-
-
 
 // Define a pasta de views para as páginas EJS
 app.set('view engine', 'ejs'); // Define o motor de visualização como EJS
@@ -49,7 +52,6 @@ app.use('/products', productsRouter);
 app.use('/services', servicesRouter);
 app.use('/orders', ordersRouter);
 app.use('/login', loginRouter);
-
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

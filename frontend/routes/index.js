@@ -37,7 +37,8 @@ router.get('/', async (req, res) => {
       products,
       pets,
       tutors,
-      orders
+      orders,
+      URL_API: process.env.URL_API // <- isso é essencial!
     });
 
   } catch (error) {
