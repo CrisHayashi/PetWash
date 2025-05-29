@@ -2,7 +2,8 @@ const ordersModel = require('../model/ordersModel');
 
 const listarPedidos = async (req, res, next) => {
     try {
-        const orders = await ordersModel.listarPedidos(); 
+        const orders = await ordersModel.listarPedidos();
+        console.log("Exemplo de pedido:", JSON.stringify(orders[0], null, 2)); 
         res.json(orders);
     } catch (err) {
         next(err);
