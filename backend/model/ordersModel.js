@@ -1,5 +1,5 @@
 const db = require('../banco/database');
-// const { all } = require('../routes/orders');
+const { all } = require('../routes/orders');
 
 const runQuery = (sql, params = []) =>
   new Promise((resolve, reject) => {

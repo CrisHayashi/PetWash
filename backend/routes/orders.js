@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const authenticateToken = require('../auth/authenticateToken');
 
 const {
   listarPedidos,
@@ -10,12 +9,6 @@ const {
   deletarPedido
 } = require('../controllers/orderscontroller');
 
-router.get('/', authenticateToken, listarPedidos);
-router.get('/:id', authenticateToken, buscarPedidoPorId);
-router.post('/', authenticateToken, criarPedido);
-router.patch('/:id', authenticateToken, atualizarPedido);
-router.delete('/:id', authenticateToken, deletarPedido);
-
 /**
  * @swagger
  * /orders:
@@ -23,8 +16,6 @@ router.delete('/:id', authenticateToken, deletarPedido);
  *     summary: Lista todos os pedidos
  *     tags: [Pedidos]
  *     description: Retorna todos os pedidos cadastrados no sistema, incluindo tutor, pet, produtos e serviços.
- *     security:
- *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Lista de pedidos retornada com sucesso
@@ -54,7 +45,7 @@ router.delete('/:id', authenticateToken, deletarPedido);
  *                   status:
  *                     type: string
  */
-router.get('/', authenticateToken, listarPedidos);
+router.get('/', listarPedidos);
 
 
 /**
@@ -64,8 +55,6 @@ router.get('/', authenticateToken, listarPedidos);
  *     summary: Obtém um pedido específico
  *     tags: [Pedidos]
  *     description: Retorna os detalhes de um pedido pelo ID.
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -79,30 +68,30 @@ router.get('/', authenticateToken, listarPedidos);
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 idPedido:
- *                   type: integer
- *                 tutorName:
- *                   type: string
- *                 petName:
- *                   type: string
- *                 productNames:
- *                   type: string
- *                 quantidadeProduto:
- *                   type: integer
+ *                 type: object
+ *                 properties:
+ *                   idPedido:
+ *                     type: integer
+ *                   tutorName:
+ *                     type: string
+ *                   petName:
+ *                     type: string
+ *                   productNames:
+ *                     type: string
+ *                   quantidadeProduto:
+ *                     type: integer
  *                 serviceNames:
- *                   type: string
- *                 quantidadeServico:
- *                   type: integer
- *                 total:
- *                   type: number
- *                 status:
- *                   type: string
+ *                    type: string
+ *                  quantidadeServico:
+ *                    type: integer
+ *                   total:
+ *                     type: number
+ *                   status:
+ *                     type: string
  *       404:
  *         description: Pedido não encontrado
  */
-router.get('/:id', authenticateToken, buscarPedidoPorId);
+router.get('/:id', buscarPedidoPorId);
 
 
 
@@ -111,10 +100,9 @@ router.get('/:id', authenticateToken, buscarPedidoPorId);
  * /orders:
  *   post:
  *     summary: Cria um novo pedido
- *     tags: [Pedidos]
+ *     tags:
+ *       - Pedidos
  *     description: Cria um pedido associando tutor, pet, produtos e serviços com quantidade e preço.
- *     security:
- *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -130,10 +118,13 @@ router.get('/:id', authenticateToken, buscarPedidoPorId);
  *             properties:
  *               tutorId:
  *                 type: integer
+ *                 description: ID do tutor do pet
  *               petId:
  *                 type: integer
+ *                 description: ID do pet
  *               products:
  *                 type: array
+ *                 description: Lista de produtos com quantidade e preço
  *                 items:
  *                   type: object
  *                   required:
@@ -143,13 +134,17 @@ router.get('/:id', authenticateToken, buscarPedidoPorId);
  *                   properties:
  *                     productId:
  *                       type: integer
+ *                       description: ID do produto
  *                     prodQtd:
  *                       type: integer
+ *                       description: Quantidade do produto
  *                     prodPrice:
  *                       type: number
  *                       format: float
+ *                       description: Preço unitário do produto
  *               services:
  *                 type: array
+ *                 description: Lista de serviços com quantidade e preço
  *                 items:
  *                   type: object
  *                   required:
@@ -159,13 +154,17 @@ router.get('/:id', authenticateToken, buscarPedidoPorId);
  *                   properties:
  *                     serviceId:
  *                       type: integer
+ *                       description: ID do serviço
  *                     servQtd:
  *                       type: integer
+ *                       description: Quantidade do serviço
  *                     servPrice:
  *                       type: number
  *                       format: float
+ *                       description: Preço unitário do serviço
  *               status:
  *                 type: string
+ *                 description: Status do pedido
  *             example:
  *               tutorId: 1
  *               petId: 3
@@ -191,10 +190,12 @@ router.get('/:id', authenticateToken, buscarPedidoPorId);
  *               properties:
  *                 orderId:
  *                   type: integer
+ *                   description: ID do pedido criado
  *       400:
  *         description: Dados inválidos
  */
-router.post('/', authenticateToken, criarPedido);
+router.post('/', criarPedido);
+
 
 /**
  * @swagger
@@ -203,13 +204,11 @@ router.post('/', authenticateToken, criarPedido);
  *     summary: Atualiza parcialmente um pedido existente
  *     tags: [Pedidos]
  *     description: Atualiza dados do pedido, incluindo produtos, serviços, tutor, pet e status.
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
- *         required: true
  *         description: ID do pedido a ser atualizado
+ *         required: true
  *         schema:
  *           type: integer
  *     requestBody:
@@ -280,7 +279,9 @@ router.post('/', authenticateToken, criarPedido);
  *       404:
  *         description: Pedido não encontrado
  */
-router.patch('/:id', authenticateToken, atualizarPedido);
+router.patch('/:id', atualizarPedido);
+
+
 
 /**
  * @swagger
@@ -289,8 +290,6 @@ router.patch('/:id', authenticateToken, atualizarPedido);
  *     summary: Remove um pedido existente
  *     tags: [Pedidos]
  *     description: Exclui um pedido do sistema com base no ID fornecido.
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -304,6 +303,6 @@ router.patch('/:id', authenticateToken, atualizarPedido);
  *       404:
  *         description: Pedido não encontrado
  */
-router.delete('/:id', authenticateToken, deletarPedido);
+router.delete('/:id', deletarPedido);
 
 module.exports = router;
