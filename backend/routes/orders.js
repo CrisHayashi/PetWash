@@ -18,32 +18,30 @@ const {
  *     description: Retorna todos os pedidos cadastrados no sistema, incluindo tutor, pet, produtos e serviços.
  *     responses:
  *       200:
- *         description: Lista de pedidos retornada com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   idPedido:
- *                     type: integer
- *                   tutorName:
- *                     type: string
- *                   petName:
- *                     type: string
- *                   productNames:
- *                     type: string
- *                   quantidadeProduto:
- *                     type: integer
- *                   serviceNames:
- *                     type: string
- *                   quantidadeServico:
- *                     type: integer
- *                   total:
- *                     type: number
- *                   status:
- *                     type: string
+ *        description: Pedido encontrado com sucesso
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object             
+ *              properties:               
+ *                idPedido:               
+ *                  type: integer
+ *                tutorName:
+ *                  type: string
+ *                petName:
+ *                  type: string
+ *                productNames:
+ *                  type: string
+ *                quantidadeProduto:
+ *                  type: integer
+ *                serviceNames:
+ *                  type: string
+ *                quantidadeServico:
+ *                  type: integer
+ *                total:
+ *                  type: number
+ *                status:
+ *                  type: string
  */
 router.get('/', listarPedidos);
 
