@@ -56,17 +56,91 @@ function listarPedidos() {
           <td>${order.id}</td>
           <td>${order.tutorName || ''}</td>
           <td>${order.petName || ''}</td>
-          <td>${(order.products || []).map(p => p.name || p.productName).join(", ")}</td>
-          <td>${(order.services || []).map(s => s.name || s.serviceName).join(", ")}</td>
+          <td>${(order.products || []).map(p => p.productName).join(", ")}</td>
+          <td>${(order.services || []).map(s => s.serviceName).join(", ")}</td>
           <td>${order.status}</td>
-          <td>${Number(order.total).toFixed(2)}</td>
-          <td><!-- Ações futuras --></td>
+          <td>${order.total.toFixed(2)}</td>
+          <td>
+            <button class="btn-small blue" onclick="editarPedido(${order.id})">
+              <i class="material-icons">edit</i>
+            </button>
+            <button class="btn-small red" onclick="deletarPedido(${order.id})">
+              <i class="material-icons">delete</i>
+            </button>
+          </td>
         </tr>
       `;
     });
     $("#pedido_list").html(html);
   });
 }
+
+function editarPedido(id) {
+  $.get(`${URL_API}/orders/${id}`, (order) => {
+    $("#orderId").val(order.id);
+    $("#tutorId").val(order.tutorId);
+    $("#petId").val(order.petId);
+    $("#status").val(order.status);
+
+    // Limpar campos
+    $("#produtos_container").html("");
+    $("#servicos_container").html("");
+
+    // Popular produtos
+    order.products.forEach(prod => {
+      const select = $(`
+        <div class="input-field">
+          <select class="browser-default produtoSelect">
+            <option value="${prod.productId}" selected>${prod.productName} - R$ ${prod.prodPrice}</option>
+          </select>
+        </div>
+      `);
+      $("#produtos_container").append(select);
+    });
+
+    // Popular serviços
+    order.services.forEach(serv => {
+      const select = $(`
+        <div class="input-field">
+          <select class="browser-default servicoSelect">
+            <option value="${serv.serviceId}" selected>${serv.serviceName} - R$ ${serv.servPrice}</option>
+          </select>
+        </div>
+      `);
+      $("#servicos_container").append(select);
+    });
+
+    $("#totalPedido").val(order.total.toFixed(2));
+    $("#pedidoForm").show();
+    $("#table_pedido").hide();
+  });
+}
+
+function deletarPedido(id) {
+  Swal.fire({
+    title: "Tem certeza?",
+    text: "Você não poderá reverter isso!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Sim, deletar!",
+    cancelButtonText: "Cancelar"
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $.ajax({
+        url: `${URL_API}/orders/${id}`,
+        type: 'DELETE',
+        success: function () {
+          Swal.fire("Deletado!", "O pedido foi removido com sucesso.", "success");
+          listarPedidos();
+        },
+        error: function () {
+          Swal.fire("Erro!", "Erro ao deletar o pedido.", "error");
+        }
+      });
+    }
+  });
+}
+
 
 // ==================== ADIÇÃO DE CAMPOS ====================
 
