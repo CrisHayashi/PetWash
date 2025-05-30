@@ -1,12 +1,11 @@
 require('dotenv').config();
-var express = require('express');
-var router = express.Router();
-const fetch = require('node-fetch');  // importar node-fetch
+const express = require('express');
+const router = express.Router();
+const fetch = require('node-fetch');
 
-var url = process.env.URL_API || 'http://localhost:3000'; // URL padrão caso não esteja definida no .env
-//console.log('URL da API carregada do .env:', url); // Verificação
+const url = process.env.URL_API || 'http://localhost:3000';
 
-// Rota para a página inicial da aplicação
+// Página inicial (carrega todos os dados e passa para o layout)
 router.get('/', async (req, res) => {
   try {
     const endpoints = ['services', 'products', 'pets', 'tutors', 'orders'];
@@ -28,8 +27,6 @@ router.get('/', async (req, res) => {
       ordersRes.json()
     ]);
 
-    //console.log("Pedidos carregados:", JSON.stringify(orders, null, 2));
-
     res.render('layout/layout', {
       title: 'Página Inicial',
       body: '../pages/index',
@@ -41,8 +38,8 @@ router.get('/', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Erro ao carregar dados:', error.message);
-    res.status(500).send('Erro no servidor');
+    console.error('Erro ao carregar dados da página inicial:', error.message);
+    res.status(500).send('Erro interno ao carregar dados');
   }
 });
 

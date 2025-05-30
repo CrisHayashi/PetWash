@@ -1,10 +1,13 @@
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 
+/**
+ * Middleware que protege rotas verificando o token JWT no cabeçalho Authorization.
+ * O token deve estar no formato "Bearer <token>"
+ */
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
-  // Verifica se o token foi fornecido no formato Bearer <token>
-  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+  const token = authHeader && authHeader.split(' ')[1]; // "Bearer <token>"
 
   if (!token) {
     return res.status(401).json({ error: 'Token não fornecido.' });
@@ -14,10 +17,12 @@ function authenticateToken(req, res, next) {
     if (err) {
       return res.status(403).json({ error: 'Token inválido ou expirado.' });
     }
-    // Decodifica o payload do token (id, name, email)
-    req.user = decoded; // Aqui vem id, name, email
+
+    // Se válido, adiciona os dados do usuário à request
+    req.user = decoded;
     next();
   });
 }
 
 module.exports = authenticateToken;
+// Esse middleware deve ser usado nas rotas que precisam de autenticação

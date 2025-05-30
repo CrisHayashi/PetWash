@@ -1,4 +1,4 @@
-const servicesModel = require('../model/servicesModel');
+const servicesModel = require('../models/servicesModel');
 
 const listarServicos = async (req, res, next) => {
     try {

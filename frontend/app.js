@@ -17,7 +17,7 @@ var productsRouter = require('./routes/products');
 var servicesRouter = require('./routes/services');
 var ordersRouter = require('./routes/orders');
 var loginRouter = require('./routes/login');
-
+var logoutRouter = require('./routes/logout');
 
 
 // Define a pasta de views para as páginas EJS
@@ -33,6 +33,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/logout', logoutRouter);
 
 // title padrão para todas as páginas
 app.use((req, res, next) => {

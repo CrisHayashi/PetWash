@@ -1,4 +1,4 @@
-const tutorsModel = require('../model/tutorsModel');
+const tutorsModel = require('../models/tutorsModel');
 
 // Função para listar todos os tutores
 const listarTutores = async (req, res, next) => {

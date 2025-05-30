@@ -1,18 +1,23 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-// Importando o controller para usuários
+// Importa o controller de usuários
 const userscontroller = require('../controllers/userscontroller');
 
-// GET - Listar todos os usuários
+/**
+ * @swagger
+ * tags:
+ *   name: Usuários
+ *   description: Operações relacionadas a usuários do sistema
+ */
+
 /**
  * @swagger
  * /users:
  *   get:
- *     summary: Retorna uma lista de usuários
- *     tags:
- *       - Usuários
- *     description: Retorna uma lista de todos os usuários cadastrados
+ *     summary: Lista todos os usuários
+ *     tags: [Usuários]
+ *     description: Retorna uma lista completa dos usuários cadastrados
  *     responses:
  *       200:
  *         description: Lista de usuários obtida com sucesso
@@ -29,25 +34,26 @@ const userscontroller = require('../controllers/userscontroller');
  *                     type: string
  *                   email:
  *                     type: string
- *                   password:
- *                     type: string
  */
 router.get('/', userscontroller.listarUsuarios);
 
-// POST - Criar um novo usuário
 /**
  * @swagger
  * /users:
  *   post:
  *     summary: Cria um novo usuário
  *     tags: [Usuários]
- *     description: Cria um novo usuário com os dados fornecidos
+ *     description: Cria um novo usuário com nome, email e senha
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - password
  *             properties:
  *               name:
  *                 type: string
@@ -56,27 +62,29 @@ router.get('/', userscontroller.listarUsuarios);
  *               password:
  *                 type: string
  *     responses:
- *       200:
+ *       201:
  *         description: Usuário criado com sucesso
- *       500:
- *         description: Erro usuario não criado
+ *       400:
+ *         description: Dados inválidos ou usuário já existe
  */
-
 router.post('/', userscontroller.criarUsuario);
 
-// POST - Login de usuário
 /**
  * @swagger
  * /users/login:
  *   post:
- *     summary: Autentica um usuário e retorna um token JWT
+ *     summary: Autentica um usuário (login)
  *     tags: [Usuários]
+ *     description: Retorna um token JWT se as credenciais forem válidas
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - email
+ *               - password
  *             properties:
  *               email:
  *                 type: string
@@ -99,12 +107,11 @@ router.post('/', userscontroller.criarUsuario);
  */
 router.post('/login', userscontroller.login);
 
-// GET - Pegar usuário por ID
 /**
  * @swagger
  * /users/{id}:
  *   get:
- *     summary: Retorna um usuário específico por ID
+ *     summary: Busca um usuário por ID
  *     tags: [Usuários]
  *     parameters:
  *       - in: path
@@ -112,7 +119,7 @@ router.post('/login', userscontroller.login);
  *         required: true
  *         schema:
  *           type: integer
- *         description: ID do usuário
+ *         description: ID do usuário a ser consultado
  *     responses:
  *       200:
  *         description: Usuário encontrado
@@ -132,8 +139,6 @@ router.post('/login', userscontroller.login);
  */
 router.get('/:id', userscontroller.buscarUsuarioPorId);
 
-
-// PUT - Atualizar um usuário
 /**
  * @swagger
  * /users/{id}:
@@ -165,15 +170,16 @@ router.get('/:id', userscontroller.buscarUsuarioPorId);
  *         description: Usuário atualizado com sucesso
  *       400:
  *         description: Dados inválidos
+ *       404:
+ *         description: Usuário não encontrado
  */
 router.put('/:id', userscontroller.atualizarUsuario);
 
-// DELETE - Deletar um usuário
 /**
  * @swagger
  * /users/{id}:
  *   delete:
- *     summary: Remove um usuário pelo ID
+ *     summary: Remove um usuário por ID
  *     tags: [Usuários]
  *     parameters:
  *       - in: path
@@ -190,5 +196,5 @@ router.put('/:id', userscontroller.atualizarUsuario);
  */
 router.delete('/:id', userscontroller.deletarUsuario);
 
-
+// Exporta todas as rotas definidas
 module.exports = router;
