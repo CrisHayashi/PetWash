@@ -75,45 +75,55 @@ function listarPedidos() {
   });
 }
 
-function editarPedido(id) {
-  $.get(`${URL_API}/orders/${id}`, (order) => {
+async function editarPedido(id) {
+  try {
+    const order = await $.get(`${URL_API}/orders/${id}`);
+    const produtosDisponiveis = await $.get(`${URL_API}/products`);
+    const servicosDisponiveis = await $.get(`${URL_API}/services`);
+
     $("#orderId").val(order.id);
     $("#tutorId").val(order.tutorId);
     $("#petId").val(order.petId);
     $("#status").val(order.status);
+    $("#produtos_container").empty();
+    $("#servicos_container").empty();
 
-    // Limpar campos
-    $("#produtos_container").html("");
-    $("#servicos_container").html("");
-
-    // Popular produtos
+    // Produtos
     order.products.forEach(prod => {
-      const select = $(`
-        <div class="input-field">
-          <select class="browser-default produtoSelect">
-            <option value="${prod.productId}" selected>${prod.productName} - R$ ${prod.prodPrice}</option>
-          </select>
-        </div>
-      `);
-      $("#produtos_container").append(select);
+      const select = $('<select class="browser-default produtoSelect"></select>');
+      select.append('<option value="">Selecione um produto</option>');
+      produtosDisponiveis.forEach(p => {
+        const selected = p.id === prod.productId ? "selected" : "";
+        select.append(`<option value="${p.id}" data-price="${p.price}" ${selected}>
+          ${p.name} - R$ ${Number(p.price).toFixed(2)}
+        </option>`);
+      });
+      $("#produtos_container").append($('<div class="input-field"></div>').append(select));
     });
 
-    // Popular serviços
+    // Serviços
     order.services.forEach(serv => {
-      const select = $(`
-        <div class="input-field">
-          <select class="browser-default servicoSelect">
-            <option value="${serv.serviceId}" selected>${serv.serviceName} - R$ ${serv.servPrice}</option>
-          </select>
-        </div>
-      `);
-      $("#servicos_container").append(select);
+      const select = $('<select class="browser-default servicoSelect"></select>');
+      select.append('<option value="">Selecione um serviço</option>');
+      servicosDisponiveis.forEach(s => {
+        const selected = s.id === serv.serviceId ? "selected" : "";
+        select.append(`<option value="${s.id}" data-price="${s.price}" ${selected}>
+          ${s.name} - R$ ${Number(s.price).toFixed(2)}
+        </option>`);
+      });
+      $("#servicos_container").append($('<div class="input-field"></div>').append(select));
     });
 
     $("#totalPedido").val(order.total.toFixed(2));
     $("#pedidoForm").show();
     $("#table_pedido").hide();
-  });
+
+    atualizarTotalAoSelecionar();
+    $(".produtoSelect, .servicoSelect").trigger("change");
+  } catch (error) {
+    console.error("Erro ao editar pedido:", error);
+    Swal.fire("Erro!", "Não foi possível carregar o pedido.", "error");
+  }
 }
 
 function deletarPedido(id) {
@@ -140,7 +150,6 @@ function deletarPedido(id) {
     }
   });
 }
-
 
 // ==================== ADIÇÃO DE CAMPOS ====================
 
@@ -219,30 +228,20 @@ function calculaTotal(produtos, servicos) {
 // ==================== SALVAR PEDIDO ====================
 
 function salvarPedido() {
+  const orderId = $("#orderId").val()?.trim();
   const produtos = [];
+  const servicos = [];
+
   $(".produtoSelect").each(function () {
     const id = $(this).val();
     const price = $(this).find(":selected").data("price");
-    if (id) {
-      produtos.push({
-        productId: parseInt(id),
-        prodPrice: parseFloat(price),
-        prodQtd: 1
-      });
-    }
+    if (id) produtos.push({ productId: parseInt(id), prodPrice: parseFloat(price), prodQtd: 1 });
   });
 
-  const servicos = [];
   $(".servicoSelect").each(function () {
     const id = $(this).val();
     const price = $(this).find(":selected").data("price");
-    if (id) {
-      servicos.push({
-        serviceId: parseInt(id),
-        servPrice: parseFloat(price),
-        servQtd: 1
-      });
-    }
+    if (id) servicos.push({ serviceId: parseInt(id), servPrice: parseFloat(price), servQtd: 1 });
   });
 
   const total = calculaTotal(produtos, servicos);
@@ -256,11 +255,15 @@ function salvarPedido() {
     total: total
   };
 
-  console.log("📤 Enviando pedido:", data); // Log para debug
+  const url = orderId ? `${URL_API}/orders/${orderId}` : `${URL_API}/orders`;
+  const method = orderId ? "PATCH" : "POST";
+
+  console.log("🔁 Enviando pedido via:", method);
+  console.log("📦 Payload:", data);
 
   $.ajax({
-    url: URL_API + "/orders",
-    method: "POST",
+    url,
+    method,
     contentType: "application/json",
     data: JSON.stringify(data),
     success: () => {
