@@ -1,4 +1,4 @@
-const ordersModel = require('../model/ordersModel');
+const ordersModel = require('../models/ordersModel');
 
 const listarPedidos = async (req, res, next) => {
     try {
@@ -24,16 +24,21 @@ const buscarPedidoPorId = async (req, res, next) => {
 
 const criarPedido = async (req, res, next) => {
     try {
-        const { tutorId, petId, products = [], services = [], status, total: totalEnviado } = req.body;
+        const { tutorId, petId, products = [], services = [], status } = req.body;
 
-        // Função para calcular o total do pedido
-        const id = await ordersModel.criarPedido({
-            tutorId,
-            petId,
-            products,
-            services,
-            status,
-        }); 
+        // Validações simples
+        for (const prod of products) {
+            if (!prod.productId || prod.prodQtd <= 0 || prod.prodPrice <= 0) {
+                return res.status(400).json({ erro: 'Produto inválido. Verifique ID, quantidade e preço.' });
+            }
+        }
+        for (const serv of services) {
+            if (!serv.serviceId || serv.servQtd <= 0 || serv.servPrice <= 0) {
+                return res.status(400).json({ erro: 'Serviço inválido. Verifique ID, quantidade e preço.' });
+            }
+        }
+
+        const id = await ordersModel.criarPedido({ tutorId, petId, products, services, status }); 
         res.status(201).json({ mensagem: 'Pedido criado com sucesso', id });
     } catch (err) {
         next(err);
@@ -43,20 +48,22 @@ const criarPedido = async (req, res, next) => {
 const atualizarPedido = async (req, res, next) => {
     const { id } = req.params;
     try {
-        const { tutorId, petId, products = [], services = [], status, total: totalEnviado } = req.body;
-      
-        await ordersModel.atualizarPedido(id, { 
-            tutorId,
-            petId,
-            products,
-            services,
-            status,
-        });
+        const { tutorId, petId, products = [], services = [], status } = req.body;
 
+        for (const prod of products) {
+            if (!prod.productId || prod.prodQtd <= 0 || prod.prodPrice <= 0) {
+                return res.status(400).json({ erro: 'Produto inválido. Verifique ID, quantidade e preço.' });
+            }
+        }
+        for (const serv of services) {
+            if (!serv.serviceId || serv.servQtd <= 0 || serv.servPrice <= 0) {
+                return res.status(400).json({ erro: 'Serviço inválido. Verifique ID, quantidade e preço.' });
+            }
+        }
+
+        await ordersModel.atualizarPedido(id, { tutorId, petId, products, services, status });
         res.json({ mensagem: 'Pedido atualizado com sucesso', id });
-
     } catch (err) {
-        console.error('Erro ao atualizar pedido:', err);
         next(err);
     }
 };
@@ -64,7 +71,7 @@ const atualizarPedido = async (req, res, next) => {
 const deletarPedido = async (req, res, next) => {
     const { id } = req.params;
     try {
-        await ordersModel.deletarPedido(id);  // Chama a função do modelo
+        await ordersModel.deletarPedido(id);
         res.json({ mensagem: 'Pedido removido com sucesso' });
     } catch (err) {
         next(err);

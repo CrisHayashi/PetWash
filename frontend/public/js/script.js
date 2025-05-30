@@ -6,6 +6,11 @@ function hideLoading() {
   document.getElementById('loading').classList.add('hide');
 }
 
+// Se clicar em "Sair", limpa localStorage
+if (window.location.pathname === "/logout") {
+  localStorage.removeItem("token");
+  localStorage.removeItem("userName");
+}
 
 // document.addEventListener('DOMContentLoaded', carregarDashboard);
 
