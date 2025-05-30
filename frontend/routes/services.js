@@ -1,25 +1,36 @@
-var express = require('express');
-var router = express.Router();
-var url = process.env.URL_API
+// Carrega variáveis do .env
+require('dotenv').config();
 
+// Importa dependências necessárias
+const express = require('express');
+const router = express.Router();
+const fetch = require('node-fetch'); // <--- IMPORTANTE!!
 
-router.get('/', async function(req, res, next) {
+// URL da API vinda do .env
+const url = process.env.URL_API;
+
+router.get('/', async function (req, res) {
   try {
+    // Busca os serviços no backend
+    const servicesResponse = await fetch(`${url}/services`);
 
-    const servicesResponse =  await fetch(`${url}/services`);
-    const services =  await servicesResponse.json();
+    // Trata erro de resposta não-OK
+    if (!servicesResponse.ok) {
+      throw new Error(`Erro na resposta da API: ${servicesResponse.status}`);
+    }
 
-    res.render('layout/layout', { 
-    body:'../pages/services', 
-    title: 'Serviços' ,
-    services : services
-  });
+    const services = await servicesResponse.json();
+
+    // Renderiza a view passando os dados
+    res.render('layout/layout', {
+      body: '../pages/services',
+      title: 'Serviços',
+      services: services
+    });
   } catch (err) {
-    console.log(err)
-    res.status(500).send("Erro ao buscar serviços")
+    console.error('Erro em /services:', err.message);
+    res.status(500).send("Erro ao buscar serviços");
   }
-
-  
 });
 
 module.exports = router;

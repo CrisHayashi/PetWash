@@ -2,12 +2,12 @@ require('dotenv').config();
 const jwt = require('jsonwebtoken');
 
 const secret = process.env.JWT_SECRET;
-const tempoExpiracao = process.env.JWT_EXPIRES_IN
+const tempoExpiracao = process.env.JWT_EXPIRES_IN;
 
 /**
  * Gera um token JWT com os dados públicos do usuário.
- * @param {Object} user - Objeto do usuário com id, name, email.
- * @returns {string} Token JWT assinado.
+ * @param {Object} user - Objeto com id, name, email
+ * @returns {string} token JWT assinado
  */
 const gerarToken = ({ id, name, email }) => {
   const payload = { id, name, email };
@@ -17,3 +17,4 @@ const gerarToken = ({ id, name, email }) => {
 };
 
 module.exports = gerarToken;
+// Esse módulo deve ser usado após o login do usuário para gerar o token

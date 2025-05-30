@@ -1,5 +1,5 @@
-const petsModel = require('../model/petsModel');
-const tutorsModel = require('../model/tutorsModel');
+const petsModel = require('../models/petsModel');
+const tutorsModel = require('../models/tutorsModel');
 
 const listarPets = async (req, res, next) => {
     try {
