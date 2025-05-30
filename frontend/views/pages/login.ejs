@@ -1,0 +1,76 @@
+<div id="register" class="register">
+    <div class="row">
+        <div class="col s12 m6 offset-m3">
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title center-align blue-text text-darken-3">Criar Conta / Atualizar</span>
+                    <form id="registerForm">
+                        <div class="input-field">
+                            <i class="material-icons prefix">account_circle</i>
+                            <input type="text" id="nameRegister" name="nome">
+                            <label for="nameRegister">Nome Completo</label>
+                        </div>
+
+                        <div class="input-field">
+                            <i class="material-icons prefix">email</i>
+                            <input type="email" id="emailRegister" name="email" required>
+                            <label for="emailRegister">E-mail</label>
+                        </div>
+
+                        <div class="input-field">
+                            <i class="material-icons prefix">lock</i>
+                            <input type="password" id="passwordRegister" name="senha" required>
+                            <label for="passwordRegister">Senha</label>
+                        </div>
+
+                        <div class="center">
+                            <button id="btnRegister" type="submit" class="btn waves-effect waves-light blue darken-3">
+                                <i class="material-icons left">person_add</i>Cadastrar / Atualizar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-action center-align">
+                    <a onclick="mostrarLogin()" id="btn-criarNovaConta" class="waves-effect waves-light btn blue darken-3">
+                        <i class="material-icons left">login</i>Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="login" class="login">
+    <div class="row">
+        <div class="col s12 m6 offset-m3">
+            <h4>Realize o seu Login !</h4>
+            <br>
+            <div class="card">
+                <div class="card-content">
+                    <h3 class="card-title center-align">Login</h3>
+                    <form id="loginForm">
+                        <div class="input-field">
+                            <i class="material-icons prefix">email</i>
+                            <input id="emailLogin" type="email" name="email" required>
+                            <label for="emailLogin">Email</label>
+                        </div>
+                        <div class="input-field">
+                            <i class="material-icons prefix">lock</i>
+                            <input id="passwordLogin" type="password" name="password" required>
+                            <label for="passwordLogin">Senha</label>
+                        </div>
+                        <div class="center-align">
+                            <button type="submit" class="btn waves-effect waves-light">Login</button><br>
+                        </div>
+                        </form>
+                </div>
+                <div class="card-action center-align">
+                    <a onclick="mostrarRegistro()" id="btn-criarNovaConta" class="waves-effect waves-light btn blue darken-3">
+                        <i class="material-icons left">person_add</i>Criar Conta</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+<script src="/js/login.js"></script>

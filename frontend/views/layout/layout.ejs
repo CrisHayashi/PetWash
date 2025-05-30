@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=2" />
+  <title>
+    <%= title %> | PetWash
+  </title>
+  <!-- Google Fonts - Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Materialize CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <!-- SweetAlert2 -->
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet" />
+  <!-- Estilo customizado -->
+  <link href="/css/style.css" rel="stylesheet" />
+  <script src="/js/config.js" defer></script>
+  <script src="/js/orders.js" defer></script>
+</head>
+
+<body>
+  <!-- Cabeçalho -->
+  <header>
+    <%- include('../partials/header') %>
+  </header>
+
+  <!-- Conteúdo Principal -->
+
+  <%- include('../partials/loading') %>
+
+
+    <main class="section">
+      <div class="row">
+        <div class="col s12 m12 l12">
+          <%- include(body) %>
+        </div>
+      </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+      <!-- Scripts -->
+      <!-- jQuery -->
+        <script src="frontend\public\js\config.js"></script>
+        <script src="frontend\public\js\script.js"></script>
+
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+      <script>
+        const URL_API = '<%= process.env.URL_API || "http://localhost:3000/" %>';
+      </script>
+      <!-- Materialize JS -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+      <!-- SweetAlert2 -->
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <!-- IMask -->
+      <script src="https://unpkg.com/imask"></script>
+      <!-- Chart.js -->
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <!-- Scripts específicos da página -->
+      <%- typeof scripts !=='undefined' ? scripts : '' %>
+        <!-- seu JS customizado -->
+        <script src="/js/init.js"></script>
+        <script src="/js/script.js"></script>
+</body>
+
+</html>

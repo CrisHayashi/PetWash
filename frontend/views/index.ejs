@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+  <title>Starter Template - Materialize</title>
+
+  <!-- CSS  -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection" />
+  <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection" />
+</head>
+
+<body>
+<%- include('layout/header', {user: "henning"}); -%>
+
+  <div class="section no-pad-bot" id="index-banner">
+    <div class="container">
+
+      <h3>Cadastro de Estudadente</h3>
+      <p>form de estudantes</p>
+
+      <form action="/student/create" method="POST">
+        <div class="input-field col s12">
+          <input id="name" type="text" name="name" class="validate">
+          <label for="name">Nome</label>
+        </div>
+
+        <div class="input-field col s12">
+          <input id="registration" type="text" name="registration" class="validate">
+          <label for="registration">Matricula</label>
+        </div>
+
+        <div class="input-field col s12">
+          <select>
+            <option value="" disabled selected>
+              Escolha o sexo
+            </option>
+            <option value="1">Masculino</option>
+            <option value="2">Feminino</option>
+            <option value="3">Outro</option>  
+          </select>
+          <label>Sexo</label>
+        </div>
+        <div class="input-field col s12">
+          <button class="btn waves-effect waves-light" type="submit" name="action">Cadastrar
+            <i class="material-icons right">send</i>
+          </button>
+        </div>
+      </form>
+
+      <br>
+
+      <h3>Lista de Estudantes</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Nome</th>
+            <th>Matricula</th>
+            <th>Sexo</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <%for(let student of students){%>
+            <tr>
+              <%for(let prop in student){ %>
+                <td>
+                  <%=student[prop]%>
+                </td>
+                <%}%>
+              <td>
+                <a href="/student/edit/<%=student.id%>" class="btn-floating btn-small waves-effect waves-light red"><i class="material-icons">edit</i></a>
+                <a href="/student/delete/<%=student.id%>" class="btn-floating btn-small waves-effect waves-light red"><i class="material-icons">delete</i></a>
+              </td>
+            </tr>
+            <%}%>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+
+
+  <!--  Scripts-->
+  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="js/materialize.js"></script>
+  <script src="js/init.js"></script>
+
+  <script>
+
+  </script>
+
+</body>
+
+</html>

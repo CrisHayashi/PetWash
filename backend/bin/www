@@ -1,0 +1,75 @@
+#!/usr/bin/env node
+
+/**
+ * Módulo principal da aplicação
+ */
+const app = require('../app');
+const debug = require('debug')('backend-server:server');
+const http = require('http');
+
+/**
+ * Define a porta a partir do .env ou usa padrão 3000
+ */
+const port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+/**
+ * Cria o servidor HTTP usando o Express
+ */
+const server = http.createServer(app);
+
+/**
+ * Inicia o servidor na porta definida
+ */
+server.listen(port, () => {
+  console.log(`🚀 Backend rodando em http://localhost:${port}`);
+});
+server.on('error', onError);
+server.on('listening', onListening);
+
+/**
+ * Normaliza a porta para número, string (pipe) ou false
+ */
+function normalizePort(val) {
+  const port = parseInt(val, 10);
+  if (isNaN(port)) return val;      // named pipe
+  if (port >= 0) return port;       // porta válida
+  return false;
+}
+
+/**
+ * Listener para erros ao iniciar o servidor
+ */
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  const bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  switch (error.code) {
+    case 'EACCES':
+      console.error(`${bind} requer privilégios elevados`);
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(`${bind} já está em uso`);
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Listener para quando o servidor começar a escutar
+ */
+function onListening() {
+  const addr = server.address();
+  const bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug(`🟢 Listening on ${bind}`);
+}

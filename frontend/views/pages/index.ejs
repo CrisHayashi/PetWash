@@ -1,0 +1,80 @@
+<!-- Layout principal com mascote -->
+<div class="section no-pad-bot banner-topo" id="index-banner">
+  <div class="container center-align">
+    <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Mascote Pet" width="100">
+    <h1 class="header orange-text text-darken-3">PetWash</h1>
+    <h5 class="light">Cuidando com amor de quem você ama 💛</h5><br>
+    <a href="/services" class="btn-large waves-effect waves-light orange darken-2 pulse">Conheça nossos serviços</a>
+  </div><br>
+</div>
+<br><br>
+
+<!-- Dashboard -->
+<div class="container">
+  <h4 class="center-align titulo-dashboard">
+    <i class="material-icons left">dashboard</i> Visão Geral do Sistema
+  </h4>
+
+  <!-- Indicadores -->
+  <div class="row">
+    <div class="col s12 m4">
+      <div class="card-panel card-custom">
+        <h5 class="center orange-text text-darken-2">Indicadores Gerais</h5>
+        <!-- Indicadores -->
+        <div class="card-indicador">
+          <span><i class="material-icons">pets</i> Pets</span>
+          <strong id="totalPets">0</strong>
+        </div>
+        <div class="card-indicador">
+          <span><i class="material-icons">person</i> Tutores</span>
+          <strong id="totalTutores">0</strong>
+        </div>
+        <div class="card-indicador">
+          <span><i class="material-icons">build</i> Serviços</span>
+          <strong id="totalServicos">0</strong>
+        </div>
+        <div class="card-indicador">
+          <span><i class="material-icons">shopping_cart</i> Produtos</span>
+          <strong id="totalProdutos">0</strong>
+        </div>
+        <div class="card-indicador">
+          <span><i class="material-icons">receipt</i> Pedidos</span>
+          <strong id="totalPedidos">0</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráfico de Serviços -->
+     <div class="row">
+    <!-- Gráfico de Serviços -->
+    <div class="col s12 m6">
+      <div class="card-panel card-custom">
+        <h5 class="center green-text text-darken-2">Serviços Mais Populares</h5>
+        <div class="grafico-container">
+          <canvas id="graficoServicos"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráfico de Produtos -->
+    <div class="col s12 m6">
+      <div class="card-panel card-custom">
+        <h5 class="center blue-text text-darken-2">Produtos Mais Vendidos</h5>
+        <div class="grafico-container">
+          <canvas id="graficoProdutos"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  // Variáveis para os dados do dashboard
+ const pets = JSON.parse('<%- JSON.stringify(pets) %>');
+  const tutors = JSON.parse('<%- JSON.stringify(tutors) %>');
+  const services = JSON.parse('<%- JSON.stringify(services) %>');
+  const products = JSON.parse('<%- JSON.stringify(products) %>');
+  const orders = JSON.parse('<%- JSON.stringify(orders) %>');
+</script>
+<script src="/js/home.js"></script>
